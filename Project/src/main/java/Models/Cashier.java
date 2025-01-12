@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class Cashier extends User implements Serializable {
 
-    private String cashierID;
     private Sector sector;
 
     public Cashier (String username, String password, String fullName, Date dateOfBirth, String phoneNumber, String email, double salary) {
@@ -16,9 +15,6 @@ public class Cashier extends User implements Serializable {
         return sector;
     }
 
-    public String getCashierID() {
-        return cashierID;
-    }
 
     public void createBill() {
 

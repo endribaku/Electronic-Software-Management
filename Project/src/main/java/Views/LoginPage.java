@@ -1,5 +1,6 @@
 package Views;
 
+import Models.User;
 import Views.CashierInterface.CHomePage;
 import javafx.application.Application;
 import javafx.geometry.HPos;
@@ -15,7 +16,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.EOFException;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 public class LoginPage extends Application {
 
@@ -90,5 +96,27 @@ public class LoginPage extends Application {
         stage.show();
     }
 
+    public boolean login(String username, String password) throws ClassNotFoundException, IOException {
+
+        ArrayList<User> users = new ArrayList<>();
+
+        try(ObjectInputStream inputStream =
+                    new ObjectInputStream(new FileInputStream("Data\\employees.dat"));){
+            while (true){
+                users.add((User)inputStream.readObject());
+            }
+        }catch (EOFException e){
+            System.out.println("All users loaded successfully.");
+        }
+
+        for(User u : users ){
+            if (String.valueOf(u.getUsername()).equals(username) && String.valueOf(u.getPassword()).equals(password)){
+                System.out.println("User " + String.valueOf(u.getUsername()) + " was found");
+                return true;
+            }
+        }
+        System.out.println("User not found");
+        return false;
+    }
 
 }

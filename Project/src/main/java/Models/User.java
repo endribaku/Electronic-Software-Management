@@ -1,10 +1,14 @@
 package Models;
 
-import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
+
 
 public abstract class User implements Serializable {
 
+    private String userID;
     private String username;
     private String password;
     private String fullName;
@@ -23,7 +27,12 @@ public abstract class User implements Serializable {
         this.email = email;
         this.salary = salary;
         this.accessLevel = accessLevel;
+        this.userID = UUID.randomUUID().toString();
     }
+
+    public String getUserID() {return userID;}
+
+    public void setUserID(String userID) {this.userID = userID;}
 
     public String getUsername() {
         return username;
@@ -87,10 +96,6 @@ public abstract class User implements Serializable {
 
     public void setAccessLevel(Access accessLevel) {
         this.accessLevel = accessLevel;
-    }
-
-    public boolean login(String username, String password) {
-        return false;
     }
 
     public void logout() {
