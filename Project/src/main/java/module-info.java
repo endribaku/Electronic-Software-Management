@@ -4,8 +4,10 @@ module com.example.store {
     requires java.desktop;
 
 
-    opens com.example.store to javafx.fxml;
-    exports com.example.store;
-    exports com.example.store.CashierInterface;
-    opens com.example.store.CashierInterface to javafx.fxml;
+//    opens com.example.store to javafx.fxml;
+//    exports com.example.store;
+    exports Views.CashierInterface;
+    opens Views.CashierInterface to javafx.fxml;
+    exports Views;
+    opens Views to javafx.fxml;
 }

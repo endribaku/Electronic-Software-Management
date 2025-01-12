@@ -1,4 +1,4 @@
-package com.example.store.CashierInterface;
+package Views.CashierInterface;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

@@ -1,6 +1,6 @@
-package com.example.store;
+package Views;
 
-import com.example.store.CashierInterface.CHomePage;
+import Views.CashierInterface.CHomePage;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
