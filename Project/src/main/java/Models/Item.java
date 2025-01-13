@@ -1,17 +1,18 @@
 package Models;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
-public class Item implements Serializable {
-    String itemID;
-    String name;
-    Category category;
-    String supplier;
-    Date purchaseDate;
-    double purchasePrice;
-    double sellingPrice;
-    int quantity;
+public class Item implements Serializable, Cloneable {
+    private String itemID;
+    private String name;
+    private Category category;
+    private String supplier;
+    private Date purchaseDate;
+    private double purchasePrice;
+    private double sellingPrice;
+    private int quantity;
 
     public Item(String itemID, String name, Category category,
                 String supplier, Date purchaseDate,
@@ -62,8 +63,12 @@ public class Item implements Serializable {
         return purchaseDate;
     }
 
-    public void setPurchaseDate(Date purchaseDate) {
-        this.purchaseDate = purchaseDate;
+    public void setPurchaseDate(int day, int month, int year) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+        this.purchaseDate = c.getTime();
     }
 
     public double getPurchasePrice() {
@@ -88,5 +93,30 @@ public class Item implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return name + "     " + sellingPrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Item) {
+            return this.itemID.equals(((Item)o).getItemID());
+        }
+        return false;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            Item temp = (Item) super.clone();
+            temp.purchaseDate = (Date)purchaseDate.clone();
+            return temp;
+        }
+        catch(CloneNotSupportedException e) {
+            return null;
+        }
     }
 }
