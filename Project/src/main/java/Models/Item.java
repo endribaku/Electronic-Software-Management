@@ -89,4 +89,13 @@ public class Item implements Serializable {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Item item = (Item) o;
+//        return Objects.equals(id, item.id); // Compare based on a unique identifier
+//    }
+
 }
