@@ -52,33 +52,63 @@ public class Manager extends User implements Serializable {
     }
 
     public void addCategory(Category category) {
-
+        inventory.getCategories().add(category);
     }
 
-    public void removeSupplier(Supplier supplier) {
-
+    public void removeSupplier(String supplierName) {
+        for (Supplier s : suppliers){
+            if(s.getName().equals(supplierName)){
+                suppliers.remove(s);
+                break;
+            }
+        }
     }
 
-    public void removeSector(Sector sector) {
-
+    public void removeSector(String sectorName) {
+        for (Sector s: sectors){
+            if(s.getSectorName().equals(sectorName))
+                sectors.remove(s);
+                break;
+        }
     }
 
     public void removeCategory(Category category) {
-
+        inventory.getCategories().remove(category);
     }
 
-    public void restockProduct(Item item, int quantity) {
-            for (Category c : inventory.getCategories()){
-                if(item.getCategoryName().equals(c.getName()))
-                    if(c.getItemByName(item.getName()) == null)
-                        c.addItem(item);
-                    else if(c.getItemByName(item.getName()) != null)
-                        restockProduct(item, item.getQuantity());
+    public void restockProduct(Item items, int quantity) {
+        if (inventory != null) {
+            for (Category c : inventory.getCategories()) {
+                if (items.getCategoryName().equals(c.getName()))
+                    if (c.getItemByName(items.getName()) != null) {
+                        Item itemInInventory = c.getItemByName(items.getName());
+                        if (itemInInventory != null) {
+                            itemInInventory.setQuantity(itemInInventory.getQuantity() + quantity);
+                            break;
+                        } else {
+                            System.out.println("Item not found");
+                            break;
+                        }
+                    }
             }
+        }
     }
 
     public void monitorCashierPerformance(String cashierName) {
-
+        ArrayList<Cashier> cashiers;
+        Cashier cashierFound = null;
+        for (Sector s : sectors) {
+            cashiers = s.getCashiers();
+            for(Cashier c : cashiers){
+                if (c.getFullName().equals(cashierName)) {
+                    cashierFound = c;
+                    //return c.getPerformance();
+                    break;
+                }
+            }
+            if(cashierFound != null)
+                break;;
+        }
     }
 
     public void viewSalesStatistics(String period) {
