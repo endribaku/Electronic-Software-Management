@@ -15,7 +15,7 @@ public class Category implements Comparable<Category>{
                     new ObjectInputStream(new FileInputStream("Data\\items.dat"));){
             while (true){
                 Item item = (Item) inputStream.readObject();
-                if(item.getCategoryName().equals(this.getName()))
+                if(item.getCategory().compareTo(this) == 0)
                     items.add(item);
             }
         }catch (EOFException e){
@@ -49,17 +49,5 @@ public class Category implements Comparable<Category>{
         }
 
         return false;
-    }
-
-    public void addItem(Item item){
-        items.add(item);
-    }
-
-    public Item getItemByName(String name){
-        for(Item i:items){
-            if(i.getName().equals(name))
-                return i;
-        }
-        return null;
     }
 }

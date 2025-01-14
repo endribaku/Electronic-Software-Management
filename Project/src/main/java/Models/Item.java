@@ -6,18 +6,19 @@ import java.util.Date;
 public class Item implements Serializable {
     String itemID;
     String name;
-    String categoryName;
+    Category category;
     String supplier;
     Date purchaseDate;
     double purchasePrice;
     double sellingPrice;
     int quantity;
 
-    public Item(String itemID, String name, String categoryName, String supplier,
-                Date purchaseDate, double purchasePrice, double sellingPrice, int quantity) {
+    public Item(String itemID, String name, Category category,
+                String supplier, Date purchaseDate,
+                double purchasePrice, double sellingPrice, int quantity) {
         this.itemID = itemID;
         this.name = name;
-        this.categoryName = categoryName;
+        this.category = category;
         this.supplier = supplier;
         this.purchaseDate = purchaseDate;
         this.purchasePrice = purchasePrice;
@@ -41,9 +42,13 @@ public class Item implements Serializable {
         this.name = name;
     }
 
-    public String getCategoryName() {return categoryName;}
+    public Category getCategory() {
+        return category;
+    }
 
-    public void setCategoryName(String categoryName) {this.categoryName = categoryName;}
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public String getSupplier() {
         return supplier;

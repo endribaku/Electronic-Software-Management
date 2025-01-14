@@ -16,8 +16,8 @@ public class Cashier extends User implements Serializable {
     }
 
 
-    public Bill createBill() {
-        return new Bill(this, this.sector);
+    public void createBill() {
+
     }
 
     public void trackTodayBills() {
