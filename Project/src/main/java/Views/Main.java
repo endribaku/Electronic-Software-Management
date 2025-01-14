@@ -9,8 +9,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         //hap user files edhe i bo read & save in arraylist
-        //new LoginPage().start(stage);
-        new AHomePage().start(stage);
+        new LoginPage().show(stage);
+        //new AHomePage().show(stage);
     }
 
     public static void main(String[] args) {

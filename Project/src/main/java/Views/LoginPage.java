@@ -24,13 +24,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class LoginPage extends Application {
+public class LoginPage  {
 
     private String email;
     private String password;
 
-    @Override
-    public void start(Stage stage) throws IOException {
+    public void show(Stage stage) throws IOException {
         HBox parent = new HBox();
 
         //template, will add photo and better design sa ti msoj cik m mir n left side, dhe better labels on right panelogin side
@@ -71,7 +70,7 @@ public class LoginPage extends Application {
             paneLogin.add(messageLabel, 1, 3);
 
             //template HomePage, will write an if-check based on the loaded user type to load the correct instance
-            new AHomePage().start(stage);
+            new AHomePage().show(stage);
         });
 
         VBox leftSide = new VBox();
