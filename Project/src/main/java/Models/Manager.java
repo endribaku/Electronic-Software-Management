@@ -32,15 +32,23 @@ public class Manager extends User implements Serializable {
     }
 
     public void addSector(Sector sector) {
-
+        sectors.add(sector);
     }
 
     public void addSuppliers(Supplier supplier) {
-
+        suppliers.add(supplier);
     }
 
     public void addItems(Item items) {
-
+        if(inventory != null){
+            for (Category c : inventory.getCategories()){
+                if(items.getCategoryName().equals(c.getName()))
+                    if(c.getItemByName(items.getName()) == null)
+                        c.addItem(items);
+                    else if(c.getItemByName(items.getName()) != null)
+                        restockProduct(items, items.getQuantity());
+            }
+        }
     }
 
     public void addCategory(Category category) {
@@ -59,8 +67,14 @@ public class Manager extends User implements Serializable {
 
     }
 
-    public void restockProduct(String name, int quantity) {
-
+    public void restockProduct(Item item, int quantity) {
+            for (Category c : inventory.getCategories()){
+                if(item.getCategoryName().equals(c.getName()))
+                    if(c.getItemByName(item.getName()) == null)
+                        c.addItem(item);
+                    else if(c.getItemByName(item.getName()) != null)
+                        restockProduct(item, item.getQuantity());
+            }
     }
 
     public void monitorCashierPerformance(String cashierName) {

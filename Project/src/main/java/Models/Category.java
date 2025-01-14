@@ -50,4 +50,16 @@ public class Category implements Comparable<Category>{
 
         return false;
     }
+
+    public void addItem(Item item){
+        items.add(item);
+    }
+
+    public Item getItemByName(String name){
+        for(Item i:items){
+            if(i.getName().equals(name))
+                return i;
+        }
+        return null;
+    }
 }
