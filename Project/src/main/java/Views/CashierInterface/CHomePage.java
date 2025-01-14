@@ -27,7 +27,7 @@ public class CHomePage extends Application {
         HBox topbar = new HBox();
         topbar.setAlignment((Pos.CENTER_LEFT));
         topbar.setPadding(new Insets(20));
-        topbar.setStyle("-fx-background-color: blue");
+        topbar.setStyle("-fx-background-color: E0E0CE");
 
         Image homeImage = new Image(getClass().getResource("/icons8-electronic-chip-100 (1).png").toExternalForm());
         ImageView logoImage = new ImageView(homeImage);
@@ -42,7 +42,7 @@ public class CHomePage extends Application {
         VBox sidebar = new VBox();
         sidebar.setAlignment((Pos.CENTER));
         sidebar.setPadding(new Insets(20));
-        sidebar.setStyle("-fx-background-color: cornflowerblue");
+        sidebar.setStyle("-fx-background-color: #E0E0CE");
 
         home.setTop(topbar);
         home.setLeft(sidebar);

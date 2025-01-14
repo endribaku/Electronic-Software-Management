@@ -1,6 +1,7 @@
 package Views;
 
 import Models.User;
+import Views.AdministratorInterface.AHomePage;
 import Views.CashierInterface.CHomePage;
 import javafx.application.Application;
 import javafx.geometry.HPos;
@@ -70,7 +71,7 @@ public class LoginPage extends Application {
             paneLogin.add(messageLabel, 1, 3);
 
             //template HomePage, will write an if-check based on the loaded user type to load the correct instance
-            new CHomePage().start(stage);
+            new AHomePage().start(stage);
         });
 
         VBox leftSide = new VBox();
