@@ -21,7 +21,7 @@ public class Administrator extends User implements Serializable {
         }
     }
 
-    public void addUser(User user) throws FileNotFoundException, IOException {
+    public void insertUser(User user) throws FileNotFoundException, IOException {
         employees.add(user);
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));
         outputStream.writeObject(employees.get(employees.indexOf(user)));
