@@ -52,9 +52,11 @@ public class Bill {
         return dateOfSale;
     }
 
-    public void addBillItem(Bill_Item item) {
-        itemsSold.add(item);
-        totalAmount += item.getTotalPrice();
+    public void addBillItem(Item item, int quantity) {
+        Bill_Item billItem = new Bill_Item(item, quantity, item.getSellingPrice());
+        item.setQuantity(item.getQuantity() - quantity);
+        itemsSold.add(billItem);
+        totalAmount += billItem.getTotalPrice();
     }
 
 //    public Bill_Item getBillItem(Bill_Item item){

@@ -1,44 +1,62 @@
-package Views.AdministratorInterface;
+package Views;
 
-import javafx.application.Application;
+import Models.Administrator;
+import Models.Bill;
+import Models.User;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class AHomePage {
+import java.util.ArrayList;
+
+public class AdminView {
+    private Administrator currentAdmin;
+
+//    public AdminView(Administrator currentAdmin) {
+//        this.currentAdmin = currentAdmin;
+//    }
 
     public void show(Stage primaryStage) {
-        //Background + Menu
-        StackPane bgRoot = new StackPane();
-        bgRoot.setStyle("-fx-background-color: #364958; -fx-padding: 80; -fx-border-radius: 20px;");
+
+        //MenuBar
+        MenuBar menuBar = new MenuBar();
+        Menu menu = new Menu("Menu");
+        MenuItem homeItem = new MenuItem("Home");
+        MenuItem inventoryItem = new MenuItem("Inventory");
+        MenuItem employeeItem = new MenuItem("Employees");
+        MenuItem exitItem = new MenuItem("Exit");
+        menu.getItems().addAll(homeItem, exitItem, inventoryItem, employeeItem);
+        Menu billMenu = new Menu("Bills");
+        MenuItem newBillItem = new MenuItem("Generate Bill");
+        MenuItem viewBillItem = new MenuItem("View Bills");
+        billMenu.getItems().addAll(newBillItem, viewBillItem);
+        Menu profileMenu = new Menu("Profile");
+        MenuItem profileItem = new MenuItem("View Profile");
+        MenuItem logoutItem = new MenuItem("Logout");
+        profileMenu.getItems().addAll(profileItem, logoutItem);
+        menuBar.getMenus().addAll(menu, billMenu, profileMenu);
+
         BorderPane Root = new BorderPane();
-        Root.setStyle("-fx-border-color: #F3F3E9; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #F3F3E9; -fx-background-radius: 15px;" + "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 5, 0.3, 4, 4);");
+        Root.setTop(menuBar);
 
         // Sidebar
         VBox sidebar = new VBox(15);
-        sidebar.setStyle("-fx-background-color: #F3F3E9; -fx-padding: 20;");
+        sidebar.setStyle("-fx-background-color: #364958; -fx-padding: 20;");
         Label homeLabel = new Label("Home");
-        homeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        homeLabel.setStyle("-fx-text-fill: #F3F3E9; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label inventoryLabel = new Label("Inventory");
-        inventoryLabel.setStyle("-fx-text-fill: #364958; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        inventoryLabel.setStyle("-fx-text-fill: #F3F3E9; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label employeeLabel = new Label("Employees");
-        employeeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        employeeLabel.setStyle("-fx-text-fill: #F3F3E9; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel);
         sidebar.setPrefWidth(150);
         Root.setLeft(sidebar);
-
-        // Header
-        HBox header = new HBox(10);
-        header.setStyle("-fx-background-color: #F3F3E9; -fx-padding: 10;");
-        Label titleLabel = new Label("Store");
-        titleLabel.setStyle("-fx-text-fill: #364958; -fx-font: 20px Helvetica; -fx-font-weight: bold;");
-        header.getChildren().addAll(titleLabel);
-        Root.setTop(header);
 
         // Home page
         GridPane homePage = new GridPane();
@@ -53,6 +71,8 @@ public class AHomePage {
         // Pie chart
         PieChart pieChart = createPieChart();
         homePage.add(pieChart, 1, 0);
+
+        Root.setCenter(homePage);
 
         //Inventory page
         GridPane inventoryPage = new GridPane();
@@ -71,16 +91,11 @@ public class AHomePage {
         employeePage.add(employeeHomeLabel, 0, 0);
 
         // Add content to center
-        Root.setCenter(homePage);
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
         employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(employeePage));
 
-        bgRoot.getChildren().add(Root);
-        bgRoot.setAlignment(Pos.CENTER);
-
-
         // Scene
-        Scene scene = new Scene(bgRoot, 1200, 800);
+        Scene scene = new Scene(Root, 1200, 800);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Dashboard");
         primaryStage.show();
