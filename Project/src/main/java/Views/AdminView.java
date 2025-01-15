@@ -8,6 +8,7 @@ import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -204,11 +205,11 @@ public class AdminView {
             }
             try {
                 if (employeeAccessLevel.equals(Access.Cashier)) {
-                    currentAdmin.addUser(new Cashier(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    currentAdmin.insertUser(new Cashier(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 } else if (employeeAccessLevel.equals(Access.Manager)) {
-                    currentAdmin.addUser(new Manager(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    currentAdmin.insertUser(new Manager(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 } else if (employeeAccessLevel.equals(Access.Administrator)) {
-                    currentAdmin.addUser(new Administrator(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    currentAdmin.insertUser(new Administrator(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 }
             } catch(Exception ex) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -228,11 +229,34 @@ public class AdminView {
         employeeListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         employeeListBox.setSpacing(10);
         //employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
+        TableColumn<User, String> employeeIDColumn = new TableColumn<>("ID");
+        employeeIDColumn.setMinWidth(100);
+        employeeIDColumn.setCellValueFactory(new PropertyValueFactory<User, String>("userID"));
         TableColumn<User, String> employeeFullNameColumn = new TableColumn<>("Full Name");
-        //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
+        employeeFullNameColumn.setMinWidth(100);
+        employeeFullNameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("fullName"));
+        TableColumn<User, String> employeeUsernameColumn = new TableColumn<>("Username");
+        employeeUsernameColumn.setMinWidth(100);
+        employeeUsernameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
+        TableColumn<User, String> employeePasswordColumn = new TableColumn<>("Password");
+        employeePasswordColumn.setMinWidth(100);
+        employeePasswordColumn.setCellValueFactory(new PropertyValueFactory<User, String>("password"));
         TableColumn<User, Access> employeeAccessLevelColumn = new TableColumn<>("Access Level");
-        TableColumn<User, String> employeeSalaryColumn = new TableColumn<>("Salary");
-        employeesTableView.getColumns().addAll(employeeFullNameColumn, employeeAccessLevelColumn, employeeSalaryColumn);
+        employeeAccessLevelColumn.setMinWidth(100);
+        employeeAccessLevelColumn.setCellValueFactory(new PropertyValueFactory<User, Access>("accessLevel"));
+        TableColumn<User, LocalDate> employeeDOBColumn = new TableColumn<>("Date of Birth");
+        employeeDOBColumn.setMinWidth(100);
+        employeeDOBColumn.setCellValueFactory(new PropertyValueFactory<User, LocalDate>("dateOfBirth"));
+        TableColumn<User, String> employeeEmailColumn = new TableColumn<>("Email");
+        employeeEmailColumn.setMinWidth(100);
+        employeeEmailColumn.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
+        TableColumn<User, String> employeePhoneNumberColumn = new TableColumn<>("Phone Number");
+        employeePhoneNumberColumn.setMinWidth(100);
+        employeePhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<User, String>("phoneNumber"));
+        TableColumn<User, Number> employeeSalaryColumn = new TableColumn<>("Salary");
+        employeeSalaryColumn.setMinWidth(100);
+        employeeSalaryColumn.setCellValueFactory(new PropertyValueFactory<User, Number>("salary"));
+        employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn);
         employeesTableView.setPrefWidth(1000);
         employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView);
 

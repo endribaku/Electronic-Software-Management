@@ -1,50 +1,50 @@
 package Models;
 
+import DAO.UserFileHandler;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Administrator extends User implements Serializable {
-    private ArrayList<User> employees;
+    private final ArrayList<User> employees;
+    private final UserFileHandler userFileHandler = new UserFileHandler();
 
     public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) throws IOException, ClassNotFoundException
     {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator);
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\employees.dat"));){
-            while (true){
-                employees.add((User)inputStream.readObject());
-            }
-        }catch (EOFException e){
-            System.out.println("All users loaded successfully.");
-        }
+        employees = userFileHandler.selectAllUser();
     }
 
-    public void insertUser(User user) throws FileNotFoundException, IOException {
+    public User getUser(String username) throws IOException, ClassNotFoundException {
+        return userFileHandler.selectUser(username);
+    }
+
+    public void insertUser(User user) throws IOException, ClassNotFoundException {
         employees.add(user);
-        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));
-        outputStream.writeObject(employees.get(employees.indexOf(user)));
+        userFileHandler.insertUser(user);
     }
 
-    public void deleteUser(String username) {
-        for(User u : employees ){
-            if (String.valueOf(u.getUsername()).equals(username)){
-                employees.remove(employees.indexOf(u));
-            }
-        }
+    public void deleteUser(String username) throws IOException, ClassNotFoundException {
+        userFileHandler.deleteUser(username);
     }
 
     public void givePermission(User user, Access accessLevel) {
-
+        user.setAccessLevel(accessLevel);
+        try {
+            updateUser(user);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void revokePermission(User user) {
-        int a = 1;
-    }
+//    public void revokePermission(User user) {
+//        int a = 1;
+//    }
 
-    public void updateUser(User user) {
-        int a = 1;
+    public void updateUser(User user) throws IOException, ClassNotFoundException {
+        userFileHandler.updateUser(user);
     }
 
     public void generateTotalIncomeReport(Date startDate, Date endDate) {
@@ -55,5 +55,7 @@ public class Administrator extends User implements Serializable {
 
     }
 
-    public ArrayList<User> getEmployees() {return employees;}
+    public ArrayList<User> getAllEmployees() throws IOException, ClassNotFoundException {
+        return userFileHandler.selectAllUser();
+    }
 }
