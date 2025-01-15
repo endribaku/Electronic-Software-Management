@@ -122,6 +122,7 @@ public class AdminView {
     public Pane show(Administrator currentAdmin) {
         HBox employeesPage = new HBox();
         employeesPage.setStyle("-fx-background-color: white; -fx-padding: 10;");
+        employeesPage.setSpacing(10);
 
         //Create new Employee
         VBox addEmployeeBox = new VBox();
@@ -227,15 +228,15 @@ public class AdminView {
         employeeListLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
         employeeListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         employeeListBox.setSpacing(10);
-        employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
+        employees = FXCollections.observableArrayList();
         TableColumn<User, String> employeeFullNameColumn = new TableColumn<>("Full Name");
         //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
         TableColumn<User, Access> employeeAccessLevelColumn = new TableColumn<>("Access Level");
         TableColumn<User, String> employeeSalaryColumn = new TableColumn<>("Salary");
         employeesTableView.getColumns().addAll(employeeFullNameColumn, employeeAccessLevelColumn, employeeSalaryColumn);
-        employeesTableView.setItems(employees);
+        employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView);
 
-        employeesPage.getChildren().addAll(addEmployeeBox);
+        employeesPage.getChildren().addAll(addEmployeeBox, employeeListBox);
 
         return employeesPage;
     }
