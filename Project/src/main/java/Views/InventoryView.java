@@ -1,5 +1,8 @@
 package Views;
 
+import Models.Access;
+import Models.Item;
+import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -7,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class InventoryView {
@@ -18,6 +22,9 @@ public class InventoryView {
     ComboBox<String> itemCategoryListView = new ComboBox<String>(categories);
     ObservableList<String> suppliers = FXCollections.observableArrayList("Samsung", "Apple", "HP", "Lenovo", "Dell");
     ComboBox<String> itemSupplierListView = new ComboBox<String>(suppliers);
+
+    ObservableList<Item> items;
+    TableView<Item> inventoryTableView = new TableView<>(items);
 
     public Pane show() {
         HBox inventoryPage = new HBox();
@@ -73,7 +80,29 @@ public class InventoryView {
         });
         GridPane.setHalignment(addItemButton, HPos.RIGHT);
         addItemGrid.add(addItemButton, 1, 6);
-        inventoryPage.getChildren().addAll(addItemGrid);
+
+        //Display Employee's List
+        VBox inventoryListBox = new VBox();
+        Label inventoryListLabel = new Label("Inventory List");
+        inventoryListLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
+        inventoryListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
+        inventoryListBox.setSpacing(10);
+        //employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
+        TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
+        //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
+        TableColumn<Item, String> itemNameColumn = new TableColumn<>("Name");
+        TableColumn<Item, String> itemCategoryColumn = new TableColumn<>("Category");
+        TableColumn<Item, String> itemSupplierColumn = new TableColumn<>("Supplier");
+        TableColumn<Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
+        TableColumn<Item, Number> itemPPriceColumn = new TableColumn<>("Purchase Price");
+        TableColumn<Item, Number> itemSPriceColumn = new TableColumn<>("Selling Price");
+
+        inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
+        inventoryTableView.setPrefWidth(1000);
+        inventoryListBox.getChildren().addAll(inventoryListLabel, inventoryTableView);
+
+        inventoryPage.getChildren().addAll(addItemGrid, inventoryListBox);
+        inventoryPage.setSpacing(10);
 
         return inventoryPage;
     }
