@@ -1,13 +1,14 @@
 package Models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Cashier extends User implements Serializable {
 
     private Sector sector;
 
-    public Cashier (String username, String password, String fullName, Date dateOfBirth, String phoneNumber, String email, double salary) {
+    public Cashier (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Cashier);
     }
 

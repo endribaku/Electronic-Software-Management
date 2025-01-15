@@ -9,10 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -31,6 +28,9 @@ public class LoginView {
         StackPane bgRoot = new StackPane();
         bgRoot.setStyle("-fx-background-color: #364958; -fx-padding: 80; -fx-border-radius: 20px;");
         bgRoot.setAlignment(Pos.CENTER);
+        BorderPane Root = new BorderPane();
+        Root.setStyle("-fx-border-color: #F3F3E9; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #F3F3E9; -fx-background-radius: 15px; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 5, 0.3, 4, 4);");
+
         HBox parent = new HBox();
 
         //template, will add photo and better design sa ti msoj cik m mir n left side, dhe better labels on right panelogin side

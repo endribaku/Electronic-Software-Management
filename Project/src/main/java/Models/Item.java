@@ -2,6 +2,7 @@ package Models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 public class Item implements Serializable {
     String itemID;
@@ -13,10 +14,10 @@ public class Item implements Serializable {
     double sellingPrice;
     int quantity;
 
-    public Item(String itemID, String name, Category category,
+    public Item(String name, Category category,
                 String supplier, Date purchaseDate,
                 double purchasePrice, double sellingPrice, int quantity) {
-        this.itemID = itemID;
+        this.itemID = UUID.randomUUID().toString();
         this.name = name;
         this.category = category;
         this.supplier = supplier;

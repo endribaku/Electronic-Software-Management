@@ -1,6 +1,7 @@
 package Models;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,7 +12,7 @@ public class Manager extends User implements Serializable {
     private Inventory inventory;
     private ArrayList<Supplier> suppliers;
 
-    public Manager (String username, String password, String fullName, Date dateOfBirth, String phoneNumber, String email, double salary) {
+    public Manager (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Manager);
     }
 

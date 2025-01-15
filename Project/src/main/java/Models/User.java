@@ -1,6 +1,7 @@
 package Models;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -12,17 +13,19 @@ public abstract class User implements Serializable {
     private String username;
     private String password;
     private String fullName;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String phoneNumber;
     private String email;
     private double salary;
     private Access accessLevel;
 
-    protected User(String username, String password, String fullName, Date dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
+    protected User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
+        if(dateOfBirth == null)
+            this.dateOfBirth = LocalDate.now();
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.salary = salary;
@@ -58,11 +61,11 @@ public abstract class User implements Serializable {
         this.fullName = fullName;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
