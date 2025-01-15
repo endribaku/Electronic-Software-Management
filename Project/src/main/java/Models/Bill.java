@@ -8,7 +8,7 @@ public class Bill {
     private Cashier cashier;
     private Sector sector;
     private ArrayList<Bill_Item> itemsSold;
-    private Double totalAmount;
+    private double totalAmount;
     private LocalDate dateOfSale;
     private static int counter = 0;
 
