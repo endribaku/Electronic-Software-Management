@@ -52,11 +52,35 @@ public class Bill {
         return dateOfSale;
     }
 
-    public void addBillItem(Item item, int quantity) {
-        Bill_Item billItem = new Bill_Item(item, quantity, item.getSellingPrice());
-        item.setQuantity(item.getQuantity() - quantity);
-        itemsSold.add(billItem);
-        totalAmount += billItem.getTotalPrice();
+    public void addBillItem(Item item, int quantityToReduce) {
+
+        if(item.getQuantity() == 0) {
+            String message = String.format("Item %s is out of stock!", item.getName());
+            sector.getManager().notifyManager(message);
+            return;
+        }
+
+        if(quantityToReduce > item.getQuantity()) {
+            String message = String.format("Not enough stock for item %s!", item.getName());
+            return;
+        }
+
+            Bill_Item billItem = new Bill_Item(item, quantityToReduce, item.getSellingPrice());
+            item.reduceStock(quantityToReduce);
+            itemsSold.add(billItem);
+            totalAmount += billItem.getTotalPrice();
+            if(item.getQuantity() == 0)
+            {
+                String message = String.format("Item %s has been sold out!", item.getName());
+                sector.getManager().notifyManager(message);
+            }
+
+            if(item.getCategory().needsRestocking())
+            {
+                String message = String.format("Category %s needs restocking!", item.getCategory().getName());
+                sector.getManager().notifyManager(message);
+            }
+
     }
 
 //    public Bill_Item getBillItem(Bill_Item item){

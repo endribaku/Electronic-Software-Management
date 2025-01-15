@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Inventory {
     ArrayList<Category> categories;
+    ArrayList<Manager> managers;
 
     public Inventory() throws ClassNotFoundException, IOException {
         try(ObjectInputStream inputStream =
@@ -42,4 +43,9 @@ public class Inventory {
             }
         }
     }
+
+    public ArrayList<Manager> getManagers() {
+        return managers;
+    }
+
 }

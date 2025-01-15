@@ -7,8 +7,9 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class Category implements Comparable<Category>{
-    String name;
-    ArrayList<Item> items;
+    private String name;
+    private ArrayList<Item> items;
+    private int stockThreshold = 5;
 
     public Category() throws ClassNotFoundException, IOException {
         try(ObjectInputStream inputStream =
@@ -43,11 +44,20 @@ public class Category implements Comparable<Category>{
         for(Item i : items){
             stock += i.getQuantity();
         }
-        if(stock < 5){
+        if(stock < stockThreshold){
             System.out.println("Needs restocking.");
+
             return true;
         }
 
         return false;
+    }
+
+    public void addItem(Item item){
+        items.add(item);
+    }
+
+    public ArrayList<Item> getItems() {
+        return items;
     }
 }
