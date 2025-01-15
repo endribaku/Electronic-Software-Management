@@ -12,7 +12,7 @@ public class Bill {
     private LocalDate dateOfSale;
     private static int counter = 0;
 
-    public Bill(Cashier cashier, Sector sector) {
+    public Bill(int billNumber, Cashier cashier, Sector sector) {
         this.billNumber = counter + 1;
         this.cashier = cashier;
         this.sector = sector;
@@ -52,9 +52,35 @@ public class Bill {
         return dateOfSale;
     }
 
-    public void addBillItem(Bill_Item item) {
-        itemsSold.add(item);
-        totalAmount += item.getTotalPrice();
+    public void addBillItem(Item item, int quantityToReduce) {
+
+        if(item.getQuantity() == 0) {
+            String message = String.format("Item %s is out of stock!", item.getName());
+            sector.getManager().notifyManager(message);
+            return;
+        }
+
+        if(quantityToReduce > item.getQuantity()) {
+            String message = String.format("Not enough stock for item %s!", item.getName());
+            return;
+        }
+
+            Bill_Item billItem = new Bill_Item(item, quantityToReduce, item.getSellingPrice());
+            item.reduceStock(quantityToReduce);
+            itemsSold.add(billItem);
+            totalAmount += billItem.getTotalPrice();
+            if(item.getQuantity() == 0)
+            {
+                String message = String.format("Item %s has been sold out!", item.getName());
+                sector.getManager().notifyManager(message);
+            }
+
+            if(item.getCategory().needsRestocking())
+            {
+                String message = String.format("Category %s needs restocking!", item.getCategory().getName());
+                sector.getManager().notifyManager(message);
+            }
+
     }
 
 //    public Bill_Item getBillItem(Bill_Item item){

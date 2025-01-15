@@ -7,15 +7,16 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 public class Category implements Comparable<Category>{
-    String name;
-    ArrayList<Item> items;
+    private String name;
+    private ArrayList<Item> items;
+    private int stockThreshold = 5;
 
     public Category() throws ClassNotFoundException, IOException {
         try(ObjectInputStream inputStream =
                     new ObjectInputStream(new FileInputStream("Data\\items.dat"));){
             while (true){
                 Item item = (Item) inputStream.readObject();
-                if(item.getCategoryName().equals(this.getName()))
+                if(item.getCategory().compareTo(this) == 0)
                     items.add(item);
             }
         }catch (EOFException e){
@@ -43,8 +44,9 @@ public class Category implements Comparable<Category>{
         for(Item i : items){
             stock += i.getQuantity();
         }
-        if(stock < 5){
+        if(stock < stockThreshold){
             System.out.println("Needs restocking.");
+
             return true;
         }
 
@@ -55,11 +57,7 @@ public class Category implements Comparable<Category>{
         items.add(item);
     }
 
-    public Item getItemByName(String name){
-        for(Item i:items){
-            if(i.getName().equals(name))
-                return i;
-        }
-        return null;
+    public ArrayList<Item> getItems() {
+        return items;
     }
 }

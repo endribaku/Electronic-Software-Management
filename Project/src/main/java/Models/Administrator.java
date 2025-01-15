@@ -1,14 +1,14 @@
 package Models;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Administrator extends User implements Serializable {
     private ArrayList<User> employees;
 
-    public Administrator (String username, String password, String fullName, Date dateOfBirth, String phoneNumber, String email, double salary)
-    throws ClassNotFoundException, IOException
+    public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) throws IOException, ClassNotFoundException
     {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator);
         try(ObjectInputStream inputStream =
@@ -54,4 +54,6 @@ public class Administrator extends User implements Serializable {
     public void generateTotalCostsReport(Date startDate, Date endDate) {
 
     }
+
+    public ArrayList<User> getEmployees() {return employees;}
 }

@@ -2,22 +2,24 @@ package Models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 public class Item implements Serializable {
     String itemID;
     String name;
-    String categoryName;
+    Category category;
     String supplier;
     Date purchaseDate;
     double purchasePrice;
     double sellingPrice;
     int quantity;
 
-    public Item(String itemID, String name, String categoryName, String supplier,
-                Date purchaseDate, double purchasePrice, double sellingPrice, int quantity) {
-        this.itemID = itemID;
+    public Item(String name, Category category,
+                String supplier, Date purchaseDate,
+                double purchasePrice, double sellingPrice, int quantity) {
+        this.itemID = UUID.randomUUID().toString();
         this.name = name;
-        this.categoryName = categoryName;
+        this.category = category;
         this.supplier = supplier;
         this.purchaseDate = purchaseDate;
         this.purchasePrice = purchasePrice;
@@ -41,9 +43,13 @@ public class Item implements Serializable {
         this.name = name;
     }
 
-    public String getCategoryName() {return categoryName;}
+    public Category getCategory() {
+        return category;
+    }
 
-    public void setCategoryName(String categoryName) {this.categoryName = categoryName;}
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public String getSupplier() {
         return supplier;
@@ -83,5 +89,10 @@ public class Item implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void reduceStock(int quantityToReduce) {
+        // Proceed to deduct the stock safely
+        quantity -= quantityToReduce;
     }
 }

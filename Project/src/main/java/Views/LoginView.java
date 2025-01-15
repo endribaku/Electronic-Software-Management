@@ -1,9 +1,6 @@
 package Views;
 
 import Models.User;
-import Views.AdministratorInterface.AHomePage;
-import Views.CashierInterface.CHomePage;
-import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,9 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -24,12 +19,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class LoginPage  {
+public class LoginView {
 
     private String email;
     private String password;
 
     public void show(Stage stage) throws IOException {
+        StackPane bgRoot = new StackPane();
+        bgRoot.setStyle("-fx-background-color: #364958; -fx-padding: 80; -fx-border-radius: 20px;");
+        bgRoot.setAlignment(Pos.CENTER);
+        BorderPane Root = new BorderPane();
+        Root.setStyle("-fx-border-color: #F3F3E9; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #F3F3E9; -fx-background-radius: 15px; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 5, 0.3, 4, 4);");
+
         HBox parent = new HBox();
 
         //template, will add photo and better design sa ti msoj cik m mir n left side, dhe better labels on right panelogin side
@@ -70,7 +71,7 @@ public class LoginPage  {
             paneLogin.add(messageLabel, 1, 3);
 
             //template HomePage, will write an if-check based on the loaded user type to load the correct instance
-            new AHomePage().show(stage);
+            new AdminView().show(stage);
         });
 
         VBox leftSide = new VBox();
