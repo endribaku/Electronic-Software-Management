@@ -1,43 +1,44 @@
 package DAO;
 
 import Models.Category;
-import Models.Item;
+import Models.Supplier;
+import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class CategoryFileHandler{
-    public static final String FILE_PATH = "Project/Data/categories.dat";
+public class SuppliersFileHandler {
+    public static final String FILE_PATH = "Project/Data/suppliers.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
-    private final ObservableList<Category> categories = FXCollections.observableArrayList();
+    private final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
 
-    public ObservableList<Category> getAllItems() {
-        if(categories.isEmpty()) {
-            selectAllCategories();
+    public ObservableList<Supplier> getAllSuppliers() {
+        if(suppliers.isEmpty()) {
+            selectAllSuppliers();
         }
-        return categories;
+        return suppliers;
     }
 
-    public void insertCategory(Category category){
+    public void insertSupplier(Supplier supplier) {
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
             ObjectOutputStream writer;
             if (DATA_FILE.length() > 0)
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
-            writer.writeObject(category);
+            writer.writeObject(supplier);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
     }
 
-    public void deleteCategory(Category category){
+    public void deleteSupplier(Supplier supplier){
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            categories.remove(category);
-            for(Category c : categories) {
-                outputStream.writeObject(c);
+            suppliers.remove(supplier);
+            for(Supplier s : suppliers) {
+                outputStream.writeObject(s);
             }
         } catch(EOFException eofe) {
 
@@ -46,17 +47,17 @@ public class CategoryFileHandler{
         }
     }
 
-    public void deleteAll(ArrayList<Category> categoriesToRemove) {
+    public void deleteAll(ArrayList<Supplier> suppliersToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-            for(Category c : categories) {
-                if (categories.containsAll(categoriesToRemove)) {
-                    categories.removeAll(categoriesToRemove);
-                } else if (categories.contains(c)) {
-                    categories.remove(c);
+            for(Supplier s : suppliers) {
+                if (suppliers.containsAll(suppliersToRemove)) {
+                    suppliers.removeAll(suppliersToRemove);
+                } else if (suppliers.contains(s)) {
+                    suppliers.remove(s);
                 }
             }
-            for(Category c : categories) {
-                outputStream.writeObject(c);
+            for(Supplier s : suppliers) {
+                outputStream.writeObject(s);
             }
         } catch(IOException ex) {
             ex.getMessage();
@@ -65,8 +66,8 @@ public class CategoryFileHandler{
 
     public boolean updateAll() {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(Category c : categories) {
-                outputStream.writeObject(c);
+            for(Supplier s : suppliers) {
+                outputStream.writeObject(s);
             }
             return true;
         } catch (IOException ex) {
@@ -75,13 +76,13 @@ public class CategoryFileHandler{
         }
     }
 
-    public Category selectCategory(String categoryName){
+    public Supplier selectSupplier(String supplierName){
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Category category;
+            Supplier supplier;
             while(true) {
-                category = (Category) reader.readObject();
-                if(category.getName().equals(categoryName))
-                    return category;
+                supplier = (Supplier) reader.readObject();
+                if(supplier.getName().equals(supplierName))
+                    return supplier;
             }
         }
         catch (EOFException ignored) {
@@ -92,12 +93,12 @@ public class CategoryFileHandler{
         return null;
     }
 
-    public void selectAllCategories() {
+    public void selectAllSuppliers() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Category category;
+            Supplier supplier;
             while(true) {
-                category = (Category) reader.readObject();
-                categories.add(category);
+                supplier = (Supplier) reader.readObject();
+                suppliers.add(supplier);
             }
         }
         catch (EOFException ignored) {

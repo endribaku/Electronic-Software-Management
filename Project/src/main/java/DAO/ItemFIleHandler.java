@@ -2,87 +2,110 @@ package DAO;
 
 import Models.Item;
 import Models.User;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class ItemFIleHandler implements ItemDao {
+public class ItemFIleHandler {
+    public static final String FILE_PATH = "Project/Data/items.dat";
+    private static final File DATA_FILE = new File(FILE_PATH);
+    private final ObservableList<Item> items = FXCollections.observableArrayList();
 
-    @Override
-    public void insertItem(Item item) throws IOException, ClassNotFoundException {
-        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\items.dat",true));
-        outputStream.writeObject(item);
+    public ObservableList<Item> getAllItems() {
+        if(items.isEmpty()) {
+            selectAllItems();
+        }
+        return items;
     }
 
-    @Override
-    public void updateItem(Item item) throws IOException, ClassNotFoundException {
-        ArrayList<Item> updatedList = selectAllItems();
 
-        for(Item t : updatedList){
-            t.setName(item.getName());
-            t.setCategory(item.getCategory());
-            t.setSupplier(item.getSupplier());
-            t.setPurchaseDate(item.getPurchaseDate());
-            t.setPurchasePrice(item.getPurchasePrice());
-            t.setSellingPrice(item.getSellingPrice());
-            t.setQuantity(item.getQuantity());
-
-        }
-
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\items.dat",true));){
-            for(Item t : updatedList){
-                outputStream.writeObject(t);
-            }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+    public void insertItem(Item item){
+        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
+            ObjectOutputStream writer;
+            if (DATA_FILE.length() > 0)
+                writer = new HeaderlessObjectOutputStream(outputStream);
+            else
+                writer = new ObjectOutputStream(outputStream);
+            writer.writeObject(item);
+        } catch(IOException ioe) {
+            ioe.getMessage();
         }
     }
 
-    @Override
-    public void deleteItem(String itemname) throws IOException, ClassNotFoundException {
-        ArrayList<Item> updatedList = selectAllItems();
-
-        for(Item t : updatedList){
-            if(t.getName().equals(itemname))
-                updatedList.remove(t);
-        }
-
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\items.dat",true));){
-            for(Item t : updatedList){
-                outputStream.writeObject(t);
+    public void deleteItem(Item item){
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            items.remove(item);
+            for(Item i : items) {
+                outputStream.writeObject(i);
             }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+
         }
     }
 
-    @Override
-    public Item selectItem(String itemname) throws IOException, ClassNotFoundException {
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\items.dat"));){
-            while (true){
-                if(inputStream.readObject() instanceof Item)
-                    if(((Item) inputStream.readObject()).getName().equals(itemname))
-                        return (Item) inputStream.readObject();
+    public void deleteAll(ArrayList<Item> itemsToRemove) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
+            for(Item i : items) {
+                if (items.containsAll(itemsToRemove)) {
+                    items.removeAll(itemsToRemove);
+                } else if (items.contains(i)) {
+                    items.remove(i);
+                }
             }
-        }catch (EOFException e){
-            System.out.println("Entire file has been traversed.");
+            for(Item i : items) {
+                outputStream.writeObject(i);
+            }
+        } catch(IOException ex) {
+            ex.getMessage();
+        }
+    }
+
+    public boolean updateAll() {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            for(Item i : items) {
+                outputStream.writeObject(i);
+            }
+            return true;
+        } catch (IOException ex) {
+            ex.getMessage();
+            return false;
+        }
+    }
+
+    public Item selectItem(String itemName){
+        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            Item item;
+            while(true) {
+                item = (Item) reader.readObject();
+                if(item.getName().equals(itemName))
+                    return item;
+            }
+        }
+        catch (EOFException ignored) {
+        }
+        catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
         }
         return null;
     }
 
-    @Override
-    public ArrayList<Item> selectAllItems() throws IOException, ClassNotFoundException {
-        ArrayList<Item> itemsFound = new ArrayList<>();
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\items.dat"));){
-            while (true){
-                if(inputStream.readObject() instanceof Item)
-                    itemsFound.add((Item) inputStream.readObject());
+    public void selectAllItems() {
+        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            Item item;
+            while(true) {
+                item = (Item) reader.readObject();
+                items.add(item);
             }
-        }catch (EOFException e){
-            System.out.println("Entire file has been traversed.");
         }
-        return itemsFound;
+        catch (EOFException ignored) {
+        }
+        catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }
