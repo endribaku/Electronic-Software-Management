@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.UUID;
 
 
-public class User implements Serializable {
+public abstract class User implements Serializable {
     private transient StringProperty userID;
     private transient StringProperty username;
     private transient StringProperty password;
@@ -32,6 +32,38 @@ public class User implements Serializable {
         this.salary = new SimpleDoubleProperty(salary);
         this.accessLevel = accessLevel;
         this.userID = new SimpleStringProperty(UUID.randomUUID().toString());
+    }
+
+    public StringProperty userIDProperty() {
+        return userID;
+    }
+
+    public StringProperty usernameProperty() {
+        return username;
+    }
+
+    public StringProperty passwordProperty() {
+        return password;
+    }
+
+    public StringProperty fullNameProperty() {
+        return fullName;
+    }
+
+    public ObjectProperty<LocalDate> dateOfBirthProperty() {
+        return dateOfBirth;
+    }
+
+    public StringProperty phoneNumberProperty() {
+        return phoneNumber;
+    }
+
+    public StringProperty emailProperty() {
+        return email;
+    }
+
+    public DoubleProperty salaryProperty() {
+        return salary;
     }
 
     public String getUserID() {return userID.get();}

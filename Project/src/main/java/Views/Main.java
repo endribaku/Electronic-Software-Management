@@ -20,7 +20,6 @@ public class Main extends Application {
         stage.setTitle("Country Management");
         stage.setScene(scene);
         stage.show();
-        new AdminController().getView().getRoot();
     }
 
     public static void main(String[] args) {

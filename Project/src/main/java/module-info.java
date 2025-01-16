@@ -5,4 +5,7 @@ module com.example.store {
 
     exports Views;
     opens Views to javafx.fxml;
+
+    exports Models;
+    opens Models to javafx.base;
 }

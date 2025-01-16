@@ -29,6 +29,7 @@ public class UserFileHandler {
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(user);
+            users.add(user);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
@@ -36,12 +37,11 @@ public class UserFileHandler {
 
     public void deleteUser(User user) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            users.remove(user);
             for(User u : users) {
-                outputStream.writeObject(u);
+                if(!u.equals(user))
+                    outputStream.writeObject(u);
             }
-        } catch(EOFException eofe) {
-
+            users.remove(user);
         } catch (IOException ex) {
             ex.getMessage();
         }
@@ -49,32 +49,28 @@ public class UserFileHandler {
 
     public void deleteAll(ArrayList<User> usersToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-        for(User u : usersToRemove) {
-            if (users.containsAll(usersToRemove)) {
-                users.removeAll(usersToRemove);
-            } else if (users.contains(u)) {
-                users.remove(u);
+            for(User u : usersToRemove) {
+                if (!usersToRemove.contains(u)) {
+                    outputStream.writeObject(u);
+                }
             }
+            users.removeAll(usersToRemove);
+        } catch(IOException ex) {
+            ex.getMessage();
         }
-        for(User u : users) {
-                outputStream.writeObject(u);
-        }
-    } catch(IOException ex) {
-        ex.getMessage();
     }
-}
 
-public boolean updateAll() {
-    try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-        for(User u : users) {
-            outputStream.writeObject(u);
+    public boolean updateAll() {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            for(User u : users) {
+                outputStream.writeObject(u);
+            }
+            return true;
+        } catch (IOException ex) {
+            ex.getMessage();
+            return false;
         }
-        return true;
-    } catch (IOException ex) {
-        ex.getMessage();
-        return false;
     }
-}
 
     public User selectUser(String username) {
         try(ObjectInputStream inputStream =
@@ -95,9 +91,8 @@ public boolean updateAll() {
 
     public void selectAllUser() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            User user;
             while(true) {
-                user = (User) reader.readObject();
+                User user = (User) reader.readObject();
                 users.add(user);
             }
         }
