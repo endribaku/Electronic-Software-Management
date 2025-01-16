@@ -1,65 +1,55 @@
 package DAO;
 
 import Models.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class UserFileHandler implements UserDAO {
+public class UserFileHandler {
 
-    @Override
-    public void insertUser(User user) throws IOException, ClassNotFoundException{
-        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));
-        outputStream.writeObject(user);
+    public static final String FILE_PATH = "Project/Data/employees.dat";
+    private static final File DATA_FILE = new File(FILE_PATH);
+    private final ObservableList<User> users = FXCollections.observableArrayList();
+
+    public ObservableList<User> getAllUsers() {
+        if(users.isEmpty()) {
+            selectAllUser();
+        }
+        return users;
     }
 
-    @Override
-    public void updateUser(User user) throws IOException, ClassNotFoundException {
-        ArrayList<User> updatedList = selectAllUser();
-
-        for(User u : updatedList){
-            if(u.getUserID().equals(user.getUserID()))
-                u.setUsername(user.getUsername());
-                u.setAccessLevel(user.getAccessLevel());
-                u.setDateOfBirth(user.getDateOfBirth());
-                u.setEmail(user.getEmail());
-                u.setPassword(user.getPassword());
-                u.setFullName(user.getFullName());
-                u.setPhoneNumber(user.getPhoneNumber());
-                u.setSalary(user.getSalary());
+    public void insertUser(User user) {
+        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
+            ObjectOutputStream writer;
+            if (DATA_FILE.length() > 0)
+                writer = new HeaderlessObjectOutputStream(outputStream);
+            else
+                writer = new ObjectOutputStream(outputStream);
+            writer.writeObject(user);
+        } catch(IOException ioe) {
+            ioe.getMessage();
         }
+    }
 
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));){
-            for(User u : updatedList){
+    public boolean deleteUser(User user) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            users.remove(user);
+            for(User u : users) {
                 outputStream.writeObject(u);
             }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+            return true;
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+            return false;
         }
     }
 
-    @Override
-    public void deleteUser(String username) throws IOException, ClassNotFoundException{
-        ArrayList<User> updatedList = selectAllUser();
-
-        for(User u : updatedList){
-            if(u.getUsername().equals(username))
-            updatedList.remove(u);
-        }
-
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));){
-            for(User u : updatedList){
-                outputStream.writeObject(u);
-            }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public User selectUser(String username) throws IOException,ClassNotFoundException {
+    public User selectUser(String username) {
         try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Project/Data/employees.dat"));){
+                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
             while (true){
                 if(inputStream.readObject() instanceof User)
                     if(((User) inputStream.readObject()).getUsername().equals(username)){
@@ -67,23 +57,25 @@ public class UserFileHandler implements UserDAO {
                     }
             }
         }catch (EOFException e){
-            System.out.println("Entire file has been traversed.");
+
+        }catch(IOException | ClassNotFoundException ex) {
+            ex.getMessage();
         }
         return null;
     }
 
-    @Override
-    public ArrayList<User> selectAllUser() throws IOException, ClassNotFoundException {
-        ArrayList<User> usersFound = new ArrayList<>();
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Project/Data/employees.dat"));){
-            while (true){
-                if(inputStream.readObject() instanceof User)
-                    usersFound.add((User) inputStream.readObject());
+    public void selectAllUser() {
+        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            User user;
+            while(true) {
+                user = (User) reader.readObject();
+                users.add(user);
             }
-        }catch (EOFException e){
-            System.out.println("Entire file has been traversed.");
         }
-        return usersFound;
+        catch (EOFException ignored) {
+        }
+        catch (IOException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }

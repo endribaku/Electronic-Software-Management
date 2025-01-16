@@ -13,5 +13,5 @@ public interface UserDAO {
 
     abstract User selectUser(String username) throws IOException,ClassNotFoundException;
 
-    abstract ArrayList<User> selectAllUser() throws IOException, ClassNotFoundException;
+    abstract void selectAllUser() throws IOException, ClassNotFoundException;
 }
