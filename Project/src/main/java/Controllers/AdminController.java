@@ -24,6 +24,7 @@ public class AdminController {
         this.empListView = view.new EmployeesListView();
         this.empListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.empListView.getEmployeesTableView().setItems(adminDAO.getAllUsers());
+        setEditListeners();
     }
 
     public Administrator getModel() {

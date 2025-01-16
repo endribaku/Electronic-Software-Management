@@ -20,7 +20,9 @@ import java.util.ArrayList;
 
 public class AdminView extends Pane {
 
-    public Pane show() {
+    BorderPane Root = new BorderPane();
+
+    public AdminView() {
 
         //MenuBar
         MenuBar menuBar = new MenuBar();
@@ -40,7 +42,6 @@ public class AdminView extends Pane {
         profileMenu.getItems().addAll(profileItem, logoutItem);
         menuBar.getMenus().addAll(menu, billMenu, profileMenu);
 
-        BorderPane Root = new BorderPane();
         Root.setTop(menuBar);
 
         // Sidebar
@@ -75,8 +76,10 @@ public class AdminView extends Pane {
         // Add content to center
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
         inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryView().show()));
-        employeeLabel.onMouseClickedProperty().set(e -> new EmployeesListView());
+        employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeesListView().getEmployeesPage()));
+    }
 
+    public BorderPane getRoot() {
         return Root;
     }
 
@@ -135,9 +138,10 @@ public class AdminView extends Pane {
         TableColumn<User, Number> employeeSalaryColumn = new TableColumn<>("Salary");
 
         Button updateEmployeeListButton = new Button("Update Table");
+        HBox employeesPage = new HBox();
 
         public EmployeesListView() {
-            HBox employeesPage = new HBox();
+
             employeesPage.setStyle("-fx-background-color: white; -fx-padding: 10;");
 
             //Create new Employee
@@ -283,6 +287,10 @@ public class AdminView extends Pane {
             employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView, updateEmployeeListButton);
             employeesPage.getChildren().addAll(addEmployeeBox, employeeListBox);
             employeesPage.setSpacing(10);
+        }
+
+        public HBox getEmployeesPage() {
+            return employeesPage;
         }
 
         public TextField getEmployeeFullNameField() {
