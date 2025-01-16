@@ -8,4 +8,6 @@ module com.example.store {
 
     exports Models;
     opens Models to javafx.base;
+    exports Main;
+    opens Main to javafx.fxml;
 }

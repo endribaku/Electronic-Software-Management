@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-public class ManageBillsView {
+public class BillManagementView {
     public void show(Stage primaryStage) {
         StackPane bgRoot = new StackPane();
         bgRoot.setStyle("-fx-background-color: #364958; -fx-padding: 80; -fx-border-radius: 20px;");

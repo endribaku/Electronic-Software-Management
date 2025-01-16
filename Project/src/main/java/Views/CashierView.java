@@ -63,7 +63,7 @@ public class CashierView {
         // Add content to center
         Root.setCenter(homePage);
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
-        billsLabel.onMouseClickedProperty().set(e -> new ManageBillsView().show(primaryStage) );
+        billsLabel.onMouseClickedProperty().set(e -> new BillManagementView().show(primaryStage) );
 
         bgRoot.getChildren().add(Root);
         bgRoot.setAlignment(Pos.CENTER);

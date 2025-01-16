@@ -2,6 +2,7 @@ package Views;
 
 import Controllers.AdminController;
 import Controllers.EmployeeManagementController;
+import Controllers.InventoryController;
 import DAO.UserFileHandler;
 import Models.*;
 import javafx.beans.value.ObservableStringValue;
@@ -77,7 +78,7 @@ public class AdminView extends Pane {
 
         // Add content to center
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
-        inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryView().show()));
+        inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
         employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
     }
 

@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 public class InventoryView {
 
+    HBox inventoryPage = new HBox();
     ObservableList<String> categories = FXCollections.observableArrayList(
             "Major Domestic Appliances", "Climate & Air", "Small Domestic Appliances", "Consumer Electronics",
             "TV", "IT & Accessories", "Phones & Accessories", "Gaming & Accessories", "Kitchen Utensils",
@@ -26,17 +27,34 @@ public class InventoryView {
     ObservableList<Item> items;
     TableView<Item> inventoryTableView = new TableView<>(items);
 
-    public Pane show() {
-        HBox inventoryPage = new HBox();
+    TextField itemNameField = new TextField();
+    TextField itemQuantityField = new TextField();
+    Label itemPPriceLabel = new Label("Item Purchase Price:");
+    TextField itemPPriceField = new TextField();;
+    Label itemSPriceLabel = new Label("Item Selling Price:");
+    TextField itemSPriceField = new TextField();
+    Label itemSupplierLabel = new Label("Item Supplier:");
+
+    public InventoryView() {
+
         inventoryPage.setStyle("-fx-background-color: white; -fx-padding: 10;");
+        VBox addItemBox = new VBox();
+        addItemBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
+        HBox addItemHeader = new HBox();
+        Label addItemLabel = new Label("Add Item");
+        addItemLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
+        Button addCategoryPaneButton = new Button("Add Category");
+        addCategoryPaneButton.setStyle("-fx-font: 11pt Helvetica;");
+        addCategoryPaneButton.setOnAction(e -> {})
+        addItemHeader.setSpacing(50);
+        addItemHeader.getChildren().addAll(addItemLabel, addCategoryPaneButton);
         GridPane addItemGrid = new GridPane();
         addItemGrid.setHgap(10);
         addItemGrid.setVgap(10);
-        addItemGrid.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         Label itemNameLabel = new Label("Item Name:");
         itemNameLabel.setStyle("-fx-font: 11pt Helvetica;");
         addItemGrid.add(itemNameLabel, 0, 0);
-        TextField itemNameField = new TextField();
+        itemNameField = new TextField();
         addItemGrid.add(itemNameField, 1, 0);
         Label itemCategoryLabel = new Label("Item Category:");
         itemCategoryLabel.setStyle("-fx-font: 11pt Helvetica;");
@@ -46,17 +64,17 @@ public class InventoryView {
         Label itemQuantityLabel = new Label("Item Quantity:");
         itemQuantityLabel.setStyle("-fx-font: 11pt Helvetica;");
         addItemGrid.add(itemQuantityLabel, 0, 2);
-        TextField itemQuantityField = new TextField();
+        itemQuantityField = new TextField();
         addItemGrid.add(itemQuantityField, 1, 2);
         Label itemPPriceLabel = new Label("Item Purchase Price:");
         itemPPriceLabel.setStyle("-fx-font: 11pt Helvetica;");
         addItemGrid.add(itemPPriceLabel, 0, 3);
-        TextField itemPPriceField = new TextField();
+        itemPPriceField = new TextField();
         addItemGrid.add(itemPPriceField, 1, 3);
         Label itemSPriceLabel = new Label("Item Selling Price:");
         itemSPriceLabel.setStyle("-fx-font: 11pt Helvetica;");
         addItemGrid.add(itemSPriceLabel, 0, 4);
-        TextField itemSPriceField = new TextField();
+        itemSPriceField = new TextField();
         addItemGrid.add(itemSPriceField, 1, 4);
         Label itemSupplierLabel = new Label("Item Supplier:");
         itemSupplierLabel.setStyle("-fx-font: 11pt Helvetica;");
@@ -65,19 +83,7 @@ public class InventoryView {
         addItemGrid.add(itemSupplierListView, 1, 5);
         Button addItemButton = new Button("Add Item");
         addItemButton.setStyle("-fx-font: 11pt Helvetica;");
-        addItemButton.setOnAction(e -> {
-            String itemName = itemNameField.getText();
-            String itemCategory = itemCategoryListView.getSelectionModel().getSelectedItem();
-            int itemQuantity = Integer.parseInt(itemQuantityField.getText());
-            double itemPPrice = Double.parseDouble(itemPPriceField.getText());
-            double itemSPrice = Double.parseDouble(itemSPriceField.getText());
-            String itemSupplier = itemSupplierListView.getSelectionModel().getSelectedItem();
-            if (itemName.equals("") || itemCategory.equals("") || itemQuantity == 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.equals("")) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Invalid Input");
-            }
-        });
+
         GridPane.setHalignment(addItemButton, HPos.RIGHT);
         addItemGrid.add(addItemButton, 1, 6);
 
@@ -103,7 +109,33 @@ public class InventoryView {
 
         inventoryPage.getChildren().addAll(addItemGrid, inventoryListBox);
         inventoryPage.setSpacing(10);
+    }
 
+    public HBox getInventoryPage() {
         return inventoryPage;
+    }
+
+    public ObservableList<String> getCategories() {
+        return categories;
+    }
+
+    public ComboBox<String> getItemCategoryListView() {
+        return itemCategoryListView;
+    }
+
+    public ObservableList<String> getSuppliers() {
+        return suppliers;
+    }
+
+    public ComboBox<String> getItemSupplierListView() {
+        return itemSupplierListView;
+    }
+
+    public ObservableList<Item> getItems() {
+        return items;
+    }
+
+    public TableView<Item> getInventoryTableView() {
+        return inventoryTableView;
     }
 }

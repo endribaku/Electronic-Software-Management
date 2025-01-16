@@ -1,4 +1,4 @@
-package Views;
+package Main;
 
 
 import Controllers.AdminController;
@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 
