@@ -1,5 +1,7 @@
 package Models;
 
+import javafx.beans.property.*;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,89 +10,88 @@ import java.util.UUID;
 
 
 public class User implements Serializable {
-
-    private String userID;
-    private String username;
-    private String password;
-    private String fullName;
-    private LocalDate dateOfBirth;
-    private String phoneNumber;
-    private String email;
-    private double salary;
-    private Access accessLevel;
+    private transient StringProperty userID;
+    private transient StringProperty username;
+    private transient StringProperty password;
+    private transient StringProperty fullName;
+    private transient ObjectProperty<LocalDate> dateOfBirth;
+    private transient StringProperty phoneNumber;
+    private transient StringProperty email;
+    private transient DoubleProperty salary;
+    private transient Access accessLevel;
 
     protected User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.dateOfBirth = dateOfBirth;
+        this.username = new SimpleStringProperty(username);
+        this.password = new SimpleStringProperty(password);
+        this.fullName = new SimpleStringProperty(fullName);
+        this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth != null ? dateOfBirth : LocalDate.now());
         if(dateOfBirth == null)
-            this.dateOfBirth = LocalDate.now();
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.salary = salary;
+            this.dateOfBirth.set(LocalDate.now());
+        this.phoneNumber = new SimpleStringProperty(phoneNumber);
+        this.email = new SimpleStringProperty(email);
+        this.salary = new SimpleDoubleProperty(salary);
         this.accessLevel = accessLevel;
-        this.userID = UUID.randomUUID().toString();
+        this.userID = new SimpleStringProperty(UUID.randomUUID().toString());
     }
 
-    public String getUserID() {return userID;}
+    public String getUserID() {return userID.get();}
 
-    public void setUserID(String userID) {this.userID = userID;}
+    public void setUserID(String userID) {this.userID.set(userID);}
 
     public String getUsername() {
-        return username;
+        return username.get();
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username.set(username);
     }
 
     public String getPassword() {
-        return password;
+        return password.get();
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password.set(password);
     }
 
     public String getFullName() {
-        return fullName;
+        return fullName.get();
     }
 
     public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.fullName.set(fullName);
     }
 
     public LocalDate getDateOfBirth() {
-        return dateOfBirth;
+        return dateOfBirth.get();
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+        this.dateOfBirth.set(dateOfBirth);
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumber.get();
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber.set(phoneNumber);
     }
 
     public String getEmail() {
-        return email;
+        return email.get();
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email.set(email);
     }
 
     public double getSalary() {
-        return salary;
+        return salary.get();
     }
 
     public void setSalary(double salary) {
-        this.salary = salary;
+        this.salary.set(salary);
     }
 
     public Access getAccessLevel() {
@@ -104,4 +105,5 @@ public class User implements Serializable {
     public void logout() {
         int a = 1;
     }
+
 }

@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.util.ArrayList;
 
-public class CategoryFileHandler{
+public class CategoryFileHandler implements AutoCloseable{
     public static final String FILE_PATH = "Project/Data/categories.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
@@ -105,5 +105,10 @@ public class CategoryFileHandler{
         catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }
