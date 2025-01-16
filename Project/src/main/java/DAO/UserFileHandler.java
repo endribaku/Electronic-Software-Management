@@ -22,11 +22,11 @@ public class UserFileHandler implements UserDAO {
                 u.setUsername(user.getUsername());
                 u.setAccessLevel(user.getAccessLevel());
                 u.setDateOfBirth(user.getDateOfBirth());
-                u.setEmail(u.getEmail());
-                u.setPassword(u.getPassword());
-                u.setFullName(u.getFullName());
-                u.setPhoneNumber(u.getPhoneNumber());
-                u.setSalary(u.getSalary());
+                u.setEmail(user.getEmail());
+                u.setPassword(user.getPassword());
+                u.setFullName(user.getFullName());
+                u.setPhoneNumber(user.getPhoneNumber());
+                u.setSalary(user.getSalary());
         }
 
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));){
