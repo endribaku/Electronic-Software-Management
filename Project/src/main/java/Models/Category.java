@@ -1,27 +1,20 @@
 package Models;
 
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.io.*;
 import java.util.ArrayList;
 
-public class Category implements Comparable<Category>{
-    private String name;
-    private ArrayList<Item> items;
+public class Category implements Comparable<Category> , Serializable {
+    private transient StringProperty name;
+    private transient ListProperty<Item> items;
     private int stockThreshold = 5;
 
-    public Category() throws ClassNotFoundException, IOException {
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\items.dat"));){
-            while (true){
-                Item item = (Item) inputStream.readObject();
-                if(item.getCategory().compareTo(this) == 0)
-                    items.add(item);
-            }
-        }catch (EOFException e){
-            System.out.println("All items for the specific category have been loaded successfully.");
-        }
+    public Category()  {
+        this.name = new SimpleStringProperty();
+        this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     @Override
@@ -32,12 +25,16 @@ public class Category implements Comparable<Category>{
     }
 
     public String getName() {
-        return name;
+        return name.get();
     }
+    public int getStockThreshold() {return stockThreshold;}
+    public ObservableList<Item> getItemsProperty() {return items.get();}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+
+    public void setName(String name) {this.name.set(name);}
+
+    public void setItems(ObservableList<Item> items) {this.items.set(items);}
+
 
     public boolean needsRestocking(){
         int stock = 0;
@@ -57,7 +54,5 @@ public class Category implements Comparable<Category>{
         items.add(item);
     }
 
-    public ArrayList<Item> getItems() {
-        return items;
-    }
+
 }
