@@ -1,63 +1,61 @@
 package DAO;
 
-import Models.Item;
-import javafx.beans.Observable;
+import Models.Sector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class ItemFIleHandler {
-    public static final String FILE_PATH = "Project/Data/items.dat";
+public class SectorFileHandler {
+    public static final String FILE_PATH = "Project/Data/sectors.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
-    private final ObservableList<Item> items = FXCollections.observableArrayList();
+    private final ObservableList<Sector> sectors = FXCollections.observableArrayList();
 
-    public ObservableList<Item> getAllItems() {
-        if(items.isEmpty()) {
-            selectAllItems();
+    public ObservableList<Sector> getAllUsers() {
+        if(sectors.isEmpty()) {
+            selectAllSectors();
         }
-        return items;
+        return sectors;
     }
 
-
-    public void insertItem(Item item){
+    public void insertSector(Sector sector) {
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
             ObjectOutputStream writer;
             if (DATA_FILE.length() > 0)
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
-            writer.writeObject(item);
+            writer.writeObject(sector);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
     }
 
-    public void deleteItem(Item item){
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            items.remove(item);
-            for(Item i : items) {
-                outputStream.writeObject(i);
+    public void deleteSector(Sector sector) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            sectors.remove(sector);
+            for (Sector s : sectors) {
+                outputStream.writeObject(s);
             }
-        } catch(EOFException eofe) {
+        } catch (EOFException eofe) {
 
         } catch (IOException ex) {
-
+            ex.getMessage();
         }
     }
 
-    public void deleteAll(ArrayList<Item> itemsToRemove) {
+        public void deleteAll(ArrayList<Sector> sectorsToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-            for(Item i : items) {
-                if (items.containsAll(itemsToRemove)) {
-                    items.removeAll(itemsToRemove);
-                } else if (items.contains(i)) {
-                    items.remove(i);
+            for(Sector s : sectorsToRemove) {
+                if (sectors.containsAll(sectorsToRemove)) {
+                    sectors.removeAll(sectorsToRemove);
+                } else if (sectors.contains(s)) {
+                    sectors.remove(s);
                 }
             }
-            for(Item i : items) {
-                outputStream.writeObject(i);
+            for(Sector s : sectors) {
+                outputStream.writeObject(s);
             }
         } catch(IOException ex) {
             ex.getMessage();
@@ -66,8 +64,8 @@ public class ItemFIleHandler {
 
     public boolean updateAll() {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(Item i : items) {
-                outputStream.writeObject(i);
+            for(Sector s : sectors) {
+                outputStream.writeObject(s);
             }
             return true;
         } catch (IOException ex) {
@@ -76,13 +74,13 @@ public class ItemFIleHandler {
         }
     }
 
-    public Item selectItem(String itemName){
+    public Sector selectSector(String sectorName){
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Item item;
+            Sector sector;
             while(true) {
-                item = (Item) reader.readObject();
-                if(item.getName().equals(itemName))
-                    return item;
+                sector = (Sector) reader.readObject();
+                if(sector.getSectorName().equals(sectorName))
+                    return sector;
             }
         }
         catch (EOFException ignored) {
@@ -93,12 +91,12 @@ public class ItemFIleHandler {
         return null;
     }
 
-    public void selectAllItems() {
+    public void selectAllSectors() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Item item;
+            Sector sector;
             while(true) {
-                item = (Item) reader.readObject();
-                items.add(item);
+                sector = (Sector) reader.readObject();
+                sectors.add(sector);
             }
         }
         catch (EOFException ignored) {
