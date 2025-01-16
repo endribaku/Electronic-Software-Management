@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Administrator extends User implements Serializable {
-    private final ArrayList<User> employees;
-    private final UserFileHandler userFileHandler = new UserFileHandler();
 
+    private final UserFileHandler userFileHandler = new UserFileHandler();
+    private ArrayList<User> employees = userFileHandler.selectAllUser();
     public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) throws IOException, ClassNotFoundException
     {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator);
-        employees = userFileHandler.selectAllUser();
     }
 
     public User getUser(String username) throws IOException, ClassNotFoundException {
@@ -22,8 +21,8 @@ public class Administrator extends User implements Serializable {
     }
 
     public void insertUser(User user) throws IOException, ClassNotFoundException {
-        employees.add(user);
         userFileHandler.insertUser(user);
+        employees = userFileHandler.selectAllUser();
     }
 
     public void deleteUser(String username) throws IOException, ClassNotFoundException {

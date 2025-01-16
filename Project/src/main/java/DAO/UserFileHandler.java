@@ -9,7 +9,7 @@ public class UserFileHandler implements UserDAO {
 
     @Override
     public void insertUser(User user) throws IOException, ClassNotFoundException{
-        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));
+        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));
         outputStream.writeObject(user);
     }
 
@@ -29,7 +29,7 @@ public class UserFileHandler implements UserDAO {
                 u.setSalary(user.getSalary());
         }
 
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));){
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));){
             for(User u : updatedList){
                 outputStream.writeObject(u);
             }
@@ -47,7 +47,7 @@ public class UserFileHandler implements UserDAO {
             updatedList.remove(u);
         }
 
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));){
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Project/Data/employees.dat",true));){
             for(User u : updatedList){
                 outputStream.writeObject(u);
             }
@@ -59,7 +59,7 @@ public class UserFileHandler implements UserDAO {
     @Override
     public User selectUser(String username) throws IOException,ClassNotFoundException {
         try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\employees.dat"));){
+                    new ObjectInputStream(new FileInputStream("Project/Data/employees.dat"));){
             while (true){
                 if(inputStream.readObject() instanceof User)
                     if(((User) inputStream.readObject()).getUsername().equals(username)){
@@ -76,7 +76,7 @@ public class UserFileHandler implements UserDAO {
     public ArrayList<User> selectAllUser() throws IOException, ClassNotFoundException {
         ArrayList<User> usersFound = new ArrayList<>();
         try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream("Data\\employees.dat"));){
+                    new ObjectInputStream(new FileInputStream("Project/Data/employees.dat"));){
             while (true){
                 if(inputStream.readObject() instanceof User)
                     usersFound.add((User) inputStream.readObject());

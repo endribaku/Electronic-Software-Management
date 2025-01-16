@@ -1,5 +1,6 @@
 package Views;
 
+import DAO.UserFileHandler;
 import Models.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
@@ -12,11 +13,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class AdminView {
     private Administrator currentAdmin;
-    ListView<User> employeesListView = new ListView<>();
 
 //    public AdminView(Administrator currentAdmin) {
 //        this.currentAdmin = currentAdmin;
@@ -114,6 +117,9 @@ public class AdminView {
 }
 
  class EmployeesListView {
+
+    UserFileHandler userFileHandler = new UserFileHandler();
+
     ObservableList<Access> accessLevels = FXCollections.observableArrayList(Access.Cashier, Access.Manager, Access.Administrator);
     ComboBox<Access> accessLevelList= new ComboBox<Access>(accessLevels);
 
@@ -137,6 +143,7 @@ public class AdminView {
         employeeFullNameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
         addEmployeeGrid.add(employeeFullNameLabel, 0, 0);
         TextField employeeFullNameField = new TextField();
+        employeeFullNameField.setStyle("-fx-font: 11pt Helvetica;");
         addEmployeeGrid.add(employeeFullNameField, 1, 0);
         Label employeeUsernameLabel = new Label("Username:");
         employeeUsernameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
@@ -197,7 +204,7 @@ public class AdminView {
             Access employeeAccessLevel = accessLevelList.getSelectionModel().getSelectedItem();
             if(employeeAccessLevel == null)
                 employeeAccessLevel = Access.Cashier;
-            if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0 || employeeAccessLevel.equals("")) {
+            if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
@@ -205,16 +212,30 @@ public class AdminView {
             }
             try {
                 if (employeeAccessLevel.equals(Access.Cashier)) {
-                    currentAdmin.insertUser(new Cashier(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    userFileHandler.insertUser(new Cashier(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 } else if (employeeAccessLevel.equals(Access.Manager)) {
-                    currentAdmin.insertUser(new Manager(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    userFileHandler.insertUser(new Manager(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 } else if (employeeAccessLevel.equals(Access.Administrator)) {
-                    currentAdmin.insertUser(new Administrator(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
+                    userFileHandler.insertUser(new Administrator(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
                 }
-            } catch(Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText("Employee Registered Successfully");
+                alert.show();
+            } catch(FileNotFoundException fnfe) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("File not found");
+                alert.setHeaderText("input file not found");
+                alert.show();
+            } catch(IOException ioe) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
-                alert.setHeaderText("Can't Register Employee right now");
+                alert.setHeaderText("input file problem");
+                alert.show();
+            } catch(ClassNotFoundException cnfe) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("boel file problem");
                 alert.show();
             }
         });
@@ -228,7 +249,6 @@ public class AdminView {
         employeeListLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
         employeeListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         employeeListBox.setSpacing(10);
-        //employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
         TableColumn<User, String> employeeIDColumn = new TableColumn<>("ID");
         employeeIDColumn.setMinWidth(100);
         employeeIDColumn.setCellValueFactory(new PropertyValueFactory<User, String>("userID"));
@@ -258,6 +278,20 @@ public class AdminView {
         employeeSalaryColumn.setCellValueFactory(new PropertyValueFactory<User, Number>("salary"));
         employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn);
         employeesTableView.setPrefWidth(1000);
+        try{
+            ObservableList<User> employeeList = FXCollections.observableArrayList(userFileHandler.selectAllUser());
+            employeesTableView.setItems(employeeList);
+        } catch(ClassNotFoundException cnfe) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("boel file problem");
+            alert.show();
+        } catch(IOException ioe) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("input text file problem loading list");
+            alert.show();
+        }
         employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView);
 
         employeesPage.getChildren().addAll(addEmployeeBox, employeeListBox);
