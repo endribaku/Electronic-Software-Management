@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.UUID;
 
 
-public abstract class User implements Serializable {
+public class User implements Serializable {
 
     private String userID;
     private String username;

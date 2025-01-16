@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserFileHandler {
 
@@ -33,19 +34,47 @@ public class UserFileHandler {
         }
     }
 
-    public boolean deleteUser(User user) {
+    public void deleteUser(User user) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             users.remove(user);
             for(User u : users) {
                 outputStream.writeObject(u);
             }
-            return true;
         } catch(EOFException eofe) {
 
         } catch (IOException ex) {
-            return false;
+            ex.getMessage();
         }
     }
+
+    public void deleteAll(ArrayList<User> usersToRemove) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
+        for(User u : usersToRemove) {
+            if (users.containsAll(usersToRemove)) {
+                users.removeAll(usersToRemove);
+            } else if (users.contains(u)) {
+                users.remove(u);
+            }
+        }
+        for(User u : users) {
+                outputStream.writeObject(u);
+        }
+    } catch(IOException ex) {
+        ex.getMessage();
+    }
+}
+
+public boolean updateAll() {
+    try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        for(User u : users) {
+            outputStream.writeObject(u);
+        }
+        return true;
+    } catch (IOException ex) {
+        ex.getMessage();
+        return false;
+    }
+}
 
     public User selectUser(String username) {
         try(ObjectInputStream inputStream =

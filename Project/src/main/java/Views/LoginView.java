@@ -71,7 +71,7 @@ public class LoginView {
             paneLogin.add(messageLabel, 1, 3);
 
             //template HomePage, will write an if-check based on the loaded user type to load the correct instance
-            new AdminView().show(stage);
+            new AdminView().show();
         });
 
         VBox leftSide = new VBox();
