@@ -73,7 +73,7 @@ public class BillGenerateView {
             });
         });
 
-        itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//        itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         addToBillButton.setOnAction(e -> {
             ObservableList<Item> selectedItems = itemListView.getSelectionModel().getSelectedItems();
