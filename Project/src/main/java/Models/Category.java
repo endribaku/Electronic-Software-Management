@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Category implements Comparable<Category> , Serializable {
     private transient StringProperty name;
     private transient ListProperty<Item> items;
-    private int stockThreshold = 5;
+    private static int stockThreshold = 5;
 
     public Category()  {
         this.name = new SimpleStringProperty();
@@ -54,5 +54,23 @@ public class Category implements Comparable<Category> , Serializable {
         items.add(item);
     }
 
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws IOException{
+        outputStream.defaultWriteObject();
+        outputStream.writeUTF(this.name.getValueSafe());
+        outputStream.writeInt(this.items.size());
+        for (Item i : items)
+            outputStream.writeObject(i);
+    }
 
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
+        this.name = new SimpleStringProperty(inputStream.readUTF());
+        int sie = inputStream.readInt();
+        ListProperty<Item> itemList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < sie; i++) {
+            itemList.add((Item) inputStream.readObject());
+        }
+        this.items = itemList;
+    }
 }

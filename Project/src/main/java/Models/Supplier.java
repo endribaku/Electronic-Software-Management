@@ -7,13 +7,14 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.Serializable;
+import javax.imageio.IIOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Supplier implements Serializable {
     private transient StringProperty supplierID;
     private transient StringProperty name;
-    private transient final ListProperty<Item> suppliedItems;
+    private transient ListProperty<Item> suppliedItems;
 
     public Supplier() {
         this.supplierID = new SimpleStringProperty();
@@ -44,6 +45,28 @@ public class Supplier implements Serializable {
     {
         if (!suppliedItems.contains(item)) {
             suppliedItems.add(item);
-        };
+        }
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
+        outputStream.writeUTF(this.supplierID.getValueSafe());
+        outputStream.writeUTF(this.name.getValueSafe());
+        outputStream.writeInt(this.suppliedItems.size());
+        for (Item s : suppliedItems)
+            outputStream.writeObject(s);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
+        this.supplierID = new SimpleStringProperty(inputStream.readUTF());
+        this.name = new SimpleStringProperty(inputStream.readUTF());
+        int size = inputStream.readInt();
+        ListProperty<Item> itemsList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < size; i++) {
+            itemsList.add((Item) inputStream.readObject());
+        }
+        this.suppliedItems = itemsList;
     }
 }

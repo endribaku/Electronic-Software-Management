@@ -1,22 +1,40 @@
 package Models;
 
 import DAO.UserFileHandler;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Administrator extends User implements Serializable {
 
 //    private final UserFileHandler  = new UserFileHandler();
-    private ArrayList<User> employees;
+    private transient ListProperty<User> employees;
     public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) throws IOException, ClassNotFoundException
     {
         super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator);
+        this.employees = new SimpleListProperty<>();
     }
 
-//    public User getUser(String username) throws IOException, ClassNotFoundException {
+    public ObservableList<User> getEmployees() {
+        return employees.get();
+    }
+
+    public ListProperty<User> employeesProperty() {
+        return employees;
+    }
+
+    public void setEmployees(ObservableList<User> employees) {
+        this.employees.set(FXCollections.observableArrayList(employees));;
+    }
+
+    //    public User getUser(String username) throws IOException, ClassNotFoundException {
 //        return userFileHandler.selectUser(username);
 //    }
 //
@@ -57,4 +75,22 @@ public class Administrator extends User implements Serializable {
 //    public ArrayList<User> getAllEmployees() throws IOException, ClassNotFoundException {
 //        return userFileHandler.selectAllUser();
 //    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws IOException{
+        outputStream.defaultWriteObject();
+        outputStream.writeInt(employees.size());
+        for (User u : employees)
+            outputStream.writeObject(u);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws IOException,ClassNotFoundException{
+        int size = inputStream.readInt();
+        ListProperty<User> employeesList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < size; i++) {
+            employeesList.add((User) inputStream.readObject());
+        }
+        this.employees = employeesList;
+    }
 }

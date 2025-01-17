@@ -1,15 +1,19 @@
 package Models;
 
 import DAO.CategoryFileHandler;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Manager extends User implements Serializable {
 
@@ -202,4 +206,36 @@ public class Manager extends User implements Serializable {
 //        }
 //        System.out.println("Item " + itemName + " not found.");
     }
+
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws IOException{
+        outputStream.defaultWriteObject();
+        outputStream.writeUTF(this.ManagerID.getValueSafe());
+        outputStream.writeInt(this.sectors.size());
+        for (Sector s : sectors)
+            outputStream.writeObject(s);
+        outputStream.writeObject(this.inventory.getValue());
+        outputStream.writeInt(this.suppliers.size());
+        for (Supplier s : suppliers)
+            outputStream.writeObject(s);
+    }
+
+    @Serial void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
+        this.ManagerID = new SimpleStringProperty(inputStream.readUTF());
+        int size1 = inputStream.readInt();
+        ListProperty<Sector> sectorsList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < size1; i++){
+            sectorsList.add((Sector) inputStream.readObject());
+        }
+        this.sectors = sectorsList;
+
+        this.inventory = new SimpleObjectProperty<Inventory>((Inventory) inputStream.readObject());
+        int size2 = inputStream.readInt();
+        ListProperty<Supplier> suppliersList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < size2; i++){
+            suppliersList.add((Supplier) inputStream.readObject());
+        }
+        this.suppliers = suppliersList;
+    }
+
 }

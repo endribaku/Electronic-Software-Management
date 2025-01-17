@@ -1,6 +1,9 @@
 package Models;
 
 import javafx.beans.property.*;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.css.StyleableObjectProperty;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -138,4 +141,30 @@ public abstract class User implements Serializable {
         int a = 1;
     }
 
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws  IOException{
+        outputStream.defaultWriteObject();
+        outputStream.writeUTF(this.userID.getValueSafe());
+        outputStream.writeUTF(this.username.getValueSafe());
+        outputStream.writeUTF(this.password.getValueSafe());
+        outputStream.writeUTF(this.fullName.getValueSafe());
+        outputStream.writeObject(this.dateOfBirth.getValue());
+        outputStream.writeUTF(this.phoneNumber.getValueSafe());
+        outputStream.writeUTF(this.email.getValueSafe());
+        outputStream.writeDouble(this.salary.getValue());
+        outputStream.writeObject(this.accessLevel.name());
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        this.userID = new SimpleStringProperty(inputStream.readUTF());
+        this.username = new SimpleStringProperty(inputStream.readUTF());
+        this.password = new SimpleStringProperty(inputStream.readUTF());
+        this.fullName = new SimpleStringProperty(inputStream.readUTF());
+        this.dateOfBirth = new SimpleObjectProperty<LocalDate>((LocalDate) inputStream.readObject());
+        this.phoneNumber = new SimpleStringProperty(inputStream.readUTF());
+        this.email = new SimpleStringProperty(inputStream.readUTF());
+        String accessLevelName = (String) inputStream.readObject();
+        this.accessLevel = Access.valueOf(accessLevelName);
+    }
 }
