@@ -1,8 +1,6 @@
 package Views;
 
-import Controllers.BillManagementController;
-import Controllers.EmployeeManagementController;
-import Controllers.InventoryController;
+import Controllers.*;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -46,9 +44,11 @@ public class AdminView extends Pane {
         billGenerateLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label billManagementLabel = new Label("Manage Bills");
         billManagementLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        Label suppliersLabel = new Label("Suppliers");
+        suppliersLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label profileLabel = new Label("Profile");
         profileLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
-        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, billGenerateLabel, billManagementLabel, profileLabel);
+        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, billGenerateLabel, billManagementLabel, suppliersLabel, profileLabel);
         sidebar.setPrefWidth(150);
         Root.setLeft(sidebar);
 
@@ -74,6 +74,8 @@ public class AdminView extends Pane {
         employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
         billGenerateLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
         billManagementLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
+        suppliersLabel.onMouseClickedProperty().set(e -> Root.setCenter(new SuppliersController().getView().getSuppliersPage()));
+        profileLabel.onMouseClickedProperty().set(e -> Root.setCenter(new ProfileController().getView().getProfilePage()));
     }
 
     public BorderPane getRoot() {
