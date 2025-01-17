@@ -54,8 +54,6 @@ public class Category implements Comparable<Category> , Serializable {
         items.add(item);
     }
 
-    public ObservableList<Item> getItems() {return items.get();}
-
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException{
         outputStream.defaultWriteObject();
@@ -75,5 +73,4 @@ public class Category implements Comparable<Category> , Serializable {
         }
         this.items = itemList;
     }
-
 }
