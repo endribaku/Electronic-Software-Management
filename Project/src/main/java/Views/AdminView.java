@@ -1,25 +1,11 @@
 package Views;
 
-import Controllers.AdminController;
+import Controllers.BillManagementController;
 import Controllers.EmployeeManagementController;
 import Controllers.InventoryController;
-import DAO.UserFileHandler;
-import Models.*;
-import javafx.beans.value.ObservableStringValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
 public class AdminView extends Pane {
 
@@ -56,7 +42,13 @@ public class AdminView extends Pane {
         inventoryLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label employeeLabel = new Label("Employees");
         employeeLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
-        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel);
+        Label billGenerateLabel = new Label("Generate Bill");
+        billGenerateLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        Label billManagementLabel = new Label("Manage Bills");
+        billManagementLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        Label profileLabel = new Label("Profile");
+        profileLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, billGenerateLabel, billManagementLabel, profileLabel);
         sidebar.setPrefWidth(150);
         Root.setLeft(sidebar);
 
@@ -80,6 +72,8 @@ public class AdminView extends Pane {
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
         inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
         employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
+        billGenerateLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
+        billManagementLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
     }
 
     public BorderPane getRoot() {

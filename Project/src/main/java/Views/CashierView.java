@@ -1,5 +1,7 @@
 package Views;
 
+import Controllers.BillManagementController;
+import Controllers.InventoryController;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -63,7 +65,7 @@ public class CashierView {
         // Add content to center
         Root.setCenter(homePage);
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
-        billsLabel.onMouseClickedProperty().set(e -> new BillManagementView().show(primaryStage) );
+        billsLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
 
         bgRoot.getChildren().add(Root);
         bgRoot.setAlignment(Pos.CENTER);

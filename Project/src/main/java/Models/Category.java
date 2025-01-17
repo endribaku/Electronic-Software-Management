@@ -12,9 +12,9 @@ public class Category implements Comparable<Category> , Serializable {
     private transient ListProperty<Item> items;
     private static int stockThreshold = 5;
 
-    public Category()  {
-        this.name = new SimpleStringProperty();
-        this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
+    public Category(String name, ArrayList<Item> items)  {
+        this.name = new SimpleStringProperty(name);
+        this.items = new SimpleListProperty<>(FXCollections.observableArrayList(items));
     }
 
     @Override

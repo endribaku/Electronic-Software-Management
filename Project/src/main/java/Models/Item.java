@@ -2,7 +2,7 @@ package Models;
 
 import javafx.beans.property.*;
 
-import java.io.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
@@ -12,18 +12,18 @@ public class Item implements Serializable {
     private transient StringProperty name;
     private transient ObjectProperty<Category> category;
     private transient ObjectProperty<Supplier> supplier;
-    private transient ObjectProperty<Date> purchaseDate;
+    private transient ObjectProperty<LocalDate> purchaseDate;
     private transient DoubleProperty purchasePrice;
     private transient DoubleProperty sellingPrice;
     private transient IntegerProperty quantity;
 
     public Item(String name, Category category,
-                Supplier supplier, Date purchaseDate,
+                Supplier supplier, LocalDate purchaseDate,
                 double purchasePrice, double sellingPrice, int quantity) {
         this.itemID = new SimpleStringProperty(UUID.randomUUID().toString());
         this.name = new SimpleStringProperty(name);
         this.category = new SimpleObjectProperty<>(category);
-        this.supplier = new SimpleObjectProperty<>(supplier);
+        this.supplier = new SimpleObjectProperty(supplier);
         this.purchaseDate = new SimpleObjectProperty<>(purchaseDate);
         this.purchasePrice = new SimpleDoubleProperty(purchasePrice);
         this.sellingPrice = new SimpleDoubleProperty(sellingPrice);
@@ -62,11 +62,11 @@ public class Item implements Serializable {
         this.supplier.set(supplier);
     }
 
-    public Date getPurchaseDate() {
+    public LocalDate getPurchaseDate() {
         return purchaseDate.get();
     }
 
-    public void setPurchaseDate(Date purchaseDate) {
+    public void setPurchaseDate(LocalDate purchaseDate) {
         this.purchaseDate.set(purchaseDate);
     }
 
@@ -99,30 +99,5 @@ public class Item implements Serializable {
         int getQuantity = getQuantity();
         getQuantity -= quantityToReduce;
         setQuantity(getQuantity);
-    }
-
-    @Serial
-    private void writeObject(ObjectOutputStream outputStream) throws IOException {
-        outputStream.defaultWriteObject();
-        outputStream.writeUTF(this.itemID.getValueSafe());
-        outputStream.writeUTF(this.name.getValueSafe());
-        outputStream.writeObject(this.category.getValue());
-        outputStream.writeObject(this.supplier.getValue());
-        outputStream.writeObject(this.purchaseDate.getValue());
-        outputStream.writeDouble(this.purchasePrice.getValue());
-        outputStream.writeDouble(this.sellingPrice.getValue());
-        outputStream.writeInt(this.quantity.getValue());
-    }
-
-    @Serial
-    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-        this.itemID = new SimpleStringProperty(inputStream.readUTF());
-        this.name = new SimpleStringProperty(inputStream.readUTF());
-        this.category = new SimpleObjectProperty<Category>((Category) inputStream.readObject());
-        this.supplier = new SimpleObjectProperty<Supplier>((Supplier) inputStream.readObject());
-        this.purchaseDate = new SimpleObjectProperty<Date>((Date) inputStream.readObject());
-        this.purchasePrice = new SimpleDoubleProperty(inputStream.readDouble());
-        this.sellingPrice = new SimpleDoubleProperty(inputStream.readDouble());
-        this.quantity = new SimpleIntegerProperty(inputStream.readInt());
     }
 }

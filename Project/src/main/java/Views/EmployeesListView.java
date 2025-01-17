@@ -127,27 +127,35 @@ public class EmployeesListView {
             employeeIDColumn.setMinWidth(100);
             employeeIDColumn.setCellValueFactory(new PropertyValueFactory<User, String>("userID"));
             employeeIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeeIDColumn.setOnEditCommit(e -> e.getRowValue().setUserID(e.getNewValue()));
             employeeFullNameColumn.setMinWidth(100);
             employeeFullNameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("fullName"));
             employeeFullNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeeFullNameColumn.setOnEditCommit(e -> e.getRowValue().setFullName(e.getNewValue()));
             employeeUsernameColumn.setMinWidth(100);
             employeeUsernameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
             employeeUsernameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeeUsernameColumn.setOnEditCommit(e -> e.getRowValue().setUsername(e.getNewValue()));
             employeePasswordColumn.setMinWidth(100);
             employeePasswordColumn.setCellValueFactory(new PropertyValueFactory<User, String>("password"));
             employeePasswordColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeePasswordColumn.setOnEditCommit(e -> e.getRowValue().setPassword(e.getNewValue()));
             employeeAccessLevelColumn.setMinWidth(100);
             employeeAccessLevelColumn.setCellValueFactory(new PropertyValueFactory<User, Access>("accessLevel"));
             employeeAccessLevelColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new Access[] { Access.Cashier, Access.Manager, Access.Administrator }));
+            employeeAccessLevelColumn.setOnEditCommit(e -> e.getRowValue().setAccessLevel(e.getNewValue()));
             employeeDOBColumn.setMinWidth(100);
             employeeDOBColumn.setCellValueFactory(new PropertyValueFactory<User, LocalDate>("dateOfBirth"));
             employeeDOBColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter()));
+            employeeDOBColumn.setOnEditCommit(e -> e.getRowValue().setDateOfBirth(e.getNewValue()));
             employeeEmailColumn.setMinWidth(100);
             employeeEmailColumn.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
             employeeEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeeEmailColumn.setOnEditCommit(e -> e.getRowValue().setEmail(e.getNewValue()));
             employeePhoneNumberColumn.setMinWidth(100);
             employeePhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<User, String>("phoneNumber"));
             employeePhoneNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            employeePhoneNumberColumn.setOnEditCommit(e -> e.getRowValue().setPhoneNumber(e.getNewValue()));
             employeeSalaryColumn.setMinWidth(100);
             employeeSalaryColumn.setCellValueFactory(new PropertyValueFactory<User, Double>("salary"));
             employeeSalaryColumn.setCellFactory(TextFieldTableCell.forTableColumn(
@@ -162,6 +170,7 @@ public class EmployeesListView {
                         }
                     }
             ));
+            employeeSalaryColumn.setOnEditCommit(e -> e.getRowValue().setSalary(e.getNewValue()));
             employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn);
             updateEmployeeListButton.setStyle("-fx-font: 11pt Helvetica;");
 

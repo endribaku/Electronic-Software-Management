@@ -13,6 +13,13 @@ public class Bill_Item {
         this.totalPrice = quantity * unitPrice;
     }
 
+    public Bill_Item(Item item) {
+        this.item = item;
+        this.quantity = 1;
+        this.unitPrice = item.getSellingPrice();
+        this.totalPrice = quantity * unitPrice;
+    }
+
     public Item getItem() {
         return item;
     }

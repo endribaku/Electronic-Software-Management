@@ -16,10 +16,10 @@ public class Supplier implements Serializable {
     private transient StringProperty name;
     private transient ListProperty<Item> suppliedItems;
 
-    public Supplier() {
-        this.supplierID = new SimpleStringProperty();
-        this.name = new SimpleStringProperty();
-        this.suppliedItems = new SimpleListProperty<>(FXCollections.observableArrayList());
+    public Supplier(String supplierID, String name, ArrayList<Item> suppliedItems) {
+        this.supplierID = new SimpleStringProperty(supplierID);
+        this.name = new SimpleStringProperty(name);
+        this.suppliedItems = new SimpleListProperty<>(FXCollections.observableArrayList(suppliedItems));
     }
 
     public String getSupplierID() {return supplierID.get();}
