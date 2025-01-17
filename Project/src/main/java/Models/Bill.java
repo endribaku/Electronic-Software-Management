@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Bill {
     private int billNumber;
-    private Cashier cashier;
+    private User cashier;
     private Sector sector;
     private ArrayList<Bill_Item> itemsSold;
     private double totalAmount;
@@ -21,7 +21,7 @@ public class Bill {
     }
 
     public Bill(){
-
+        this.billNumber = 1;
     }
 
     public int getBillNumber() {
@@ -32,7 +32,7 @@ public class Bill {
         this.billNumber = billNumber;
     }
 
-    public Cashier getCashier() {
+    public User getCashier() {
         return cashier;
     }
 
@@ -60,6 +60,12 @@ public class Bill {
 
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public void setTotalAmountfromItemsSold() {
+        for (Bill_Item item : itemsSold) {
+            this.totalAmount += item.getTotalPrice();
+        }
     }
 
     public ArrayList<Bill_Item> getItemsSold() {return itemsSold;}
@@ -112,9 +118,9 @@ public class Bill {
         billText.append("                ELECTRONIC STORE         \n");
         billText.append("-----------------------------------------\n");
         billText.append(String.format("Bill Number:    %d%n", billNumber));
-        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
-        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
-        billText.append(String.format("Date:           %s%n", dateOfSale));
+//        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
+//        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
+//        billText.append(String.format("Date:           %s%n", dateOfSale));
         billText.append("\n");
 
         // Add items and quantities

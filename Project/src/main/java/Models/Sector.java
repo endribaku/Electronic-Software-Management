@@ -11,6 +11,8 @@ public class Sector implements Serializable {
     private transient StringProperty sectorName;
     private transient ListProperty<Cashier> cashiers = new SimpleListProperty<>(FXCollections.observableArrayList());
     private transient ObjectProperty<Manager> manager;
+    private transient ListProperty<Item> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
+
 
     public Sector(String sectorName, ArrayList<Cashier> cashiers, Manager manager) {
         this.sectorName = new SimpleStringProperty(sectorName);

@@ -22,16 +22,18 @@ public class BillFileHandler {
     private static final File BILLS_FOLDER = new File(BILLS_DIRECTORY);
     public static String getBillsDirectory() {return BILLS_DIRECTORY;}
 
-    public void saveBillToFile(Bill bill) {
+    public boolean saveBillToFile(Bill bill) {
         String billText = bill.generateBillText();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String formattedDate = bill.getDateOfSale().format(formatter);
-        String filename = "Bill" + bill.getBillNumber() + formattedDate + ".txt";
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+//        String formattedDate = bill.getDateOfSale().format(formatter);
+        String filename = "Bill" + bill.getBillNumber() + ".txt";
         try(PrintWriter fileWriter = new PrintWriter(BILLS_DIRECTORY + "/" + filename))
         {
             fileWriter.write(billText);
+            return true;
         } catch (IOException e) {
             System.out.println("Failed to save file: " + filename + " - " + e.getMessage());
+            return false;
         }
     }
 

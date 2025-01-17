@@ -47,4 +47,9 @@ public class Bill_Item {
     public double getTotalPrice() {
         return totalPrice;
     }
+
+    public String getItemId() {
+        return item.getItemID();
+    }
+    public String getItemName() {return item.getName();}
 }

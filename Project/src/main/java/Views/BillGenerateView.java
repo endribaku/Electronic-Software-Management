@@ -1,17 +1,21 @@
 package Views;
 
 import Models.*;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.TextFieldTableCell;
 public class BillGenerateView {
     HBox billGeneratePage = new HBox();
 
@@ -50,12 +54,14 @@ public class BillGenerateView {
     Button addToBillButton = new Button("Add to Bill");
 
     TableView<Bill_Item> billTableView = new TableView<>(billList);
+
     TableColumn<Bill_Item, Number> itemIDColumn = new TableColumn<>("ID");
     TableColumn<Bill_Item, String> itemNameColumn = new TableColumn<>("Name");
     TableColumn<Bill_Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
-    TableColumn<Bill_Item, Number> itemPriceColumn = new TableColumn<>("Price");
-
+    TableColumn<Bill_Item, Double> itemPriceColumn = new TableColumn<>("Price");
     Button createBillButton = new Button("Create Bill");
+
+
 
     public BillGenerateView() {
 
@@ -73,27 +79,41 @@ public class BillGenerateView {
             });
         });
 
+        //Setting values of columns to be automatically added on the columns based on the billlist
+        itemIDColumn.setCellValueFactory(new PropertyValueFactory<>("itemId"));
+        itemNameColumn.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        itemPriceColumn.setCellValueFactory(cellData -> {
+            Bill_Item billItem = cellData.getValue();
+            return new SimpleDoubleProperty(billItem.getTotalPrice()).asObject();
+        });
+
+
 //        itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        addToBillButton.setOnAction(e -> {
-            ObservableList<Item> selectedItems = itemListView.getSelectionModel().getSelectedItems();
-            for (Item item : selectedItems) {
-                Bill_Item existingBillItem = billList.stream()
-                        .filter(billItem -> billItem.getItem().equals(item))
-                        .findFirst()
-                        .orElse(null);
-
-                if (existingBillItem != null) {
-                    // Increment quantity if already in the bill
-                    int newQuantity = existingBillItem.getQuantity() + 1;
-                    billList.remove(existingBillItem);
-                    billList.add(new Bill_Item(item));
-                } else {
-                    // Add new BillItem
-                    billList.add(new Bill_Item(item));
-                }
-            }
-        });
+//        addToBillButton.setOnAction(e -> {
+//            System.out.println("Clicked");
+//            ObservableList<Item> selectedItems = itemListView.getSelectionModel().getSelectedItems();
+//            for (Item item : selectedItems) {
+//                Bill_Item existingBillItem = billList.stream()
+//                        .filter(billItem -> billItem.getItem().equals(item))
+//                        .findFirst()
+//                        .orElse(null);
+//
+//                if (existingBillItem != null) {
+//                    // Increment quantity if already in the bill
+//                    int newQuantity = existingBillItem.getQuantity() + 1;
+//                    billList.remove(existingBillItem);
+//                    billList.add(new Bill_Item(item));
+//                    System.out.println(billList.size());
+//
+//                } else {
+//                    // Add new BillItem
+//                    billList.add(new Bill_Item(item));
+//                    System.out.println(billList.size());
+//                }
+//            }
+//        });
         addToBillButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addToBillButton, HPos.RIGHT);
 

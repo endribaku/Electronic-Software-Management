@@ -54,6 +54,25 @@ public class Category implements Comparable<Category> , Serializable {
         items.add(item);
     }
 
+    public Item getItemByName(String itemName) {
+        for (Item i : items) {
+            if (i.getName().equals(itemName)) {
+                System.out.println("Item found in category: " + name);
+                return i;
+            }
+        }
+        return null;
+    }
+
+    public void restockItem(String itemName, int restockAmount) {
+        Item item = getItemByName(itemName);
+        if (item != null) {
+            item.restock(restockAmount);
+        } else {
+            System.out.println("Item not found in category: " + name);
+        }
+    }
+
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException{
         outputStream.defaultWriteObject();
