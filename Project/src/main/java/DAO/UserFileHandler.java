@@ -89,6 +89,23 @@ public class UserFileHandler {
         return null;
     }
 
+    public User selectUserFromId(String userID) {
+        try(ObjectInputStream inputStream =
+                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
+            while (true){
+                if(inputStream.readObject() instanceof User)
+                    if(((User) inputStream.readObject()).getUserID().equals(userID)){
+                        return (User)inputStream.readObject();
+                    }
+            }
+        }catch (EOFException e){
+
+        }catch(IOException | ClassNotFoundException ex) {
+            ex.getMessage();
+        }
+        return null;
+    }
+
     public void selectAllUser() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             while(true) {

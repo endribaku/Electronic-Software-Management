@@ -20,6 +20,10 @@ public class Bill {
         this.dateOfSale = LocalDate.now();
     }
 
+    public Bill(){
+
+    }
+
     public int getBillNumber() {
         return billNumber;
     }
@@ -51,6 +55,15 @@ public class Bill {
     public LocalDate getDateOfSale() {
         return dateOfSale;
     }
+
+    public void setDateOfSale(LocalDate dateOfSale) {this.dateOfSale = dateOfSale;}
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public ArrayList<Bill_Item> getItemsSold() {return itemsSold;}
+    public void setItemsSold(ArrayList<Bill_Item> itemsSold) {this.itemsSold = itemsSold;}
 
     public void addBillItem(Item item, int quantityToReduce) {
 
@@ -91,7 +104,7 @@ public class Bill {
 //        return null;
 //    }
 
-    public void generateBillText() {
+    public String generateBillText() {
         StringBuilder billText = new StringBuilder();
 
         // Add header
@@ -99,8 +112,8 @@ public class Bill {
         billText.append("                ELECTRONIC STORE         \n");
         billText.append("-----------------------------------------\n");
         billText.append(String.format("Bill Number:    %d%n", billNumber));
-        billText.append(String.format("Cashier Name:   %s%n", cashier.getUsername())); // Assuming Cashier has a getName method
-        billText.append(String.format("Sector:         %s%n", sector.getSectorName())); // Assuming Sector has a getName method
+        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
+        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
         billText.append(String.format("Date:           %s%n", dateOfSale));
         billText.append("\n");
 
@@ -110,7 +123,7 @@ public class Bill {
         billText.append("-----------------------------------------\n");
         for (Bill_Item item : itemsSold) {
             billText.append(String.format("%-20s %-10d %.2f%n",
-                    item.getItem().getName(), // Assuming Item has a getName method
+                    item.getItem().getName(),
                     item.getQuantity(),
                     item.getTotalPrice()));
         }
@@ -124,6 +137,8 @@ public class Bill {
 
         // Print the bill
         System.out.println(billText.toString());
+        return billText.toString();
     }
+
 
 }
