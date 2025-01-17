@@ -7,7 +7,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.HPos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
+import DAO.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,21 +21,7 @@ public class BillGenerateView {
     BorderPane createBox = new BorderPane();
     VBox addItemstoBillPane = new VBox();
     ObservableList<Item> itemList = FXCollections.observableArrayList(
-            new Item("Macbook", new Category("Laptop", new ArrayList<>()),
-                    new Supplier("123", "Apple", new ArrayList<>()),
-                    LocalDate.now(), 1000, 1200, 5),
-            new Item("iPhone 12", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("123", "Apple", new ArrayList<>()),
-                    LocalDate.now(), 500, 700, 5),
-            new Item("iPhone 13", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("123", "Apple", new ArrayList<>()),
-                    LocalDate.now(), 600, 800, 5),
-            new Item("iPad 3", new Category("Tablet", new ArrayList<>()),
-                    new Supplier("123", "Apple", new ArrayList<>()),
-                    LocalDate.now(), 800, 1000, 5),
-            new Item("iPhone 16", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("123", "Apple", new ArrayList<>()),
-                    LocalDate.now(), 1300, 1500, 5)
+        new CategoryFileHandler().selectAllItemsFromCategories()
     );
     FilteredList<Item> filteredItemList = new FilteredList<>(itemList, p -> true);
 

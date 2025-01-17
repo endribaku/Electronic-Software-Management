@@ -20,7 +20,7 @@ public class CategoryFileHandler implements AutoCloseable{
         return categories;
     }
 
-    public void insertCategory(Category category){
+    public boolean insertCategory(Category category){
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
             ObjectOutputStream writer;
             if (DATA_FILE.length() > 0)
@@ -28,8 +28,10 @@ public class CategoryFileHandler implements AutoCloseable{
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(category);
+            return true;
         } catch(IOException ioe) {
             ioe.getMessage();
+            return false;
         }
     }
 
@@ -105,6 +107,26 @@ public class CategoryFileHandler implements AutoCloseable{
         catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    public ObservableList<Item> selectAllItemsFromCategories()
+    {
+        ObservableList<Item> items = FXCollections.observableArrayList();
+        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE)))
+        {
+            selectAllCategories();
+            for(Category c : categories) {
+                c.getItems().forEach(items::add);
+            }
+        } catch (FileNotFoundException e)
+        {
+            System.out.println(e.getMessage());
+        } catch (IOException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        return items;
     }
 
     @Override
