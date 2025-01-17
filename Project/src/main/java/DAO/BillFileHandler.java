@@ -4,6 +4,7 @@ import Models.Bill;
 import Models.Bill_Item;
 import Models.Cashier;
 import Models.Item;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
@@ -37,16 +38,21 @@ public class BillFileHandler {
 
 
     public ObservableList<Bill> getBillsFromDirectory() {
+        ObservableList<Bill> bills = FXCollections.observableArrayList();
         try {
             File[] billFiles = BILLS_FOLDER.listFiles();
 
             for (File billFile : billFiles) {
                 if (billFile.getName().endsWith(".txt") && billFile.isFile())
                 {
-
+                    bills.add(getBillFromFile(billFile));
                 }
             }
         }
+        catch (Exception e) {
+            System.out.println("Unexpected error occurred: " + e.getMessage());
+        }
+        return bills;
     }
 
     public Bill getBillFromFile(File billFile) {
@@ -64,9 +70,10 @@ public class BillFileHandler {
                 if(line.startsWith("Bill Number:"))
                 {
                     bill.setBillNumber(Integer.parseInt(line.split(":")[1].trim()));
-                } else if(line.startsWith("Cashier ID:") {
+                } else if(line.startsWith("Cashier ID:")) {
+                    String cashierId = line.split(":")[1].trim();
                     UserFileHandler cashierSelecter = new UserFileHandler();
-                    bill.setCashier((Cashier) cashierSelecter.selectUserFromId(String.valueOf(line.split(":")[1].trim())));
+                    bill.setCashier((Cashier) cashierSelecter.selectUserFromId(cashierId));
                 } else if(line.startsWith("Date of Sale:")) {
                     String dateValue = line.split(":")[1].trim();
                     bill.setDateOfSale(LocalDate.parse(dateValue, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -101,6 +108,15 @@ public class BillFileHandler {
             }
             bill.setItemsSold(items);
             return bill;
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing a numeric value: " + e.getMessage());
+            return null;
+        } catch (IOException e) {
+            System.err.println("Error reading the bill file: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            System.err.println("Unexpected error occurred: " + e.getMessage());
+            return null;
         }
     }
 }
