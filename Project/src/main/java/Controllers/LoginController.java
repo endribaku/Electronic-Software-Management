@@ -20,8 +20,10 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        String username = view.getUsernameTextField().getText();
-        String password = view.getPasswordTextField().getText();
+        String username = view.getUsernameTextField().getText().trim();
+        String password = view.getPasswordTextField().getText().trim();
+
+        System.out.println(username + " " + password);
 
         if (username.isEmpty() || password.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "Please enter both username and password.");
@@ -31,7 +33,7 @@ public class LoginController {
         try {
             User currentUser = handler.authenticateUser(username, password);
 
-            if ((currentUser == null)) {
+            if ((currentUser != null)) {
                 showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, " + username + "!");
                 Scene homeScene = new Scene(new UserController(currentUser).getView().getRoot(), 1500, 700);
                 Stage primaryStage = (Stage) view.getApplication().getWindow();

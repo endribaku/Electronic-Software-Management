@@ -124,10 +124,21 @@ public class UserFileHandler {
         try(ObjectInputStream inputStream =
                     new ObjectInputStream(new FileInputStream(DATA_FILE));){
             while (true) {
-                if (inputStream.readObject() instanceof User)
-                    if (((User) inputStream.readObject()).getUsername().equals(username) && ((User) inputStream.readObject()).getPassword().equals(password)) {
-                        return (User) inputStream.readObject();
+                Object obj = inputStream.readObject();
+
+                // Check if the object is a User instance
+                if (obj instanceof User) {
+                    User user = (User) obj;
+
+                    System.out.println("Username: " + user.getUsername());
+                    System.out.println("Password: " + user.getPassword());
+
+                    // Check username and password
+                    if (user.getUsername().equals(username.trim()) &&
+                            user.getPassword().equals(password.trim())) {
+                        return user; // Return the matched User
                     }
+                }
             }
         }catch (EOFException e){
 
