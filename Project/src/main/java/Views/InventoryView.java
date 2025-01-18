@@ -1,6 +1,8 @@
 package Views;
 
+import Models.Category;
 import Models.Item;
+import Models.Supplier;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -14,9 +16,9 @@ public class InventoryView {
             "Major Domestic Appliances", "Climate & Air", "Small Domestic Appliances", "Consumer Electronics",
             "TV", "IT & Accessories", "Phones & Accessories", "Gaming & Accessories", "Kitchen Utensils",
             "Electrical Accessories", "Fitness Accessories");
-    ComboBox<String> itemCategoryListView = new ComboBox<String>(categories);
-    ObservableList<String> suppliers = FXCollections.observableArrayList("Samsung", "Apple", "HP", "Lenovo", "Dell");
-    ComboBox<String> itemSupplierListView = new ComboBox<String>(suppliers);
+    ComboBox<Category> itemCategoryListView = new ComboBox<Category>();
+    ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
+    ComboBox<String> itemSupplierListView = new ComboBox<String>();
 
     ObservableList<Item> items;
     TableView<Item> inventoryTableView = new TableView<>(items);
@@ -35,6 +37,16 @@ public class InventoryView {
     TextField itemPPriceField = new TextField();;
     TextField itemSPriceField = new TextField();
     Button addItemButton = new Button("Create Item");
+
+    TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
+    //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
+    TableColumn<Item, String> itemNameColumn = new TableColumn<>("Name");
+    TableColumn<Item, Category> itemCategoryColumn = new TableColumn<>("Category");
+    TableColumn<Item, Supplier> itemSupplierColumn = new TableColumn<>("Supplier");
+    TableColumn<Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
+    TableColumn<Item, Number> itemPPriceColumn = new TableColumn<>("Purchase Price");
+    TableColumn<Item, Number> itemSPriceColumn = new TableColumn<>("Selling Price");
+
 
     public InventoryView() {
 
@@ -123,14 +135,7 @@ public class InventoryView {
         inventoryListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         inventoryListBox.setSpacing(10);
         //employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
-        TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
-        //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
-        TableColumn<Item, String> itemNameColumn = new TableColumn<>("Name");
-        TableColumn<Item, String> itemCategoryColumn = new TableColumn<>("Category");
-        TableColumn<Item, String> itemSupplierColumn = new TableColumn<>("Supplier");
-        TableColumn<Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
-        TableColumn<Item, Number> itemPPriceColumn = new TableColumn<>("Purchase Price");
-        TableColumn<Item, Number> itemSPriceColumn = new TableColumn<>("Selling Price");
+
 
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
         inventoryTableView.setPrefWidth(1000);
@@ -138,6 +143,34 @@ public class InventoryView {
 
         inventoryPage.getChildren().addAll(createBox, inventoryListBox);
         inventoryPage.setSpacing(10);
+    }
+
+    public TableColumn<Item, Number> getItemIDColumn() {
+        return itemIDColumn;
+    }
+
+    public TableColumn<Item, String> getItemNameColumn() {
+        return itemNameColumn;
+    }
+
+    public TableColumn<Item, Category> getItemCategoryColumn() {
+        return itemCategoryColumn;
+    }
+
+    public TableColumn<Item, Supplier> getItemSupplierColumn() {
+        return itemSupplierColumn;
+    }
+
+    public TableColumn<Item, Number> getItemQuantityColumn() {
+        return itemQuantityColumn;
+    }
+
+    public TableColumn<Item, Number> getItemPPriceColumn() {
+        return itemPPriceColumn;
+    }
+
+    public TableColumn<Item, Number> getItemSPriceColumn() {
+        return itemSPriceColumn;
     }
 
     public HBox getInventoryPage() {
@@ -148,11 +181,11 @@ public class InventoryView {
         return categories;
     }
 
-    public ComboBox<String> getItemCategoryListView() {
+    public ComboBox<Category> getItemCategoryListView() {
         return itemCategoryListView;
     }
 
-    public ObservableList<String> getSuppliers() {
+    public ObservableList<Supplier> getSuppliers() {
         return suppliers;
     }
 
@@ -167,4 +200,25 @@ public class InventoryView {
     public TableView<Item> getInventoryTableView() {
         return inventoryTableView;
     }
+
+    public TextField getCategoryNameField() {
+        return categoryNameField;
+    }
+
+    public TextField getItemNameField() {
+        return itemNameField;
+    }
+
+    public TextField getItemQuantityField() {
+        return itemQuantityField;
+    }
+
+    public TextField getItemPPriceField() {
+        return itemPPriceField;
+    }
+
+    public TextField getItemSPriceField() {
+        return itemSPriceField;
+    }
+
 }

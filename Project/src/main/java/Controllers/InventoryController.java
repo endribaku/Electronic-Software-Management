@@ -1,21 +1,94 @@
 package Controllers;
 
+import DAO.CategoryFileHandler;
 import DAO.InventoryFileHandler;
+import DAO.ItemFIleHandler;
+import DAO.SuppliersFileHandler;
+import Models.Category;
+import Models.Item;
+import Models.Supplier;
 import Views.InventoryView;
+import javafx.beans.property.ListProperty;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class InventoryController {
-    private final InventoryView view = new InventoryView();
-    private final InventoryFileHandler inventoryDAO = new InventoryFileHandler();
+
+    private final InventoryView inventoryListView = new InventoryView();
+    private final ItemFIleHandler itemFIleHandler = new ItemFIleHandler();
+    private final CategoryFileHandler categoryFileHandler = new CategoryFileHandler();
+    private final SuppliersFileHandler suppliersFileHandler = new SuppliersFileHandler();
+    private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
 
     public InventoryController() {
-
+        this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
+        this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
+        this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
     }
 
     public InventoryView getView() {
-        return view;
+        return inventoryListView;
     }
 
     public InventoryFileHandler getInventoryDAO() {
-        return inventoryDAO;
+        return inventoryFileHandler;
+    }
+
+    public void setEditListeners(){
+        this.inventoryListView.getItemIDColumn().setOnEditCommit(e->{
+            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+
+        this.inventoryListView.getItemNameColumn().setOnEditCommit(e->{
+            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue());
+        });
+
+        this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e->{
+            categoryFileHandler.getAllCategories().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+
+        this.inventoryListView.getItemSupplierColumn().setOnEditCommit(e->{
+            suppliersFileHandler.getAllSuppliers().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+
+        this.inventoryListView.getItemQuantityColumn().setOnEditCommit(e->{
+            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+
+        this.inventoryListView.getItemPPriceColumn().setOnEditCommit(e->{
+            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+
+        this.inventoryListView.getItemSPriceColumn().setOnEditCommit(e->{
+            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+        });
+    }
+
+    private void onItemAdd(){
+        String itemName = inventoryListView.getItemNameField().getText();
+        String itemCategory = inventoryListView.getCategoryNameField().getText();
+        String itemQuantity = inventoryListView.getItemQuantityField().getText();
+        String itemPPrice = inventoryListView.getItemPPriceField().getText();
+        String itemSPrice = inventoryListView.getItemSPriceField().getText();
+        String itemSupplier =  inventoryListView.getItemSupplierListView().getValue();
+
+        try{
+            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity.isEmpty() || itemPPrice.isEmpty() || itemSPrice.isEmpty() || itemSupplier.isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Invalid Input");
+                alert.show();
+            } else {
+                //insert later
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void onCategoryAdd(){
+        Category CategoryName = inventoryListView.getItemCategoryListView().getValue();
+
     }
 }

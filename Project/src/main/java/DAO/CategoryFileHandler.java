@@ -1,7 +1,6 @@
 package DAO;
 
 import Models.Category;
-import Models.Item;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -13,7 +12,7 @@ public class CategoryFileHandler implements AutoCloseable{
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
 
-    public ObservableList<Category> getAllItems() {
+    public ObservableList<Category> getAllCategories() {
         if(categories.isEmpty()) {
             selectAllCategories();
         }
