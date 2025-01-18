@@ -46,4 +46,9 @@ public class Cashier extends User implements Serializable {
     private void readObject(ObjectInputStream inputStream) throws IOException,ClassNotFoundException{
         this.sector = new SimpleObjectProperty<Sector>((Sector) inputStream.readObject());
     }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
 }

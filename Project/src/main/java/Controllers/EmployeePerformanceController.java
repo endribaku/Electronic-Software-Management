@@ -5,6 +5,7 @@ import DAO.ItemFIleHandler;
 import DAO.SectorFileHandler;
 import DAO.UserFileHandler;
 import Models.Bill;
+import Models.User;
 import Views.EmployeePerformanceView;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,13 +25,21 @@ public class EmployeePerformanceController {
     private ItemFIleHandler itemFileHandler = new ItemFIleHandler();
     private BillFileHandler billFileHandler = new BillFileHandler();
     private SectorFileHandler sectorFileHandler = new SectorFileHandler();
-
+    private User currentUser;
     public EmployeePerformanceController() {
         this.view.getBillTableView().setItems(billFileHandler.getBillsFromDirectory());
         setupBillDateFilter();
         setupSearchBar();
     }
 
+
+    // Controller setting the currentUser as the one who controls
+    public EmployeePerformanceController(User user) {
+        this.currentUser = user;
+        this.view.getBillTableView().setItems(billFileHandler.getBillsFromDirectory());
+        setupBillDateFilter();
+        setupSearchBar();
+    }
     public EmployeePerformanceView getView() {
         return view;
     }

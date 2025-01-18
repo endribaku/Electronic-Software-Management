@@ -15,10 +15,19 @@ public class BillManagementController {
     private BillManagementView managementView = new BillManagementView();
     private BillGenerateView generateView = new BillGenerateView();
     private BillFileHandler billFileHandler = new BillFileHandler();
+    private User currentUser;
+
+    public BillManagementController(User user) {
+
+        this.generateView.getAddToBillButton().setOnAction(e -> onAddToBill(e));
+        this.generateView.getCreateBillButton().setOnAction(e -> onGenerateBill(e));
+        this.currentUser = user;
+    }
 
     public BillManagementController() {
         this.generateView.getAddToBillButton().setOnAction(e -> onAddToBill(e));
         this.generateView.getCreateBillButton().setOnAction(e -> onGenerateBill(e));
+
     }
 
     public BillManagementView getManagementView() {
@@ -78,10 +87,16 @@ public class BillManagementController {
            return;
        }
 
+        //Generate bill with its info
        ArrayList<Bill_Item> billItemsList = new ArrayList<>(billItems);
        Bill newBill = new Bill();
+
+       newBill.setDateOfSale(java.time.LocalDate.now());
+       newBill.setCashier(currentUser);
+       newBill.setSector(null);
        newBill.setItemsSold(billItemsList);
        newBill.setTotalAmountfromItemsSold();
+
        billFileHandler.saveBillToFile(newBill);
 
 

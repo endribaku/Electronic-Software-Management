@@ -89,4 +89,9 @@ public class Sector implements Serializable {
         this.cashiers = cashierList;
         this.manager = new SimpleObjectProperty<Manager>((Manager) inputStream.readObject());
     }
+
+    @Override
+    public String toString() {
+        return sectorName.getValueSafe();
+    }
 }

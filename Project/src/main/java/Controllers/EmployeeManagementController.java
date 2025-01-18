@@ -12,9 +12,20 @@ import java.time.LocalDate;
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
     private final UserFileHandler employeeFileHandler = new UserFileHandler();
+    private User currentUser;
 
     public EmployeeManagementController() {
 
+        employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
+        //this.employeesListView.getEmployeesTableView().
+        this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
+        this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
+        setEditListeners();
+    }
+
+    // Controller setting the currentUser as the one who controls
+    public EmployeeManagementController(User currentUser) {
+        this.currentUser = currentUser;
         employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());

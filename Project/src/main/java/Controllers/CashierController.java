@@ -7,6 +7,7 @@ public class CashierController {
     private CashierView view = new CashierView();
     private UserFileHandler handler = new UserFileHandler();
 
+
     public CashierController() {
 
     }

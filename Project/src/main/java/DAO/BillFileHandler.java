@@ -24,8 +24,8 @@ public class BillFileHandler {
 
     public boolean saveBillToFile(Bill bill) {
         String billText = bill.generateBillText();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//        String formattedDate = bill.getDateOfSale().format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = bill.getDateOfSale().format(formatter);
         String filename = "Bill" + bill.getBillNumber() + ".txt";
         try(PrintWriter fileWriter = new PrintWriter(BILLS_DIRECTORY + "/" + filename))
         {
@@ -69,13 +69,16 @@ public class BillFileHandler {
 
             while((line = reader.nextLine()) != null)
             {
-                if(line.startsWith("Bill Number:"))
-                {
+                if(line.startsWith("Bill Number:")) {
                     bill.setBillNumber(Integer.parseInt(line.split(":")[1].trim()));
-                } else if(line.startsWith("Cashier ID:")) {
+                }  else if(line.startsWith("Cashier ID:"))
+                {
                     String cashierId = line.split(":")[1].trim();
                     UserFileHandler cashierSelecter = new UserFileHandler();
                     bill.setCashier((Cashier) cashierSelecter.selectUserFromId(cashierId));
+                }
+                else if(line.startsWith("Cashier User Name:")) {
+                    String cashierName = line.split(":")[1].trim();
                 } else if(line.startsWith("Date of Sale:")) {
                     String dateValue = line.split(":")[1].trim();
                     bill.setDateOfSale(LocalDate.parse(dateValue, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -103,7 +106,9 @@ public class BillFileHandler {
                 }
 
                 if (line.startsWith("Total Price: ")) {
-                    double totalPrice = Double.parseDouble(line.split(":")[1].trim());
+                    String priceString = line.split(":")[1].trim();
+                    priceString = priceString.replace("$", "");
+                    double totalPrice = Double.parseDouble(priceString);
                     bill.setTotalAmount(totalPrice);
                 }
 

@@ -7,6 +7,7 @@ import DAO.SuppliersFileHandler;
 import Models.Category;
 import Models.Item;
 import Models.Supplier;
+import Models.User;
 import Views.InventoryView;
 import javafx.beans.property.ListProperty;
 import javafx.collections.ObservableList;
@@ -20,8 +21,19 @@ public class InventoryController {
     private final CategoryFileHandler categoryFileHandler = new CategoryFileHandler();
     private final SuppliersFileHandler suppliersFileHandler = new SuppliersFileHandler();
     private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
+    private User currentUser;
+
 
     public InventoryController() {
+        this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
+        this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
+        this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
+        setEditListeners();
+    }
+
+    // Controller setting the currentUser as the one who controls
+    public InventoryController(User user) {
+        this.currentUser = user;
         this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
         this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
         this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));

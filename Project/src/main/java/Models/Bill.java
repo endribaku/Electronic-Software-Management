@@ -36,7 +36,7 @@ public class Bill {
         return cashier;
     }
 
-    public void setCashier(Cashier cashier) {
+    public void setCashier(User cashier) {
         this.cashier = cashier;
     }
 
@@ -118,9 +118,9 @@ public class Bill {
         billText.append("                ELECTRONIC STORE         \n");
         billText.append("-----------------------------------------\n");
         billText.append(String.format("Bill Number:    %d%n", billNumber));
-//        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
+        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
 //        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
-//        billText.append(String.format("Date:           %s%n", dateOfSale));
+        billText.append(String.format("Date:           %s%n", dateOfSale));
         billText.append("\n");
 
         // Add items and quantities
