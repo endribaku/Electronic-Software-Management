@@ -26,15 +26,14 @@ public class SupplierManagementView {
     private ObservableList<Item> itemList = FXCollections.observableArrayList();
     private ComboBox<Item> itemBoxList= new ComboBox<Item>(itemList);
 
-    private Button addSupplierButton = new Button("Register Employee");
+    private Button addSupplierButton = new Button("Register Supplier");
 
     private TableView<Supplier> suppliersTableView = new TableView<>();
     private TableColumn<Supplier, String> supplierIDColumn = new TableColumn<>("ID");
     private TableColumn<Supplier, String> supplierNameColumn = new TableColumn<>("Full Name");
-    private TableColumn<Supplier, Item> supplierItemListColumn = new TableColumn<>("Access Level");
+    private TableColumn<Supplier, Item> supplierItemListColumn = new TableColumn<>("Supplied Items");
 
     private Button updateSupplierListButton = new Button("Update Table");
-
 
     public SupplierManagementView() {
 
@@ -70,13 +69,19 @@ public class SupplierManagementView {
         suppliersTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         suppliersTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         supplierIDColumn.setMinWidth(100);
-        supplierIDColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("userID"));
+        supplierIDColumn.setMaxWidth(200);
+        supplierNameColumn.setMinWidth(200);
+        supplierIDColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("supplierID"));
         supplierIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         supplierIDColumn.setOnEditCommit(e -> e.getRowValue().setSupplierID(e.getNewValue()));
-        supplierItemListColumn.setMinWidth(100);
+        supplierNameColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("supplierName"));
+        supplierNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        supplierNameColumn.setOnEditCommit(e -> e.getRowValue().setName(e.getNewValue()));
+        supplierItemListColumn.setMinWidth(200);
         supplierItemListColumn.setCellValueFactory(new PropertyValueFactory<Supplier, Item>("suppliedItems"));
         supplierItemListColumn.setCellFactory(ComboBoxTableCell.forTableColumn(itemList));
-        suppliersTableView.getColumns().addAll(supplierIDColumn, supplierItemListColumn);
+        suppliersTableView.getColumns().addAll(supplierIDColumn, supplierNameColumn, supplierItemListColumn);
+        suppliersTableView.setPrefWidth(1000);
         updateSupplierListButton.setStyle("-fx-font: 11pt Helvetica;");
 
         supplierListBox.getChildren().addAll(supplierListLabel, suppliersTableView, updateSupplierListButton);

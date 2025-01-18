@@ -82,9 +82,8 @@ public class ProfileView {
             accessLevelTextField.setEditable(false);
             sectorTextField.setEditable(false);
 
-            HBox profileBox = new HBox();
+            BorderPane profileBox = new BorderPane();
             profileBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
-            profileBox.setSpacing(10);
 
             GridPane detailsBox = new GridPane();
             detailsBox.setHgap(10);
@@ -105,7 +104,7 @@ public class ProfileView {
             detailsBox.add(dateOfBirthTextField, 1, 5);
             detailsBox.add(accessLevelTextField, 1, 6);
             detailsBox.add(sectorTextField, 1, 7);
-
+            detailsBox.setPadding(new Insets(0, 20, 0, 40));
             // Buttons
             VBox buttons = new VBox();
             editButton = new Button("Edit Profile");
@@ -113,8 +112,12 @@ public class ProfileView {
             buttons.getChildren().addAll(editButton, logout);
             buttons.setSpacing(210);
 
-            profileBox.getChildren().addAll(profileImageView, detailsBox, buttons);
-            profileBox.setSpacing(75);
+            profileBox.setLeft(profileImageView);
+            profileBox.setRight(buttons);
+            profileBox.setCenter(detailsBox);
+            profileBox.setPadding(new Insets(20));
+            //profileBox.getChildren().addAll(profileImageView, detailsBox, buttons);
+            //profileBox.setSpacing(75);
             editButton.setStyle("-fx-font: 11pt Helvetica;");
             logout.setStyle("-fx-font: 11pt Helvetica;");
 

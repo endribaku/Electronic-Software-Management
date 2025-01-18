@@ -47,43 +47,43 @@ public class Manager extends User implements Serializable {
 
 
 
-    public void addSector(Sector sector) {
-        sectors.add(sector);
-    }
-
-    public void addSuppliers(Supplier supplier) {
-        suppliers.add(supplier);
-    }
-
-    public void addItem(Item item) {
-
-        for (Category c: inventory.get().getCategories())
-        {
-            if(item.getCategory().getName().equals(c.getName()))
-            {
-                c.addItem(item);
-                return;
-            }
-        }
-
-        //If Category was not found
-        System.out.println("Category not found for item to be added");
-
-    }
-
-    public void addCategory(Category category) {
-        inventory.get().getCategories().add(category);
-    }
-
-    public void removeSupplier(String supplierName) {
-        for (Supplier s : suppliers) {
-            if (s.getName().equals(supplierName)) {
-                suppliers.remove(s);
-                return;
-            }
-        }
-        System.out.println("Supplier name was not found");
-    }
+//    public void addSector(Sector sector) {
+//        sectors.add(sector);
+//    }
+//
+//    public void addSuppliers(Supplier supplier) {
+//        suppliers.add(supplier);
+//    }
+//
+//    public void addItem(Item item) {
+//
+//        for (Category c: inventory.get().getAllCategories())
+//        {
+//            if(item.getCategory().getName().equals(c.getName()))
+//            {
+//                c.addItem(item);
+//                return;
+//            }
+//        }
+//
+//        //If Category was not found
+//        System.out.println("Category not found for item to be added");
+//
+//    }
+//
+//    public void addCategory(Category category) {
+//        inventory.get().getCategories().add(category);
+//    }
+//
+//    public void removeSupplier(String supplierName) {
+//        for (Supplier s : suppliers) {
+//            if (s.getName().equals(supplierName)) {
+//                suppliers.remove(s);
+//                return;
+//            }
+//        }
+//        System.out.println("Supplier name was not found");
+//    }
 
     public void removeSector(String sectorName) {
         for (Sector s : sectors) {

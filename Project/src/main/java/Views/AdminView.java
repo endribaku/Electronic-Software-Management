@@ -15,17 +15,27 @@ public class AdminView extends Pane {
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
         MenuItem homeItem = new MenuItem("Home");
+        homeItem.setOnAction(e -> Root.setCenter(new AdminView().getRoot()));
         MenuItem inventoryItem = new MenuItem("Inventory");
+        inventoryItem.setOnAction(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
         MenuItem employeeItem = new MenuItem("Employees");
+        employeeItem.setOnAction(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
         MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setOnAction(e -> System.exit(0));
         menu.getItems().addAll(homeItem, exitItem, inventoryItem, employeeItem);
         Menu billMenu = new Menu("Bills");
         MenuItem newBillItem = new MenuItem("Generate Bill");
+        newBillItem.setOnAction(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
+        MenuItem viewPerformanceItem = new MenuItem("View Performance");
+        viewPerformanceItem.setOnAction(e -> Root.setCenter(new EmployeePerformanceController().getView().getEmployeePerformancePage()));
         MenuItem viewBillItem = new MenuItem("View Bills");
-        billMenu.getItems().addAll(newBillItem, viewBillItem);
+        viewBillItem.setOnAction(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
+        billMenu.getItems().addAll(newBillItem, viewPerformanceItem, viewBillItem);
         Menu profileMenu = new Menu("Profile");
         MenuItem profileItem = new MenuItem("View Profile");
+        profileItem.setOnAction(e -> Root.setCenter(new ProfileController().getView().getProfilePage()));
         MenuItem logoutItem = new MenuItem("Logout");
+        logoutItem.setOnAction(e -> System.exit(0));
         profileMenu.getItems().addAll(profileItem, logoutItem);
         menuBar.getMenus().addAll(menu, billMenu, profileMenu);
 
@@ -40,6 +50,8 @@ public class AdminView extends Pane {
         inventoryLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label employeeLabel = new Label("Employees");
         employeeLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        Label performanceLabel = new Label("Performance");
+        performanceLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label billGenerateLabel = new Label("Generate Bill");
         billGenerateLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label billManagementLabel = new Label("Manage Bills");
@@ -48,7 +60,7 @@ public class AdminView extends Pane {
         suppliersLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
         Label profileLabel = new Label("Profile");
         profileLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
-        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, billGenerateLabel, billManagementLabel, suppliersLabel, profileLabel);
+        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, performanceLabel, billGenerateLabel, billManagementLabel, suppliersLabel, profileLabel);
         sidebar.setPrefWidth(150);
         Root.setLeft(sidebar);
 
@@ -72,6 +84,7 @@ public class AdminView extends Pane {
         homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
         inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
         employeeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
+        performanceLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeePerformanceController().getView().getEmployeePerformancePage()));
         billGenerateLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
         billManagementLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
         suppliersLabel.onMouseClickedProperty().set(e -> Root.setCenter(new SuppliersController().getView().getSuppliersPage()));

@@ -62,7 +62,7 @@ public class InventoryView {
         addItemHeader.setSpacing(165);
         addItemHeader.getChildren().addAll(addItemLabel, addCategoryPaneButton);
         GridPane addItemGrid = new GridPane();
-        addItemGrid.setHgap(10);
+        addItemGrid.setHgap(105);
         addItemGrid.setVgap(10);
         Label itemNameLabel = new Label("Item Name:");
         itemNameLabel.setStyle("-fx-font: 11pt Helvetica;");
@@ -134,8 +134,6 @@ public class InventoryView {
         inventoryListLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
         inventoryListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         inventoryListBox.setSpacing(10);
-        //employees = FXCollections.observableArrayList(currentAdmin.getEmployees());
-
 
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
         inventoryTableView.setPrefWidth(1000);

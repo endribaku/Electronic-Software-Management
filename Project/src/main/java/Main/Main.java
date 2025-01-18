@@ -2,6 +2,8 @@ package Main;
 
 
 import Controllers.AdminController;
+import Controllers.LoginController;
+import Views.LoginView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,9 +17,10 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         File file = new File("Project/Data/employees.dat");
         System.out.println("File exists: " + file.exists());
-        Scene scene = new Scene(new AdminController().getView().getRoot(), 1500, 700); // Get the root node
-        stage.setTitle("Country Management");
+        Scene scene = new LoginController(stage).getView().getApplication();
+        stage.setTitle("Store Management");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

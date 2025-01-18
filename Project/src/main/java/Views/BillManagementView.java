@@ -54,7 +54,7 @@ public class BillManagementView {
         billListBox.setSpacing(10);
 
         billTableView.getColumns().addAll(billNumberTableColumn, billStringTableColumn, itemQuantityColumn, itemPriceColumn);
-        billTableView.setPrefWidth(1000);
+        billTableView.setPrefWidth(1300);
         billListBox.getChildren().addAll(billListLabel, searchBar, billTableView);
 
         billManagePage.getChildren().addAll(billListBox);

@@ -117,8 +117,20 @@ public class BillGenerateView {
         addToBillButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addToBillButton, HPos.RIGHT);
 
+        GridPane quantityGrid = new GridPane();
+        Label quantityLabel = new Label("Quantity:");
+        TextField quantityTextField = new TextField();
+        quantityLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+        quantityTextField.setStyle("-fx-font: 11pt Helvetica;");
+        quantityGrid.add(quantityLabel, 0, 0);
+        quantityGrid.add(quantityTextField, 1, 0);
+        quantityGrid.add(addToBillButton, 1, 1);
+        quantityGrid.setHgap(130);
+        quantityGrid.setVgap(10);
+
+
         //Create Item Pane
-        addItemstoBillPane.getChildren().addAll(searchBar, itemListView, addToBillButton);
+        addItemstoBillPane.getChildren().addAll(searchBar, itemListView, quantityGrid);
         addItemstoBillPane.setSpacing(10);
         createBox.setCenter(addItemstoBillPane);
 

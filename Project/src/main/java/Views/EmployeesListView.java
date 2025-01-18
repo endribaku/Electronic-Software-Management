@@ -57,6 +57,7 @@ public class EmployeesListView {
             VBox addEmployeeBox = new VBox();
             addEmployeeBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
             addEmployeeBox.setSpacing(10);
+            addEmployeeBox.setMinWidth(350);
             Label addEmployeeLabel = new Label("Register new Employee");
             addEmployeeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
             GridPane addEmployeeGrid = new GridPane();
