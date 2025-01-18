@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 public class Inventory implements Serializable{
     private transient ListProperty<Sector> sectors = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private transient ListProperty<Manager> managers = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private transient ListProperty<User> managers = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public Inventory(ListProperty<Sector> sectors, ListProperty<Manager> managers) {
+    public Inventory(ListProperty<Sector> sectors, ListProperty<User> managers) {
         this.sectors = new SimpleListProperty<>(sectors);
         this.managers = new SimpleListProperty<>(managers);
     }
@@ -21,15 +21,15 @@ public class Inventory implements Serializable{
 
     }
 
-    public ObservableList<Manager> getManagers() {
+    public ObservableList<User> getManagers() {
         return managers.get();
     }
 
-    public ListProperty<Manager> managersProperty() {
+    public ListProperty<User> managersProperty() {
         return managers;
     }
 
-    public void setManagers(ObservableList<Manager> managers) {
+    public void setManagers(ObservableList<User> managers) {
         this.managers.set(managers);
     }
 
@@ -55,7 +55,7 @@ public class Inventory implements Serializable{
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
         this.sectors = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Sector>) inputStream.readObject()));
-        this.managers = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Manager>) inputStream.readObject()));
+        this.managers = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<User>) inputStream.readObject()));
     }
 
 

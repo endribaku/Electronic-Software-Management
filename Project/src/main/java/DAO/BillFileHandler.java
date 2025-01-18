@@ -2,20 +2,17 @@ package DAO;
 
 import Models.Bill;
 import Models.Bill_Item;
-import Models.Cashier;
 import Models.Item;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
 
 public class BillFileHandler {
     private static final String BILLS_DIRECTORY = "Project/Data/RegisteredBills";
@@ -75,7 +72,7 @@ public class BillFileHandler {
                 {
                     String cashierId = line.split(":")[1].trim();
                     UserFileHandler cashierSelecter = new UserFileHandler();
-                    bill.setCashier((Cashier) cashierSelecter.selectUserFromId(cashierId));
+                    bill.setCashier(cashierSelecter.selectUserFromId(cashierId));
                 }
                 else if(line.startsWith("Cashier User Name:")) {
                     String cashierName = line.split(":")[1].trim();

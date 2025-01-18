@@ -26,8 +26,9 @@ public class User implements Serializable {
     private transient DoubleProperty salary;
     private transient Access accessLevel;
     private transient ListProperty<Permission> permissionList;
+    private transient ListProperty<Sector> sector;
 
-    public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
+    public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel, List<Permission> permissionList, List<Sector> sector) {
         this.username = new SimpleStringProperty(username);
         this.password = new SimpleStringProperty(password);
         this.fullName = new SimpleStringProperty(fullName);
@@ -39,7 +40,11 @@ public class User implements Serializable {
         this.salary = new SimpleDoubleProperty(salary);
         this.accessLevel = accessLevel;
         this.userID = new SimpleStringProperty(UUID.randomUUID().toString());
+        this.permissionList = new SimpleListProperty<>(FXCollections.observableArrayList(permissionList));
+        this.sector = new SimpleListProperty<>(FXCollections.observableArrayList(sector));
     }
+
+    public User() {}
 
     public StringProperty userIDProperty() {
         return userID;
@@ -153,6 +158,18 @@ public class User implements Serializable {
         this.permissionList.set(permissionList);
     }
 
+    public ObservableList<Sector> getSector() {
+        return sector.get();
+    }
+
+    public ListProperty<Sector> sectorProperty() {
+        return sector;
+    }
+
+    public void setSector(ObservableList<Sector> sector) {
+        this.sector.set(sector);
+    }
+
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws  IOException{
         outputStream.defaultWriteObject();
@@ -165,6 +182,8 @@ public class User implements Serializable {
         outputStream.writeUTF(this.email.getValueSafe());
         outputStream.writeDouble(this.salary.getValue());
         outputStream.writeObject(this.accessLevel.name());
+        outputStream.writeObject(new ArrayList<>(this.sector.getValue()));
+        outputStream.writeObject(new ArrayList<>(this.permissionList.getValue()));
     }
 
     @Serial
@@ -179,5 +198,7 @@ public class User implements Serializable {
         this.salary = new SimpleDoubleProperty(inputStream.readDouble());
         String accessLevelName = (String) inputStream.readObject();
         this.accessLevel = Access.valueOf(accessLevelName);
+        this.sector = new SimpleListProperty<Sector>(FXCollections.observableArrayList((ArrayList<Sector>) inputStream.readObject()));
+        this.permissionList = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Permission>) inputStream.readObject()));
     }
 }

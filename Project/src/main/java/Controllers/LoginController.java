@@ -3,6 +3,7 @@ package Controllers;
 import DAO.UserFileHandler;
 import Models.User;
 import Views.LoginView;
+import Views.UserView;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
@@ -15,7 +16,10 @@ public class LoginController {
         view = new LoginView(stage);
 
         this.view.getBtLogin().setOnAction(e -> {
-            handleLogin();
+            //handleLogin();
+            Scene homeScene = new Scene(new UserController(new User()).getView().getRoot(), 1500, 700);
+            Stage primaryStage = (Stage) view.getApplication().getWindow();
+            primaryStage.setScene(homeScene);
         });
     }
 

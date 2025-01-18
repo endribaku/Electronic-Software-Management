@@ -4,10 +4,10 @@ import DAO.UserFileHandler;
 import Models.*;
 import Views.EmployeesListView;
 import javafx.scene.control.Alert;
+import javafx.scene.control.SelectionMode;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
@@ -18,7 +18,7 @@ public class EmployeeManagementController {
 
         employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
         //this.employeesListView.getEmployeesTableView().
-        this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
+        this.employeesListView.getCreateEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
         setEditListeners();
     }
@@ -28,9 +28,27 @@ public class EmployeeManagementController {
         this.currentUser = currentUser;
         employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
         //this.employeesListView.getEmployeesTableView().
-        this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
+        this.employeesListView.getCreateEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
         setEditListeners();
+        this.employeesListView.getAccessLevelList().onActionProperty().set(e -> {
+            if(this.employeesListView.getAccessLevelList().getSelectionModel().getSelectedItem() == Access.Manager
+                    || this.employeesListView.getAccessLevelList().getSelectionModel().getSelectedItem() == Access.Administrator) {
+                this.employeesListView.getSectorsList().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            }
+            if(this.employeesListView.getAccessLevelList().getSelectionModel().getSelectedItem() == Access.Cashier) {
+                this.employeesListView.getSectorsList().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            }
+        });
+        this.employeesListView.getEditAccessLevelList().onActionProperty().set(e -> {
+            if(this.employeesListView.getEditAccessLevelList().getSelectionModel().getSelectedItem() == Access.Manager
+                    || this.employeesListView.getAccessLevelList().getSelectionModel().getSelectedItem() == Access.Administrator) {
+                this.employeesListView.getEditSectorsList().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            }
+            if(this.employeesListView.getAccessLevelList().getSelectionModel().getSelectedItem() == Access.Cashier){
+                this.employeesListView.getEditSectorsList().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            }
+        });
     }
 
     public EmployeesListView getEmpListView() {
@@ -92,6 +110,8 @@ public class EmployeeManagementController {
         LocalDate employeeDOB = employeesListView.getEmployeeDOBField().getValue();
         String employeeEmail = employeesListView.getEmployeeEmailField().getText();
         String employeePhoneNumber = employeesListView.getEmployeePhoneNumberField().getText();
+        ArrayList<Permission> employeePermissions = new ArrayList<>(employeesListView.getPermissionList().getItems());
+        ArrayList<Sector> employeeSectors = new ArrayList<>(employeesListView.getSectorsList().getItems());
         if(employeeDOB == null)
             employeeDOB = LocalDate.now();
         double employeeSalary;
@@ -103,13 +123,13 @@ public class EmployeeManagementController {
         Access employeeAccessLevel = employeesListView.getAccessLevelList().getValue();
         if(employeeAccessLevel == null)
             employeeAccessLevel = Access.Cashier;
-        if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0) {
+        if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0 || employeePermissions.isEmpty() || employeeSectors.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
                 alert.show();
         } else {
-            employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel));
+            employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissions, employeeSectors));
         }
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
@@ -121,6 +141,8 @@ public class EmployeeManagementController {
             employeesListView.getEmployeePhoneNumberField().clear();
             employeesListView.getEmployeeSalaryField().clear();
             employeesListView.getAccessLevelList().setValue(null);
+            employeesListView.getPermissionList().getSelectionModel().clearSelection();
+            employeesListView.getSectorsList().getSelectionModel().clearSelection();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");

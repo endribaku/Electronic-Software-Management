@@ -3,6 +3,7 @@ module com.example.store {
     requires javafx.fxml;
     requires java.desktop;
     requires java.logging;
+    requires java.naming;
 
     exports Views;
     opens Views to javafx.fxml;

@@ -1,7 +1,8 @@
 package Views;
 
-import DAO.UserFileHandler;
 import Models.Access;
+import Models.Permission;
+import Models.Sector;
 import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-import javafx.util.converter.NumberStringConverter;
 
 import java.time.LocalDate;
 
@@ -32,8 +32,12 @@ public class EmployeesListView {
         TextField employeeSalaryField = new TextField();
         ObservableList<Access> accessLevels = FXCollections.observableArrayList(Access.Cashier, Access.Manager, Access.Administrator);
         ComboBox<Access> accessLevelList= new ComboBox<Access>(accessLevels);
+        ObservableList<Permission> permissions = FXCollections.observableArrayList(Permission.BillGeneration, Permission.EmployeeManagement, Permission.PerformanceView, Permission.BillManagement, Permission.InventoryAccess, Permission.SupplierManagement);
+        ListView<Permission> permissionList = new ListView<Permission>(permissions);
+        ObservableList<Sector> sectors = FXCollections.observableArrayList(new Sector("Electronics", new User()));
+        ListView<Sector> sectorsList = new ListView<Sector>(sectors);
 
-        Button addEmployeeButton = new Button("Register Employee");
+        Button createEmployeeButton = new Button("Register Employee");
 
         TableView<User> employeesTableView = new TableView<>();
         TableColumn<User, String> employeeIDColumn = new TableColumn<>("ID");
@@ -45,9 +49,26 @@ public class EmployeesListView {
         TableColumn<User, String> employeeEmailColumn = new TableColumn<>("Email");
         TableColumn<User, String> employeePhoneNumberColumn = new TableColumn<>("Phone Number");
         TableColumn<User, Double> employeeSalaryColumn = new TableColumn<>("Salary");
+        TableColumn<User, Permission> employeePermissionsColumn = new TableColumn<>("Permissions");
+        TableColumn<User, Sector> employeeSectorColumn = new TableColumn<>("Sector");
 
         Button updateEmployeeListButton = new Button("Update Table");
 
+        Button editEmployeeButton = new Button("Edit Employee");
+        Button updateEmployeeButton = new Button("Update Employee");
+        Button addEmployeeButton = new Button("Add Employee");
+        Button deleteEmployeeButton = new Button("Delete Employee");
+
+        TextField editEmployeeFullNameField = new TextField();
+        TextField editEmployeeUsernameField = new TextField();
+        TextField editEmployeePasswordField = new TextField();
+        DatePicker editEmployeeDOBField = new DatePicker();
+        TextField editEmployeeEmailField = new TextField();
+        TextField editEmployeePhoneNumberField = new TextField();
+        TextField editEmployeeSalaryField = new TextField();
+        ComboBox<Access> editAccessLevelList= new ComboBox<Access>(accessLevels);
+        ListView<Permission> editPermissionList = new ListView<Permission>(permissions);
+        ListView<Sector> editSectorsList = new ListView<Sector>(sectors);
 
         public EmployeesListView() {
 
@@ -55,11 +76,15 @@ public class EmployeesListView {
 
             //Create new Employee
             VBox addEmployeeBox = new VBox();
+            HBox addEmployeeHeaderBox = new HBox();
             addEmployeeBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
             addEmployeeBox.setSpacing(10);
             addEmployeeBox.setMinWidth(350);
             Label addEmployeeLabel = new Label("Register new Employee");
             addEmployeeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
+            editEmployeeButton.setStyle("-fx-font: 11pt Helvetica;");
+            addEmployeeHeaderBox.getChildren().addAll(addEmployeeLabel, editEmployeeButton);
+            addEmployeeHeaderBox.setSpacing(130);
             GridPane addEmployeeGrid = new GridPane();
             addEmployeeGrid.setHgap(10);
             addEmployeeGrid.setVgap(10);
@@ -110,11 +135,107 @@ public class EmployeesListView {
             addEmployeeGrid.add(employeeAccessLevelLabel, 0, 7);
             accessLevelList.setStyle("-fx-font: 11pt Helvetica;");
             addEmployeeGrid.add(accessLevelList, 1,7);
-            //Create User Button
+            Label employeePermissionsList = new Label("Permissions:");
+            employeePermissionsList.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            addEmployeeGrid.add(employeePermissionsList, 0, 8);
+            permissionList.setStyle("-fx-font: 11pt Helvetica;");
+            permissionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            addEmployeeGrid.add(permissionList, 0, 9);
+            Label employeeSectorLabel = new Label("Sector:");
+            employeeSectorLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            addEmployeeGrid.add(employeeSectorLabel, 1, 8);
+            sectorsList.setStyle("-fx-font: 11pt Helvetica;");
+            addEmployeeGrid.add(sectorsList, 1, 9);
+
+            //Edit Employee Pane
+            HBox editEmployeeHeaderBox = new HBox();
+            Label editEmployeeLabel = new Label("Edit Employee");
+            editEmployeeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
             addEmployeeButton.setStyle("-fx-font: 11pt Helvetica;");
             GridPane.setHalignment(addEmployeeButton, HPos.RIGHT);
-            addEmployeeGrid.add(addEmployeeButton, 1, 8);
-            addEmployeeBox.getChildren().addAll(addEmployeeLabel, addEmployeeGrid);
+            editEmployeeHeaderBox.getChildren().addAll(editEmployeeLabel, addEmployeeButton);
+            editEmployeeHeaderBox.setSpacing(210);
+            GridPane editEmployeeGrid = new GridPane();
+            editEmployeeGrid.setHgap(10);
+            editEmployeeGrid.setVgap(10);
+            Label editEmployeeFullNameLabel = new Label("Full Name:");
+            editEmployeeFullNameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeFullNameLabel, 0, 0);
+            editEmployeeFullNameField = new TextField();
+            editEmployeeFullNameField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeFullNameField, 1, 0);
+            Label editEmployeeUsernameLabel = new Label("Username:");
+            editEmployeeUsernameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeUsernameLabel, 0, 1);
+            editEmployeeUsernameField = new TextField();
+            editEmployeeUsernameField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeUsernameField, 1,1);
+            Label editEmployeePasswordLabel = new Label("Password:");
+            editEmployeePasswordLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeePasswordLabel, 0, 2);
+            editEmployeePasswordField = new TextField();
+            editEmployeePasswordField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeePasswordField, 1, 2);
+            Label editEmployeeDOBLabel = new Label("Date of Birth:");
+            editEmployeeDOBLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeDOBLabel, 0, 3);
+            editEmployeeDOBField = new DatePicker();
+            editEmployeeDOBField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeDOBField, 1, 3);
+            Label editEmployeeEmailLabel = new Label("Email:");
+            editEmployeeEmailLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeEmailLabel, 0, 4);
+            editEmployeeEmailField = new TextField();
+            editEmployeeEmailField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeEmailField, 1, 4);
+            Label editEmployeePhoneNumberLabel = new Label("Phone Number:");
+            editEmployeePhoneNumberLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeePhoneNumberLabel, 0, 5);
+            editEmployeePhoneNumberField = new TextField();
+            editEmployeePhoneNumberField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeePhoneNumberField, 1, 5);
+            Label editEmployeeSalaryLabel = new Label("Salary:");
+            editEmployeeSalaryLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeSalaryLabel, 0, 6);
+            editEmployeeSalaryField = new TextField();
+            editEmployeeSalaryField.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeSalaryField, 1, 6);
+            Label editEmployeeAccessLevelLabel = new Label("Access Level:");
+            editEmployeeAccessLevelLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeAccessLevelLabel, 0, 7);
+            editAccessLevelList.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editAccessLevelList, 1,7);
+            Label editEmployeePermissionsList = new Label("Permissions:");
+            editEmployeePermissionsList.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeePermissionsList, 0, 8);
+            editPermissionList.setStyle("-fx-font: 11pt Helvetica;");
+            editPermissionList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            editEmployeeGrid.add(editPermissionList, 0, 9);
+            Label editEmployeeSectorLabel = new Label("Sector:");
+            editEmployeeSectorLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editEmployeeSectorLabel, 1, 8);
+            editSectorsList.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeGrid.add(editSectorsList, 1, 9);
+
+            updateEmployeeButton.setStyle("-fx-font: 11pt Helvetica;");
+            GridPane.setHalignment(updateEmployeeButton, HPos.RIGHT);
+            editEmployeeGrid.add(updateEmployeeButton, 1, 10);
+
+            //Create User Button
+            createEmployeeButton.setStyle("-fx-font: 11pt Helvetica;");
+            GridPane.setHalignment(createEmployeeButton, HPos.RIGHT);
+            addEmployeeGrid.add(createEmployeeButton, 1, 10);
+
+            addEmployeeBox.getChildren().addAll(addEmployeeHeaderBox, addEmployeeGrid);
+
+            editEmployeeButton.setOnAction(e -> {
+                addEmployeeBox.getChildren().clear();
+                addEmployeeBox.getChildren().addAll(editEmployeeHeaderBox, editEmployeeGrid);
+            });
+            addEmployeeButton.setOnAction(e -> {
+                addEmployeeBox.getChildren().clear();
+                addEmployeeBox.getChildren().addAll(addEmployeeHeaderBox, addEmployeeGrid);
+            });
 
             //Display Employee's List
             VBox employeeListBox = new VBox();
@@ -125,39 +246,34 @@ public class EmployeesListView {
             employeesTableView.setEditable(true);
             employeesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             employeesTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            employeeIDColumn.setMinWidth(100);
+            employeeIDColumn.setMaxWidth(100);
             employeeIDColumn.setCellValueFactory(new PropertyValueFactory<User, String>("userID"));
             employeeIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeeIDColumn.setOnEditCommit(e -> e.getRowValue().setUserID(e.getNewValue()));
-            employeeFullNameColumn.setMinWidth(100);
+            employeeFullNameColumn.setMaxWidth(100);
             employeeFullNameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("fullName"));
             employeeFullNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeeFullNameColumn.setOnEditCommit(e -> e.getRowValue().setFullName(e.getNewValue()));
-            employeeUsernameColumn.setMinWidth(100);
             employeeUsernameColumn.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
             employeeUsernameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeeUsernameColumn.setOnEditCommit(e -> e.getRowValue().setUsername(e.getNewValue()));
-            employeePasswordColumn.setMinWidth(100);
             employeePasswordColumn.setCellValueFactory(new PropertyValueFactory<User, String>("password"));
             employeePasswordColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeePasswordColumn.setOnEditCommit(e -> e.getRowValue().setPassword(e.getNewValue()));
-            employeeAccessLevelColumn.setMinWidth(100);
             employeeAccessLevelColumn.setCellValueFactory(new PropertyValueFactory<User, Access>("accessLevel"));
             employeeAccessLevelColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new Access[] { Access.Cashier, Access.Manager, Access.Administrator }));
             employeeAccessLevelColumn.setOnEditCommit(e -> e.getRowValue().setAccessLevel(e.getNewValue()));
-            employeeDOBColumn.setMinWidth(100);
+            employeeSectorColumn.setCellValueFactory(new PropertyValueFactory<User, Sector>("sector"));
+            employeeSectorColumn.setCellFactory(ComboBoxTableCell.forTableColumn(sectors.toArray(new Sector[0])));
             employeeDOBColumn.setCellValueFactory(new PropertyValueFactory<User, LocalDate>("dateOfBirth"));
             employeeDOBColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter()));
             employeeDOBColumn.setOnEditCommit(e -> e.getRowValue().setDateOfBirth(e.getNewValue()));
-            employeeEmailColumn.setMinWidth(100);
             employeeEmailColumn.setCellValueFactory(new PropertyValueFactory<User, String>("email"));
             employeeEmailColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeeEmailColumn.setOnEditCommit(e -> e.getRowValue().setEmail(e.getNewValue()));
-            employeePhoneNumberColumn.setMinWidth(100);
             employeePhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<User, String>("phoneNumber"));
             employeePhoneNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             employeePhoneNumberColumn.setOnEditCommit(e -> e.getRowValue().setPhoneNumber(e.getNewValue()));
-            employeeSalaryColumn.setMinWidth(100);
             employeeSalaryColumn.setCellValueFactory(new PropertyValueFactory<User, Double>("salary"));
             employeeSalaryColumn.setCellFactory(TextFieldTableCell.forTableColumn(
                     new DoubleStringConverter() {
@@ -171,8 +287,11 @@ public class EmployeesListView {
                         }
                     }
             ));
+            employeePermissionsColumn.setCellValueFactory(new PropertyValueFactory<User, Permission>("Permission"));
+            employeePermissionsColumn.setCellFactory(ComboBoxTableCell.forTableColumn(permissions.toArray(new Permission[0])));
+            employeeAccessLevelColumn.setOnEditCommit(e -> e.getRowValue().setAccessLevel(e.getNewValue()));
             employeeSalaryColumn.setOnEditCommit(e -> e.getRowValue().setSalary(e.getNewValue()));
-            employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn);
+            employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeSectorColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn, employeePermissionsColumn);
             updateEmployeeListButton.setStyle("-fx-font: 11pt Helvetica;");
 
             employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView, updateEmployeeListButton);
@@ -217,11 +336,95 @@ public class EmployeesListView {
             return accessLevelList;
         }
 
-        public Button getAddEmployeeButton() {
-            return addEmployeeButton;
+        public Button getCreateEmployeeButton() {
+            return createEmployeeButton;
         }
 
-        public TableView<User> getEmployeesTableView() {
+    public ObservableList<Access> getAccessLevels() {
+        return accessLevels;
+    }
+
+    public ObservableList<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public ListView<Permission> getPermissionList() {
+        return permissionList;
+    }
+
+    public ObservableList<Sector> getSectors() {
+        return sectors;
+    }
+
+    public ListView<Sector> getSectorsList() {
+        return sectorsList;
+    }
+
+    public TableColumn<User, Permission> getEmployeePermissionsColumn() {
+        return employeePermissionsColumn;
+    }
+
+    public TableColumn<User, Sector> getEmployeeSectorColumn() {
+        return employeeSectorColumn;
+    }
+
+    public Button getEditEmployeeButton() {
+        return editEmployeeButton;
+    }
+
+    public Button getUpdateEmployeeButton() {
+        return updateEmployeeButton;
+    }
+
+    public Button getDeleteEmployeeButton() {
+        return deleteEmployeeButton;
+    }
+
+    public Button getAddEmployeeButton() {
+        return addEmployeeButton;
+    }
+
+    public TextField getEditEmployeeFullNameField() {
+        return editEmployeeFullNameField;
+    }
+
+    public TextField getEditEmployeePasswordField() {
+        return editEmployeePasswordField;
+    }
+
+    public TextField getEditEmployeeUsernameField() {
+        return editEmployeeUsernameField;
+    }
+
+    public DatePicker getEditEmployeeDOBField() {
+        return editEmployeeDOBField;
+    }
+
+    public TextField getEditEmployeeEmailField() {
+        return editEmployeeEmailField;
+    }
+
+    public TextField getEditEmployeePhoneNumberField() {
+        return editEmployeePhoneNumberField;
+    }
+
+    public TextField getEditEmployeeSalaryField() {
+        return editEmployeeSalaryField;
+    }
+
+    public ComboBox<Access> getEditAccessLevelList() {
+        return editAccessLevelList;
+    }
+
+    public ListView<Permission> getEditPermissionList() {
+        return editPermissionList;
+    }
+
+    public ListView<Sector> getEditSectorsList() {
+        return editSectorsList;
+    }
+
+    public TableView<User> getEmployeesTableView() {
             return employeesTableView;
         }
 

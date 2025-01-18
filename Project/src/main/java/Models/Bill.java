@@ -12,7 +12,7 @@ public class Bill {
     private LocalDate dateOfSale;
     private static int counter = 0;
 
-    public Bill(int billNumber, Cashier cashier, Sector sector) {
+    public Bill(int billNumber, User cashier, Sector sector) {
         this.billNumber = counter + 1;
         this.cashier = cashier;
         this.sector = sector;
@@ -75,7 +75,7 @@ public class Bill {
 
         if(item.getQuantity() == 0) {
             String message = String.format("Item %s is out of stock!", item.getName());
-            sector.getManager().notifyManager(message);
+            //sector.getManager().notifyManager(message);
             return;
         }
 
@@ -91,13 +91,13 @@ public class Bill {
             if(item.getQuantity() == 0)
             {
                 String message = String.format("Item %s has been sold out!", item.getName());
-                sector.getManager().notifyManager(message);
+                //sector.getManager().notifyManager(message);
             }
 
             if(item.getCategory().needsRestocking())
             {
                 String message = String.format("Category %s needs restocking!", item.getCategory().getName());
-                sector.getManager().notifyManager(message);
+                //sector.getManager().notifyManager(message);
             }
 
     }
@@ -136,7 +136,7 @@ public class Bill {
 
         // Add total amount
         billText.append("-----------------------------------------\n");
-        billText.append(String.format("Total Price:        $%.2f%n", totalAmount));
+        billText.append(String.format("Total Price:        $ %.2f%n", totalAmount));
         billText.append("-----------------------------------------\n");
         billText.append("         Thank you for shopping with us! \n");
         billText.append("-----------------------------------------\n");

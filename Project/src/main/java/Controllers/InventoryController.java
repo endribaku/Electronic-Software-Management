@@ -9,8 +9,6 @@ import Models.Item;
 import Models.Supplier;
 import Models.User;
 import Views.InventoryView;
-import javafx.beans.property.ListProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -38,6 +36,31 @@ public class InventoryController {
         this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
         this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
         setEditListeners();
+
+        this.inventoryListView.getSectorComboBox().setItems(InventoryFileHandler.getSectorsList());
+        this.inventoryListView.getSectorComboBox().setOnAction(e -> {
+            if(this.inventoryListView.getSectorComboBox().getSelectionModel().getSelectedItem() != null) {
+                this.inventoryListView.getItemCategoryListView().setEditable(true);
+                this.inventoryListView.getItemCategoryListView().setItems(this.inventoryListView.getSectorComboBox().getSelectionModel().getSelectedItem().getCategories());
+            }
+        });
+
+        this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
+        this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
+        this.inventoryListView.getUpdateInventory().setOnAction(e -> {});
+        this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
+
+        this.inventoryListView.getAddOptionsComboBox().onActionProperty().setValue(e -> {
+            if(this.inventoryListView.getAddOptionsComboBox().getSelectionModel().getSelectedItem().equals("Add Item")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
+            }
+            if(this.inventoryListView.getAddOptionsComboBox().getSelectionModel().getSelectedItem().equals("Add Category")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
+            }
+            if(this.inventoryListView.getAddOptionsComboBox().getSelectionModel().getSelectedItem().equals("Add Sector")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
+            }
+        });
     }
 
     public InventoryView getView() {
@@ -115,7 +138,34 @@ public class InventoryController {
     }
 
     private void onCategoryAdd(){
-        Category CategoryName = inventoryListView.getItemCategoryListView().getValue();
+        String CategoryName = inventoryListView.getCategoryNameField().getText();
+        try{
+            if(CategoryName.isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Invalid Input");
+                alert.show();
+            } else {
+                //insert later
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    private void onSectorAdd(){
+        String sectorName = inventoryListView.getSectorNameField().getText();
+        try{
+            if(sectorName.isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Invalid Input");
+                alert.show();
+            } else {
+                //insert later
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

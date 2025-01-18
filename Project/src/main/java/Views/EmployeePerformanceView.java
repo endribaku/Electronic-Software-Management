@@ -23,7 +23,7 @@ public class EmployeePerformanceView {
 
     TableView<Bill> billTableView = new TableView<>(filteredBills);
     TableColumn<Bill, Number> billNumberColumn = new TableColumn<>("ID");
-    TableColumn<Bill, Cashier> cashierColumn = new TableColumn<>("Cashier");
+    TableColumn<Bill, User> cashierColumn = new TableColumn<>("Cashier");
     TableColumn<Bill, Sector> sectorColumn = new TableColumn<>("Sector");
     TableColumn<Bill, Item> itemsSoldColumn = new TableColumn<>("Items Sold");
     TableColumn<Bill, Number> totalPriceColumn = new TableColumn<>("Total Price");
@@ -107,7 +107,7 @@ public class EmployeePerformanceView {
         return billNumberColumn;
     }
 
-    public TableColumn<Bill, Cashier> getCashierColumn() {
+    public TableColumn<Bill, User> getCashierColumn() {
         return cashierColumn;
     }
 
