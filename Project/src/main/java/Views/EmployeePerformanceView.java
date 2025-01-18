@@ -127,6 +127,18 @@ public class EmployeePerformanceView {
         return dateOfSaleColumn;
     }
 
+    public VBox getChartsBox() {
+        return chartsBox;
+    }
+
+    public ComboBox<String> getBillDateFilter() {
+        return billDateFilter;
+    }
+
+    public ComboBox<String> getEmployeePerformanceFilter() {
+        return employeePerformanceFilter;
+    }
+
     private LineChart<String, Number> createLineChart() {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
