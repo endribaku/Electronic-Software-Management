@@ -9,11 +9,11 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Inventory implements Serializable{
-    private transient ListProperty<Category> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private transient ListProperty<Sector> sectors = new SimpleListProperty<>(FXCollections.observableArrayList());
     private transient ListProperty<Manager> managers = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public Inventory(ListProperty<Category> categories, ListProperty<Manager> managers) {
-        this.categories = new SimpleListProperty<>(categories);
+    public Inventory(ListProperty<Sector> sectors, ListProperty<Manager> managers) {
+        this.sectors = new SimpleListProperty<>(sectors);
         this.managers = new SimpleListProperty<>(managers);
     }
 
@@ -21,65 +21,45 @@ public class Inventory implements Serializable{
 
     }
 
-    public ObservableList<Category> getCategories() {return categories.get();}
-
-    public ListProperty<Category> categoriesProperty() {return categories;}
-
-    public void setCategories(ObservableList<Category> categories) {this.categories.set(categories);}
-
-    public ObservableList<Manager> getManagers() {return managers.get();}
-
-    public ListProperty<Manager> managersProperty() {return managers;}
-
-    public void setManagers(ObservableList<Manager> managers) {this.managers.set(managers);}
-
-    public Category getCategoryByName(String name){
-        for(Category c : categories){
-            if(c.getName().equals(name))
-                return c;
-        }
-        return null;
+    public ObservableList<Manager> getManagers() {
+        return managers.get();
     }
 
-    public void addCategory(Category category) throws FileNotFoundException, IOException{
-        categories.add(category);
-        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("Data\\employees.dat",true));
-        outputStream.writeObject(categories.get(categories.indexOf(category)));
+    public ListProperty<Manager> managersProperty() {
+        return managers;
     }
 
-    public void removeCategory(String name){
-        for(Category c : categories ){
-            if (String.valueOf(c.getName()).equals(name)){
-                categories.remove(categories.indexOf(c));
-            }
-        }
+    public void setManagers(ObservableList<Manager> managers) {
+        this.managers.set(managers);
+    }
+
+    public ObservableList<Sector> getSectors() {
+        return sectors.get();
+    }
+
+    public ListProperty<Sector> sectorsProperty() {
+        return sectors;
+    }
+
+    public void setSectors(ObservableList<Sector> sectors) {
+        this.sectors.set(sectors);
     }
 
     @Serial
-    private void writeObject(ObjectOutputStream outputStream) throws IOException{
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
-        outputStream.writeInt(this.categories.size());
-        for (Category c : categories)
-            outputStream.writeObject(c);
-        outputStream.writeInt(this.managers.size());
-        for (Manager m : managers)
-            outputStream.writeObject(m);
+        outputStream.writeObject(sectors.getValue());
+        outputStream.writeObject(managers.getValue());
     }
 
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
-        int size1 = inputStream.readInt();
-        ListProperty<Category> categoryList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        for (int i = 0; i < size1; i++) {
-            categoryList.add((Category) inputStream.readObject());
-        }
-        this.categories = categoryList;
-
-        int size2 = inputStream.readInt();
-        ListProperty<Manager> managersList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        for (int i = 0; i < size2; i++) {
-            managersList.add((Manager) inputStream.readObject());
-        }
-        this.managers = managersList;
+        this.sectors = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Sector>) inputStream.readObject()));
+        this.managers = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Manager>) inputStream.readObject()));
     }
+
+
+
+
+
 }

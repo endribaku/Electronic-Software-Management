@@ -11,18 +11,24 @@ public class Sector implements Serializable {
     private transient StringProperty sectorName;
     private transient ListProperty<Cashier> cashiers = new SimpleListProperty<>(FXCollections.observableArrayList());
     private transient ObjectProperty<Manager> manager;
-    private transient ListProperty<Item> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private transient ListProperty<Category> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 
-    public Sector(String sectorName, ArrayList<Cashier> cashiers, Manager manager) {
+    public Sector(String sectorName, ArrayList<Cashier> cashiers, Manager manager, ArrayList<Category> categories) {
         this.sectorName = new SimpleStringProperty(sectorName);
         this.cashiers.set(FXCollections.observableArrayList(cashiers));
         this.manager = new SimpleObjectProperty<>(manager);
+        this.categories.set(FXCollections.observableArrayList(categories));
     }
 
     public Sector() {
         this.sectorName = new SimpleStringProperty();
         this.manager = new SimpleObjectProperty<>();
+    }
+
+    public Sector(String sectorName, Manager manager) {
+        this.sectorName = new SimpleStringProperty(sectorName);
+        this.manager = new SimpleObjectProperty<>(manager);
     }
 
     public ObservableList<Cashier> getCashiers() {
@@ -55,6 +61,12 @@ public class Sector implements Serializable {
             }
         }
     }
+
+    public void addCategory(Category category)
+    {
+        categories.add(category);
+    }
+
 
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException {

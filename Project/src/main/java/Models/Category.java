@@ -73,6 +73,7 @@ public class Category implements Comparable<Category> , Serializable {
         }
     }
 
+
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException{
         outputStream.defaultWriteObject();
