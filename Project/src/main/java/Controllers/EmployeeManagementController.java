@@ -115,22 +115,7 @@ public class EmployeeManagementController {
             alert.setHeaderText("Employee Registered Successfully");
             alert.show();
 
-//        } catch(FileNotFoundException fnfe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("File not found");
-//            alert.setHeaderText("Input File not found");
-//            alert.show();
-//        } catch(IOException ioe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("IOException problem");
-//            alert.show();
-//        } catch(ClassNotFoundException cnfe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("Class Not Found file problem");
-//            alert.show();
-//        }
-    }
+
+        }
 
 }
