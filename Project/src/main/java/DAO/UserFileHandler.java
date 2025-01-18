@@ -119,4 +119,21 @@ public class UserFileHandler {
             System.out.println(ex.getMessage());
         }
     }
+
+    public User authenticateUser(String username, String password) {
+        try(ObjectInputStream inputStream =
+                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
+            while (true) {
+                if (inputStream.readObject() instanceof User)
+                    if (((User) inputStream.readObject()).getUsername().equals(username) && ((User) inputStream.readObject()).getPassword().equals(password)) {
+                        return (User) inputStream.readObject();
+                    }
+            }
+        }catch (EOFException e){
+
+        }catch(IOException | ClassNotFoundException ex) {
+            ex.getMessage();
+        }
+        return null;
+    }
 }

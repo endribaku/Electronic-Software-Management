@@ -25,6 +25,7 @@ public class InventoryController {
         this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
         this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
         this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
+        setEditListeners();
     }
 
     public InventoryView getView() {
@@ -35,34 +36,48 @@ public class InventoryController {
         return inventoryFileHandler;
     }
 
-    public void setEditListeners(){
-        this.inventoryListView.getItemIDColumn().setOnEditCommit(e->{
+    public void setEditListeners() {
+        this.inventoryListView.getItemIDColumn().setOnEditCommit(e -> {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-        this.inventoryListView.getItemNameColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemNameColumn().setOnEditCommit(e -> {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue());
         });
 
-        this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e -> {
             categoryFileHandler.getAllCategories().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-        this.inventoryListView.getItemSupplierColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemSupplierColumn().setOnEditCommit(e -> {
             suppliersFileHandler.getAllSuppliers().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-        this.inventoryListView.getItemQuantityColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemQuantityColumn().setOnEditCommit(e -> {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-        this.inventoryListView.getItemPPriceColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemPPriceColumn().setOnEditCommit(e -> {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-        this.inventoryListView.getItemSPriceColumn().setOnEditCommit(e->{
+        this.inventoryListView.getItemSPriceColumn().setOnEditCommit(e -> {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
+
+//        this.inventoryListView.getUpdateInventory().setOnAction(e -> {
+//            if (this.inventoryFileHandler.updateAll()) {
+//                Alert success = new Alert(Alert.AlertType.INFORMATION);
+//                success.setTitle("Success");
+//                success.setHeaderText("Employee Table Updated Successfully");
+//                success.show();
+//            } else {
+//                Alert fail = new Alert(Alert.AlertType.ERROR);
+//                fail.setTitle("Success");
+//                fail.setHeaderText("Employee Table Update Error");
+//                fail.show();
+//            }
+//        });
     }
 
     private void onItemAdd(){

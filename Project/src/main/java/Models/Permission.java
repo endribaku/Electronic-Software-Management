@@ -1,0 +1,10 @@
+package Models;
+
+public enum Permission {
+    INVENTORY_ACCESS,
+    EMPLOYEE_MANAGEMENT,
+    PERFORMANCE_VIEW,
+    BILL_GENERATION,
+    BILL_MANAGEMENT,
+    SUPPLIER_MANAGEMENT
+}

@@ -62,17 +62,17 @@ public class InventoryFileHandler {
 //        }
 //    }
 //
-//    public boolean updateAll() {
-//        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-//            for(Category c : inventoryList) {
-//                outputStream.writeObject(c);
-//            }
-//            return true;
-//        } catch (IOException ex) {
-//            ex.getMessage();
-//            return false;
-//        }
-//    }
+    public boolean updateAll() {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            for(Sector s : sectorsList) {
+                outputStream.writeObject(s);
+            }
+            return true;
+        } catch (IOException ex) {
+            ex.getMessage();
+            return false;
+        }
+    }
 //
 //    public void selectAllInventory() {
 //        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
@@ -138,7 +138,7 @@ public class InventoryFileHandler {
 
     public static ObservableList<Sector> getSectorsList()
     {
-        ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
+        sectorsList = FXCollections.observableArrayList();
 
         try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             Inventory inventory = (Inventory) reader.readObject();

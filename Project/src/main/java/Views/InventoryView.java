@@ -37,6 +37,7 @@ public class InventoryView {
     TextField itemPPriceField = new TextField();;
     TextField itemSPriceField = new TextField();
     Button addItemButton = new Button("Create Item");
+    Button updateInventory = new Button("Update Inventory");
 
     TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
     //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
@@ -219,4 +220,11 @@ public class InventoryView {
         return itemSPriceField;
     }
 
+    public Button getAddItemButton() {
+        return addItemButton;
+    }
+
+    public Button getUpdateInventory() {
+        return updateInventory;
+    }
 }

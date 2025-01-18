@@ -1,10 +1,7 @@
 package Controllers;
 
 import DAO.UserFileHandler;
-import Models.Access;
-import Models.Administrator;
-import Models.Cashier;
-import Models.Manager;
+import Models.*;
 import Views.EmployeesListView;
 import javafx.scene.control.Alert;
 
@@ -17,7 +14,8 @@ public class EmployeeManagementController {
     private final UserFileHandler employeeFileHandler = new UserFileHandler();
 
     public EmployeeManagementController() {
-        this.employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
+        employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
+        //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
         setEditListeners();
@@ -93,19 +91,14 @@ public class EmployeeManagementController {
         Access employeeAccessLevel = employeesListView.getAccessLevelList().getValue();
         if(employeeAccessLevel == null)
             employeeAccessLevel = Access.Cashier;
-        try {
-            if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0) {
+        if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
                 alert.show();
-            } else if (employeeAccessLevel.equals(Access.Cashier)) {
-                employeeFileHandler.insertUser(new Cashier(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
-            } else if (employeeAccessLevel.equals(Access.Manager)) {
-                employeeFileHandler.insertUser(new Manager(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
-            } else if (employeeAccessLevel.equals(Access.Administrator)) {
-                employeeFileHandler.insertUser(new Administrator(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary));
-            }
+        } else {
+            employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel));
+        }
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
             employeesListView.getEmployeeFullNameField().clear();
@@ -122,22 +115,22 @@ public class EmployeeManagementController {
             alert.setHeaderText("Employee Registered Successfully");
             alert.show();
 
-        } catch(FileNotFoundException fnfe) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("File not found");
-            alert.setHeaderText("Input File not found");
-            alert.show();
-        } catch(IOException ioe) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("IOException problem");
-            alert.show();
-        } catch(ClassNotFoundException cnfe) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Class Not Found file problem");
-            alert.show();
-        }
+//        } catch(FileNotFoundException fnfe) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("File not found");
+//            alert.setHeaderText("Input File not found");
+//            alert.show();
+//        } catch(IOException ioe) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("IOException problem");
+//            alert.show();
+//        } catch(ClassNotFoundException cnfe) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("Class Not Found file problem");
+//            alert.show();
+//        }
     }
 
 }

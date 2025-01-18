@@ -1,6 +1,7 @@
 package Models;
 
 import javafx.beans.property.*;
+import javafx.collections.ObservableList;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.UUID;
 
 
-public abstract class User implements Serializable {
+public class User implements Serializable {
     private transient StringProperty userID;
     private transient StringProperty username;
     private transient StringProperty password;
@@ -21,9 +22,10 @@ public abstract class User implements Serializable {
     private transient StringProperty phoneNumber;
     private transient StringProperty email;
     private transient DoubleProperty salary;
+    private transient ListProperty<Permission> permissionList;
     private transient Access accessLevel;
 
-    protected User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
+    public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
         this.username = new SimpleStringProperty(username);
         this.password = new SimpleStringProperty(password);
         this.fullName = new SimpleStringProperty(fullName);
@@ -137,8 +139,16 @@ public abstract class User implements Serializable {
         this.accessLevel = accessLevel;
     }
 
-    public void logout() {
-        int a = 1;
+    public ObservableList<Permission> getPermissionList() {
+        return permissionList.get();
+    }
+
+    public ListProperty<Permission> permissionListProperty() {
+        return permissionList;
+    }
+
+    public void setPermissionList(ObservableList<Permission> permissionList) {
+        this.permissionList.set(permissionList);
     }
 
     @Serial

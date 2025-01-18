@@ -5,17 +5,17 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-public class AdminView extends Pane {
+public class UserView extends Pane {
 
     BorderPane Root = new BorderPane();
 
-    public AdminView() {
+    public UserView() {
 
         //MenuBar
         MenuBar menuBar = new MenuBar();
         Menu menu = new Menu("Menu");
         MenuItem homeItem = new MenuItem("Home");
-        homeItem.setOnAction(e -> Root.setCenter(new AdminView().getRoot()));
+        homeItem.setOnAction(e -> Root.setCenter(new UserView().getRoot()));
         MenuItem inventoryItem = new MenuItem("Inventory");
         inventoryItem.setOnAction(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
         MenuItem employeeItem = new MenuItem("Employees");

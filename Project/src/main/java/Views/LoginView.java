@@ -1,6 +1,6 @@
 package Views;
 
-import Controllers.AdminController;
+import Controllers.UserController;
 import Models.User;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.EOFException;
@@ -23,6 +22,10 @@ public class LoginView {
 
     private StackPane bgRoot;
     Scene scene;
+
+    TextField usernameTextField = new TextField();
+    TextField passwordTextField = new TextField();
+    Button btLogin = new Button("Login");
 
     public LoginView(Stage stage) {
         bgRoot = new StackPane();
@@ -44,17 +47,14 @@ public class LoginView {
         paneLogin.setHgap(5.5);
         paneLogin.setVgap(5.5);
 
-        Label emailLabel = new Label("Email:");
-        emailLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
-        paneLogin.add(emailLabel, 0, 0);
-        TextField emailTextField = new TextField();
-        paneLogin.add(emailTextField, 1, 0);
+        Label usernameLabel = new Label("Username:");
+        usernameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+        paneLogin.add(usernameLabel, 0, 0);
+        paneLogin.add(usernameTextField, 1, 0);
         Label passLabel = new Label("Password:");
         passLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
         paneLogin.add(passLabel, 0, 1);
-        TextField passTextField = new TextField();
-        paneLogin.add(passTextField, 1,1);
-        Button btLogin = new Button("Login");
+        paneLogin.add(passwordTextField, 1,1);
         btLogin.setStyle("-fx-font: 11pt Helvetica;");
         paneLogin.add(btLogin,1,2);
         GridPane.setHalignment(btLogin, HPos.RIGHT);
@@ -62,17 +62,9 @@ public class LoginView {
         loginBox.getChildren().addAll(titleLabel, paneLogin);
         Root.setCenter(loginBox);
         bgRoot.getChildren().add(Root);
-        btLogin.setOnAction(e -> {
-            //template, will check matching email & pass based on Users ArrayList
-            Label messageLabel = new Label();
-            messageLabel.setTextFill(Color.GREEN);
-            messageLabel.setText("Login Successful");
-            paneLogin.add(messageLabel, 1, 3);
 
-            Scene adminScene = new Scene(new AdminController().getView().getRoot(), 1500, 700);
-            stage.setScene(adminScene);
-            stage.show();
-        });
+        //btLogin.setOnAction(e -> stage.setScene(new Scene(new UserController().getView().getRoot(), 1500, 700)));
+
         scene = new Scene(getRoot(), 700, 700);
         bgRoot.setPrefSize(700, 700);
     }
@@ -108,4 +100,15 @@ public class LoginView {
         return scene;
     }
 
+    public TextField getUsernameTextField() {
+        return usernameTextField;
+    }
+
+    public TextField getPasswordTextField() {
+        return passwordTextField;
+    }
+
+    public Button getBtLogin() {
+        return btLogin;
+    }
 }
