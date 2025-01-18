@@ -14,6 +14,7 @@ public class EmployeeManagementController {
     private final UserFileHandler employeeFileHandler = new UserFileHandler();
 
     public EmployeeManagementController() {
+
         employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());

@@ -1,6 +1,7 @@
 package Models;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -22,8 +24,8 @@ public class User implements Serializable {
     private transient StringProperty phoneNumber;
     private transient StringProperty email;
     private transient DoubleProperty salary;
-    private transient ListProperty<Permission> permissionList;
     private transient Access accessLevel;
+    private transient ListProperty<Permission> permissionList;
 
     public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
         this.username = new SimpleStringProperty(username);
@@ -174,6 +176,7 @@ public class User implements Serializable {
         this.dateOfBirth = new SimpleObjectProperty<LocalDate>((LocalDate) inputStream.readObject());
         this.phoneNumber = new SimpleStringProperty(inputStream.readUTF());
         this.email = new SimpleStringProperty(inputStream.readUTF());
+        this.salary = new SimpleDoubleProperty(inputStream.readDouble());
         String accessLevelName = (String) inputStream.readObject();
         this.accessLevel = Access.valueOf(accessLevelName);
     }
