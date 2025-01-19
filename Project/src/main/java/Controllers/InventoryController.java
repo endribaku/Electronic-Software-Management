@@ -2,20 +2,26 @@ package Controllers;
 
 import DAO.CategoryFileHandler;
 import DAO.InventoryFileHandler;
-import DAO.ItemFIleHandler;
+import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
 import Models.Category;
 import Models.Item;
 import Models.Supplier;
 import Models.User;
 import Views.InventoryView;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.io.EOFException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class InventoryController {
 
     private final InventoryView inventoryListView = new InventoryView();
-    private final ItemFIleHandler itemFIleHandler = new ItemFIleHandler();
+    private final ItemFileHandler itemFileHandler = new ItemFileHandler();
     private final CategoryFileHandler categoryFileHandler = new CategoryFileHandler();
     private final SuppliersFileHandler suppliersFileHandler = new SuppliersFileHandler();
     private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
@@ -23,19 +29,21 @@ public class InventoryController {
 
 
     public InventoryController() {
-        this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
-        this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
-        this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
+        this.inventoryListView.getInventoryTableView().setItems(itemFileHandler.getAllItems());
         setEditListeners();
     }
 
     // Controller setting the currentUser as the one who controls
     public InventoryController(User user) {
         this.currentUser = user;
-        this.inventoryListView.getInventoryTableView().setItems(itemFIleHandler.getAllItems());
-        this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
-        this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
-        setEditListeners();
+        this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
+        this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
+        this.inventoryListView.getInventoryTableView().setItems(itemFileHandler.getAllItems());
+//        ObservableList<Category> categoriesList = FXCollections.observableArrayList(categoryFileHandler.getAllCategories());
+//        ObservableList<String> categoriesNamesList = FXCollections.observableArrayList();
+//        categoriesList.forEach(category -> categoriesNamesList.add(category.getName()));
+        this.inventoryListView.getItemCategoryListView().setItems(categoryFileHandler.getAllCategories());
+        this.inventoryListView.getItems().addAll(itemFileHandler.getAllItems());
 
         this.inventoryListView.getOptionsComboBox().setOnAction(e -> {
             if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Item")){
@@ -46,6 +54,7 @@ public class InventoryController {
                 this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
             }
         });
+        setEditListeners();
     }
 
     public InventoryView getView() {
@@ -58,11 +67,11 @@ public class InventoryController {
 
     public void setEditListeners() {
         this.inventoryListView.getItemIDColumn().setOnEditCommit(e -> {
-            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
         this.inventoryListView.getItemNameColumn().setOnEditCommit(e -> {
-            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue());
+            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue());
         });
 
         this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e -> {
@@ -74,48 +83,63 @@ public class InventoryController {
         });
 
         this.inventoryListView.getItemQuantityColumn().setOnEditCommit(e -> {
-            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
         this.inventoryListView.getItemPPriceColumn().setOnEditCommit(e -> {
-            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
         this.inventoryListView.getItemSPriceColumn().setOnEditCommit(e -> {
-            itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
+            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-//        this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
-//            if (this.inventoryFileHandler.updateAll()) {
-//                Alert success = new Alert(Alert.AlertType.INFORMATION);
-//                success.setTitle("Success");
-//                success.setHeaderText("Employee Table Updated Successfully");
-//                success.show();
-//            } else {
-//                Alert fail = new Alert(Alert.AlertType.ERROR);
-//                fail.setTitle("Success");
-//                fail.setHeaderText("Employee Table Update Error");
-//                fail.show();
-//            }
-//        });
+        this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
+            if (this.inventoryFileHandler.updateAll()) {
+                Alert success = new Alert(Alert.AlertType.INFORMATION);
+                success.setTitle("Success");
+                success.setHeaderText("Employee Table Updated Successfully");
+                success.show();
+            } else {
+                Alert fail = new Alert(Alert.AlertType.ERROR);
+                fail.setTitle("Success");
+                fail.setHeaderText("Employee Table Update Error");
+                fail.show();
+            }
+        });
     }
 
     private void onItemAdd(){
         String itemName = inventoryListView.getItemNameField().getText();
-        String itemCategory = inventoryListView.getCategoryNameField().getText();
-        String itemQuantity = inventoryListView.getItemQuantityField().getText();
-        String itemPPrice = inventoryListView.getItemPPriceField().getText();
-        String itemSPrice = inventoryListView.getItemSPriceField().getText();
-        String itemSupplier =  inventoryListView.getItemSupplierListView().getValue();
+        String itemCategory = inventoryListView.getItemCategoryListView().getValue().toString();
+        int itemQuantity = Integer.parseInt(inventoryListView.getItemQuantityField().getText());
+        double itemPPrice = Double.parseDouble(inventoryListView.getItemPPriceField().getText());
+        double itemSPrice = Double.parseDouble(inventoryListView.getItemSPriceField().getText());
+        String itemSupplier =  inventoryListView.getItemSupplierListView().getValue().toString();
 
         try{
-            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity.isEmpty() || itemPPrice.isEmpty() || itemSPrice.isEmpty() || itemSupplier.isEmpty()){
+            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity == 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
                 alert.show();
             } else {
-                //insert later
+                itemFileHandler.insertItem(new Item(itemName, itemCategory, itemSupplier, LocalDate.now(), itemPPrice, itemSPrice, itemQuantity));
+
+                inventoryListView.getInventoryTableView().setItems(itemFileHandler.getAllItems());
+
+                inventoryListView.getItemNameField().clear();
+                inventoryListView.getCategoryNameField().clear();
+                inventoryListView.getItemQuantityField().clear();
+                inventoryListView.getItemPPriceField().clear();
+                inventoryListView.getItemSPriceField().clear();
+                inventoryListView.getItemSupplierListView().setValue(null);
+                inventoryListView.getOptionsComboBox().setValue("Add Item");
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText("Item Added Successfully");
+                alert.show();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -123,7 +147,33 @@ public class InventoryController {
     }
 
     private void onCategoryAdd(){
-        Category CategoryName = inventoryListView.getItemCategoryListView().getValue();
+        String categoryName = inventoryListView.getCategoryNameField().getText();
+        String sectorName = inventoryListView.getSectorComboBox().getValue().toString();
+        ArrayList<Item> itemList = new ArrayList<>(inventoryListView.getItemListBox().getSelectionModel().getSelectedItems());
+        try{
+            if(categoryName.isEmpty() || sectorName.isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Invalid Input");
+                alert.show();
+            } else {
+                categoryFileHandler.insertCategory(new Category(categoryName, itemList, sectorName));
+                //inventoryListView.getItemCategoryListView().setItems(categoryFileHandler.getAllCategories());
+                inventoryListView.getItemNameField().clear();
+                inventoryListView.getCategoryNameField().clear();
+                inventoryListView.getItemQuantityField().clear();
+                inventoryListView.getItemPPriceField().clear();
+                inventoryListView.getItemSPriceField().clear();
+                inventoryListView.getItemSupplierListView().setValue(null);
+                inventoryListView.getOptionsComboBox().setValue("Add Item");
 
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText("Item Added Successfully");
+                alert.show();
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

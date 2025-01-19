@@ -1,7 +1,7 @@
 package Controllers;
 
 import DAO.BillFileHandler;
-import DAO.ItemFIleHandler;
+import DAO.ItemFileHandler;
 import DAO.SectorFileHandler;
 import DAO.UserFileHandler;
 import Models.Bill;
@@ -9,12 +9,10 @@ import Models.User;
 import Views.EmployeePerformanceView;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
-import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +20,7 @@ import java.util.stream.Collectors;
 public class EmployeePerformanceController {
     private EmployeePerformanceView view = new EmployeePerformanceView();
     private UserFileHandler userFileHandler = new UserFileHandler();
-    private ItemFIleHandler itemFileHandler = new ItemFIleHandler();
+    private ItemFileHandler itemFileHandler = new ItemFileHandler();
     private BillFileHandler billFileHandler = new BillFileHandler();
     private SectorFileHandler sectorFileHandler = new SectorFileHandler();
     private User currentUser;
@@ -48,7 +46,7 @@ public class EmployeePerformanceController {
         return userFileHandler;
     }
 
-    public ItemFIleHandler getItemFileHandler() {
+    public ItemFileHandler getItemFileHandler() {
         return itemFileHandler;
     }
 

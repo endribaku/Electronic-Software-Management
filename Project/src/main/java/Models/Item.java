@@ -10,20 +10,36 @@ import java.util.UUID;
 public class Item implements Serializable {
     private transient StringProperty itemID;
     private transient StringProperty name;
-    private transient ObjectProperty<Category> category;
-    private transient ObjectProperty<Supplier> supplier;
+    private transient StringProperty category;
+    private transient ObjectProperty<Category> categoryProperty;
+    private transient StringProperty supplier;
+    private transient ObjectProperty<Supplier> supplierProperty;
     private transient ObjectProperty<LocalDate> purchaseDate;
     private transient DoubleProperty purchasePrice;
     private transient DoubleProperty sellingPrice;
     private transient IntegerProperty quantity;
+    private static int stockThreshold = 5;
+
+    public Item(String name, String category,
+                String supplier, LocalDate purchaseDate,
+                double purchasePrice, double sellingPrice, int quantity) {
+        this.itemID = new SimpleStringProperty(UUID.randomUUID().toString());
+        this.name = new SimpleStringProperty(name);
+        this.category = new SimpleStringProperty(category);
+        this.supplier = new SimpleStringProperty(supplier);
+        this.purchaseDate = new SimpleObjectProperty<>(purchaseDate);
+        this.purchasePrice = new SimpleDoubleProperty(purchasePrice);
+        this.sellingPrice = new SimpleDoubleProperty(sellingPrice);
+        this.quantity = new SimpleIntegerProperty(quantity);
+    }
 
     public Item(String name, Category category,
                 Supplier supplier, LocalDate purchaseDate,
                 double purchasePrice, double sellingPrice, int quantity) {
         this.itemID = new SimpleStringProperty(UUID.randomUUID().toString());
         this.name = new SimpleStringProperty(name);
-        this.category = new SimpleObjectProperty<>(category);
-        this.supplier = new SimpleObjectProperty(supplier);
+        this.categoryProperty = new SimpleObjectProperty<>(category);
+        this.supplierProperty = new SimpleObjectProperty<>(supplier);
         this.purchaseDate = new SimpleObjectProperty<>(purchaseDate);
         this.purchasePrice = new SimpleDoubleProperty(purchasePrice);
         this.sellingPrice = new SimpleDoubleProperty(sellingPrice);
@@ -46,19 +62,19 @@ public class Item implements Serializable {
         this.name.set(name);
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category.get();
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category.set(category);
     }
 
-    public Supplier getSupplier() {
+    public String getSupplier() {
         return supplier.get();
     }
 
-    public void setSupplier(Supplier supplier) {
+    public void setSupplier(String supplier) {
         this.supplier.set(supplier);
     }
 
@@ -94,6 +110,14 @@ public class Item implements Serializable {
         this.quantity.set(quantity);
     }
 
+    public boolean needsRestocking(){
+        if(getQuantity() < stockThreshold){
+            System.out.println("Needs restocking.");
+            return true;
+        }
+        return false;
+    }
+
     public void reduceStock(int quantityToReduce) {
         // Proceed to deduct the stock safely
         int getQuantity = getQuantity();
@@ -111,8 +135,8 @@ public class Item implements Serializable {
         outputStream.defaultWriteObject();
         outputStream.writeUTF(this.itemID.getValueSafe());
         outputStream.writeUTF(this.name.getValueSafe());
-        outputStream.writeObject(this.category.getValue());
-        outputStream.writeObject(this.supplier.getValue());
+        outputStream.writeUTF(this.category.getValueSafe());
+        outputStream.writeUTF(this.supplier.getValueSafe());
         outputStream.writeObject(this.purchaseDate.getValue());
         outputStream.writeDouble(this.purchasePrice.getValue());
         outputStream.writeDouble(this.sellingPrice.getValue());
@@ -123,8 +147,8 @@ public class Item implements Serializable {
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
         this.itemID = new SimpleStringProperty(inputStream.readUTF());
         this.name = new SimpleStringProperty(inputStream.readUTF());
-        this.category = new SimpleObjectProperty<>((Category) inputStream.readObject());
-        this.supplier = new SimpleObjectProperty<>((Supplier) inputStream.readObject());
+        this.category = new SimpleStringProperty(inputStream.readUTF());
+        this.supplier = new SimpleStringProperty(inputStream.readUTF());
         this.purchaseDate = new SimpleObjectProperty<>((LocalDate) inputStream.readObject());
         this.purchasePrice = new SimpleDoubleProperty(inputStream.readDouble());
         this.sellingPrice = new SimpleDoubleProperty(inputStream.readDouble());

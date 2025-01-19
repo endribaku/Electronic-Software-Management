@@ -1,30 +1,32 @@
 package Views;
 
-import Models.Category;
-import Models.Item;
-import Models.Supplier;
+import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
+import javafx.util.converter.NumberStringConverter;
 
 public class InventoryView {
 
     HBox inventoryPage = new HBox();
-    ObservableList<String> categories = FXCollections.observableArrayList(
-            "Major Domestic Appliances", "Climate & Air", "Small Domestic Appliances", "Consumer Electronics",
-            "TV", "IT & Accessories", "Phones & Accessories", "Gaming & Accessories", "Kitchen Utensils",
-            "Electrical Accessories", "Fitness Accessories");
-    ComboBox<Category> itemCategoryListView = new ComboBox<Category>();
-    ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
-    ComboBox<String> itemSupplierListView = new ComboBox<String>();
+//    ObservableList<String> categories = FXCollections.observableArrayList();
+    ObservableList<Category> categories = FXCollections.observableArrayList();
+    ComboBox<Category> itemCategoryListView = new ComboBox<Category>(categories);
+    ObservableList<String> suppliers = FXCollections.observableArrayList("Apple", "Samsung", "Microsoft");
+    ComboBox<String> itemSupplierListView = new ComboBox<String>(suppliers);
     ObservableList<String> optionsList = FXCollections.observableArrayList("Add Item", "Add Category", "Add Sector");
     ComboBox<String> optionsComboBox = new ComboBox<>(optionsList);
 
-    ObservableList<Item> items;
-    TableView<Item> inventoryTableView = new TableView<>(items);
+    ObservableList<Item> items = FXCollections.observableArrayList();
+    ListView<Item> itemListBox = new ListView<>(items);
+
+    ObservableList<String> sectors = FXCollections.observableArrayList("IT", "Furniture", "Youth");
+    ComboBox<String> sectorComboBox = new ComboBox<>(sectors);
 
     BorderPane createBox = new BorderPane();
     VBox addItemPane = new VBox();
@@ -45,11 +47,11 @@ public class InventoryView {
 
     Button updateInventoryButton = new Button("Update Inventory");
 
-    TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
-    //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
+    TableView<Item> inventoryTableView = new TableView<>();
+    TableColumn<Item, String> itemIDColumn = new TableColumn<>("ID");
     TableColumn<Item, String> itemNameColumn = new TableColumn<>("Name");
-    TableColumn<Item, Category> itemCategoryColumn = new TableColumn<>("Category");
-    TableColumn<Item, Supplier> itemSupplierColumn = new TableColumn<>("Supplier");
+    TableColumn<Item, String> itemCategoryColumn = new TableColumn<>("Category");
+    TableColumn<Item, String> itemSupplierColumn = new TableColumn<>("Supplier");
     TableColumn<Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
     TableColumn<Item, Number> itemPPriceColumn = new TableColumn<>("Purchase Price");
     TableColumn<Item, Number> itemSPriceColumn = new TableColumn<>("Selling Price");
@@ -129,14 +131,26 @@ public class InventoryView {
         categoryNameLabel.setStyle("-fx-font: 11pt Helvetica;");
         addCategoryGrid.add(categoryNameLabel, 0, 0);
         addCategoryGrid.add(categoryNameField, 1, 0);
+        Label itemlistLabel = new Label("Item List:");
+        itemlistLabel.setStyle("-fx-font: 11pt Helvetica;");
+        addCategoryGrid.add(itemlistLabel, 0, 2);
+        itemListBox.setStyle("-fx-font: 11pt Helvetica;");
+        itemListBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        itemListBox.setMaxHeight(150);
+        addCategoryGrid.add(itemListBox, 1, 2);
+        Label sectorCategoryLabel = new Label("Sector:");
+        sectorCategoryLabel.setStyle("-fx-font: 11pt Helvetica;");
+        addCategoryGrid.add(sectorCategoryLabel, 0, 1);
+        sectorComboBox.setStyle("-fx-font: 11pt Helvetica;");
+        addCategoryGrid.add(sectorComboBox, 1, 1);
         addCategoryButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addCategoryButton, HPos.RIGHT);
-        addCategoryGrid.add(addCategoryButton, 1, 1);
+        addCategoryGrid.add(addCategoryButton, 1, 3);
         addCategoryPane.getChildren().addAll(addCategoryHeader, addCategoryGrid);
         addCategoryPane.setSpacing(10);
         addCategoryPane.setPadding(new Insets(10));
 
-        //Create Supplier Pane
+        //Create Sector Pane
         HBox addSectorHeader = new HBox();
         Label addSectorLabel = new Label("Add Sector");
         addSectorLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
@@ -163,8 +177,40 @@ public class InventoryView {
         inventoryListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         inventoryListBox.setSpacing(10);
 
+
+        inventoryTableView.setEditable(true);
+        inventoryTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        inventoryTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        itemIDColumn.setPrefWidth(100);
+        itemIDColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("itemID"));
+        itemIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemIDColumn.setOnEditCommit(e -> e.getRowValue().setItemID(e.getNewValue()));
+        itemNameColumn.setPrefWidth(100);
+        itemNameColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("name"));
+        itemNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemNameColumn.setOnEditCommit(e -> e.getRowValue().setName(e.getNewValue()));
+        itemCategoryColumn.setPrefWidth(150);
+        itemCategoryColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("category"));
+        itemCategoryColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemCategoryColumn.setOnEditCommit(e -> e.getRowValue().setCategory(e.getNewValue()));
+        itemSupplierColumn.setPrefWidth(100);
+        itemSupplierColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("supplier"));
+        itemSupplierColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemSupplierColumn.setOnEditCommit(e -> e.getRowValue().setSupplier(e.getNewValue()));
+        itemQuantityColumn.setPrefWidth(100);
+        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("quantity"));
+        itemQuantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+        itemQuantityColumn.setOnEditCommit(e -> e.getRowValue().setQuantity(e.getNewValue().intValue()));
+        itemPPriceColumn.setPrefWidth(100);
+        itemPPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("purchasePrice"));
+        itemPPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+        itemPPriceColumn.setOnEditCommit(e -> e.getRowValue().setPurchasePrice(e.getNewValue().intValue()));
+        itemSPriceColumn.setPrefWidth(100);
+        itemSPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("sellingPrice"));
+        itemSPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+        itemSPriceColumn.setOnEditCommit(e -> e.getRowValue().setSellingPrice(e.getNewValue().intValue()));
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
-        inventoryTableView.setPrefWidth(1000);
+        inventoryTableView.setMaxWidth(1000);
         updateInventoryButton.setStyle("-fx-font: 11pt Helvetica;");
         inventoryListBox.getChildren().addAll(inventoryListLabel, inventoryTableView, updateInventoryButton);
 
@@ -172,7 +218,7 @@ public class InventoryView {
         inventoryPage.setSpacing(10);
     }
 
-    public TableColumn<Item, Number> getItemIDColumn() {
+    public TableColumn<Item, String> getItemIDColumn() {
         return itemIDColumn;
     }
 
@@ -180,11 +226,11 @@ public class InventoryView {
         return itemNameColumn;
     }
 
-    public TableColumn<Item, Category> getItemCategoryColumn() {
+    public TableColumn<Item, String> getItemCategoryColumn() {
         return itemCategoryColumn;
     }
 
-    public TableColumn<Item, Supplier> getItemSupplierColumn() {
+    public TableColumn<Item, String> getItemSupplierColumn() {
         return itemSupplierColumn;
     }
 
@@ -204,7 +250,7 @@ public class InventoryView {
         return inventoryPage;
     }
 
-    public ObservableList<String> getCategories() {
+    public ObservableList<Category> getCategories() {
         return categories;
     }
 
@@ -212,16 +258,12 @@ public class InventoryView {
         return itemCategoryListView;
     }
 
-    public ObservableList<Supplier> getSuppliers() {
+    public ObservableList<String> getSuppliers() {
         return suppliers;
     }
 
     public ComboBox<String> getItemSupplierListView() {
         return itemSupplierListView;
-    }
-
-    public ObservableList<Item> getItems() {
-        return items;
     }
 
     public TableView<Item> getInventoryTableView() {
@@ -260,7 +302,7 @@ public class InventoryView {
         this.inventoryPage = inventoryPage;
     }
 
-    public void setCategories(ObservableList<String> categories) {
+    public void setCategories(ObservableList<Category> categories) {
         this.categories = categories;
     }
 
@@ -294,5 +336,57 @@ public class InventoryView {
 
     public Button getAddSectorButton() {
         return addSectorButton;
+    }
+
+    public ObservableList<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(ObservableList<Item> items) {
+        this.items = items;
+    }
+
+    public ListView<Item> getItemListBox() {
+        return itemListBox;
+    }
+
+    public void setItemListBox(ListView<Item> itemListBox) {
+        this.itemListBox = itemListBox;
+    }
+
+    public void setSuppliers(ObservableList<String> suppliers) {
+        this.suppliers = suppliers;
+    }
+
+    public void setItemSupplierListView(ComboBox<String> itemSupplierListView) {
+        this.itemSupplierListView = itemSupplierListView;
+    }
+
+    public void setOptionsList(ObservableList<String> optionsList) {
+        this.optionsList = optionsList;
+    }
+
+    public void setOptionsComboBox(ComboBox<String> optionsComboBox) {
+        this.optionsComboBox = optionsComboBox;
+    }
+
+    public void setItemCategoryListView(ComboBox<Category> itemCategoryListView) {
+        this.itemCategoryListView = itemCategoryListView;
+    }
+
+    public ObservableList<String> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(ObservableList<String> sectors) {
+        this.sectors = sectors;
+    }
+
+    public ComboBox<String> getSectorComboBox() {
+        return sectorComboBox;
+    }
+
+    public void setSectorComboBox(ComboBox<String> sectorComboBox) {
+        this.sectorComboBox = sectorComboBox;
     }
 }

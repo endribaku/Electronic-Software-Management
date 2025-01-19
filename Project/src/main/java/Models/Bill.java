@@ -75,7 +75,7 @@ public class Bill {
 
         if(item.getQuantity() == 0) {
             String message = String.format("Item %s is out of stock!", item.getName());
-            sector.getManager().notifyManager(message);
+            //sector.getManager().notifyManager(message);
             return;
         }
 
@@ -91,13 +91,13 @@ public class Bill {
             if(item.getQuantity() == 0)
             {
                 String message = String.format("Item %s has been sold out!", item.getName());
-                sector.getManager().notifyManager(message);
+                //sector.getManager().notifyManager(message);
             }
 
-            if(item.getCategory().needsRestocking())
+            if(item.needsRestocking())
             {
-                String message = String.format("Category %s needs restocking!", item.getCategory().getName());
-                sector.getManager().notifyManager(message);
+                String message = String.format("Category %s needs restocking!", item.getCategory());
+                //sector.getManager().notifyManager(message);
             }
 
     }

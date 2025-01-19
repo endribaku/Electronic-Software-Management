@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.util.ArrayList;
 
-public class CategoryFileHandler implements AutoCloseable{
+public class CategoryFileHandler {
     public static final String FILE_PATH = "Project/Data/categories.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<Category> categories = FXCollections.observableArrayList();
@@ -27,6 +27,7 @@ public class CategoryFileHandler implements AutoCloseable{
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(category);
+            categories.add(category);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
@@ -48,15 +49,11 @@ public class CategoryFileHandler implements AutoCloseable{
     public void deleteAll(ArrayList<Category> categoriesToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
             for(Category c : categories) {
-                if (categories.containsAll(categoriesToRemove)) {
-                    categories.removeAll(categoriesToRemove);
-                } else if (categories.contains(c)) {
-                    categories.remove(c);
+                if(!categoriesToRemove.contains(c)) {
+                    outputStream.writeObject(c);
                 }
             }
-            for(Category c : categories) {
-                outputStream.writeObject(c);
-            }
+            categories.removeAll(categoriesToRemove);
         } catch(IOException ex) {
             ex.getMessage();
         }
@@ -93,9 +90,8 @@ public class CategoryFileHandler implements AutoCloseable{
 
     public void selectAllCategories() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Category category;
             while(true) {
-                category = (Category) reader.readObject();
+                Category category = (Category) reader.readObject();
                 categories.add(category);
             }
         }
@@ -104,10 +100,5 @@ public class CategoryFileHandler implements AutoCloseable{
         catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-
     }
 }

@@ -10,7 +10,13 @@ import java.util.ArrayList;
 public class Category implements Comparable<Category> , Serializable {
     private transient StringProperty name;
     private transient ListProperty<Item> items;
-    private static int stockThreshold = 5;
+    private transient StringProperty sector;
+
+    public Category(String name, ArrayList<Item> items, String sector)  {
+        this.name = new SimpleStringProperty(name);
+        this.items = new SimpleListProperty<>(FXCollections.observableArrayList(items));
+        this.sector = new SimpleStringProperty(sector);
+    }
 
     public Category(String name, ArrayList<Item> items)  {
         this.name = new SimpleStringProperty(name);
@@ -27,28 +33,37 @@ public class Category implements Comparable<Category> , Serializable {
     public String getName() {
         return name.get();
     }
-    public int getStockThreshold() {return stockThreshold;}
-    public ObservableList<Item> getItemsProperty() {return items.get();}
+    public ObservableList<Item> getItemsProperty() {
+        return items.get();
+    }
 
+    public String getSector() {
+        return sector.get();
+    }
+
+    public StringProperty sectorProperty() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector.set(sector);
+    }
+
+    public ObservableList<Item> getItems() {
+        return items.get();
+    }
+
+    public ListProperty<Item> itemsProperty() {
+        return items;
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
 
     public void setName(String name) {this.name.set(name);}
 
     public void setItems(ObservableList<Item> items) {this.items.set(items);}
-
-
-    public boolean needsRestocking(){
-        int stock = 0;
-        for(Item i : items){
-            stock += i.getQuantity();
-        }
-        if(stock < stockThreshold){
-            System.out.println("Needs restocking.");
-
-            return true;
-        }
-
-        return false;
-    }
 
     public void addItem(Item item){
         items.add(item);
@@ -81,16 +96,23 @@ public class Category implements Comparable<Category> , Serializable {
         outputStream.writeInt(this.items.size());
         for (Item i : items)
             outputStream.writeObject(i);
+        outputStream.writeUTF(this.sector.getValueSafe());
     }
 
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
         this.name = new SimpleStringProperty(inputStream.readUTF());
-        int sie = inputStream.readInt();
         ListProperty<Item> itemList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        for (int i = 0; i < sie; i++) {
+        int size = inputStream.readInt();
+        for (int i = 0; i < size; i++) {
             itemList.add((Item) inputStream.readObject());
         }
         this.items = itemList;
+        this.sector = new SimpleStringProperty(inputStream.readUTF());
+    }
+
+    @Override
+    public String toString() {
+        return name.getValueSafe();
     }
 }

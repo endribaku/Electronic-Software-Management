@@ -1,14 +1,13 @@
 package DAO;
 
 import Models.Item;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
 
-public class ItemFIleHandler {
+public class ItemFileHandler {
     public static final String FILE_PATH = "Project/Data/items.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<Item> items = FXCollections.observableArrayList();
@@ -29,6 +28,7 @@ public class ItemFIleHandler {
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(item);
+            items.add(item);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
@@ -43,22 +43,18 @@ public class ItemFIleHandler {
         } catch(EOFException eofe) {
 
         } catch (IOException ex) {
-
+            System.out.println(ex.getMessage());
         }
     }
 
     public void deleteAll(ArrayList<Item> itemsToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
             for(Item i : items) {
-                if (items.containsAll(itemsToRemove)) {
-                    items.removeAll(itemsToRemove);
-                } else if (items.contains(i)) {
-                    items.remove(i);
+                if (!itemsToRemove.contains(i)) {
+                    outputStream.writeObject(i);
                 }
             }
-            for(Item i : items) {
-                outputStream.writeObject(i);
-            }
+            items.removeAll(itemsToRemove);
         } catch(IOException ex) {
             ex.getMessage();
         }
@@ -95,9 +91,8 @@ public class ItemFIleHandler {
 
     public void selectAllItems() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Item item;
             while(true) {
-                item = (Item) reader.readObject();
+                Item item = (Item) reader.readObject();
                 items.add(item);
             }
         }

@@ -49,7 +49,7 @@ public class UserFileHandler {
 
     public void deleteAll(ArrayList<User> usersToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-            for(User u : usersToRemove) {
+            for(User u : users) {
                 if (!usersToRemove.contains(u)) {
                     outputStream.writeObject(u);
                 }

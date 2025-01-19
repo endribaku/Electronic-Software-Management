@@ -143,13 +143,13 @@ public class Manager extends User implements Serializable {
         for (Sector sector : sectors) {
             ArrayList<Cashier> cashiers = new ArrayList<Cashier>();
 
-            for (Cashier c : sector.getCashiers()) {
-                if (c.getUsername().equals(cashierName)) {
-                    cashier = c;
-                    break;
-                }
-            }
-            if (cashier != null) break;
+//            for (Cashier c : sector.getCashiers()) {
+//                if (c.getUsername().equals(cashierName)) {
+//                    cashier = c;
+//                    break;
+//                }
+//            }
+//            if (cashier != null) break;
         }
 
         if (cashier == null) return;
