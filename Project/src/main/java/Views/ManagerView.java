@@ -29,9 +29,7 @@ public class ManagerView {
         Menu billMenu = new Menu("Bills");
         MenuItem viewPerformanceItem = new MenuItem("View Performance");
         viewPerformanceItem.setOnAction(e -> Root.setCenter(new EmployeePerformanceController().getView().getEmployeePerformancePage()));
-        MenuItem viewBillItem = new MenuItem("View Bills");
-        viewBillItem.setOnAction(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
-        billMenu.getItems().addAll(viewPerformanceItem, viewBillItem);
+        billMenu.getItems().addAll(viewPerformanceItem);
         Menu profileMenu = new Menu("Profile");
         MenuItem profileItem = new MenuItem("View Profile");
         profileItem.setOnAction(e -> Root.setCenter(new ProfileController().getView().getProfilePage()));

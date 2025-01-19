@@ -1,6 +1,7 @@
 package Views;
 
 import Controllers.*;
+import javafx.geometry.Insets;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -9,18 +10,14 @@ public class UserView extends Pane {
 
     BorderPane Root = new BorderPane();
 
-
-
     VBox sidebar = new VBox(15);
     Label homeLabel = new Label("Home");
     Label inventoryLabel = new Label("Inventory");
     Label employeeLabel = new Label("Employees");
     Label performanceLabel = new Label("Performance");
     Label billGenerateLabel = new Label("Generate Bill");
-    Label billManagementLabel = new Label("Manage Bills");
     Label suppliersLabel = new Label("Suppliers");
     Label profileLabel = new Label("Profile");
-
 
     Menu menu = new Menu("Menu");
     MenuItem homeItem = new MenuItem("Home");
@@ -29,8 +26,6 @@ public class UserView extends Pane {
     MenuItem exitItem = new MenuItem("Exit");
     Menu billMenu = new Menu("Bills");
 
-
-
     MenuItem newBillItem = new MenuItem("Generate Bill");
     MenuItem viewPerformanceItem = new MenuItem("View Performance");
     MenuItem viewBillItem = new MenuItem("View Bills");
@@ -38,37 +33,14 @@ public class UserView extends Pane {
     MenuItem profileItem = new MenuItem("View Profile");
     MenuItem logoutItem = new MenuItem("Logout");
 
-
-
-
-    GridPane homePage = new GridPane();
+    HBox homePage = new HBox();
 
     public UserView() {
 
         //MenuBar
         MenuBar menuBar = new MenuBar();
-
-
-//        homeItem.setOnAction(e -> Root.setCenter(new UserView().getRoot()));
-
-//        inventoryItem.setOnAction(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
-
-//        employeeItem.setOnAction(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
-
-//        exitItem.setOnAction(e -> System.exit(0));
         menu.getItems().addAll(homeItem, exitItem, inventoryItem, employeeItem);
-
-
-//        newBillItem.setOnAction(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
-
-//        viewPerformanceItem.setOnAction(e -> Root.setCenter(new EmployeePerformanceController().getView().getEmployeePerformancePage()));
-
-//        viewBillItem.setOnAction(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
         billMenu.getItems().addAll(newBillItem, viewPerformanceItem, viewBillItem);
-
-//        profileItem.setOnAction(e -> Root.setCenter(new ProfileController().getView().getProfilePage()));
-
-        logoutItem.setOnAction(e -> System.exit(0));
         profileMenu.getItems().addAll(profileItem, logoutItem);
         menuBar.getMenus().addAll(menu, billMenu, profileMenu);
 
@@ -88,28 +60,56 @@ public class UserView extends Pane {
 
         billGenerateLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
 
-        billManagementLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
-
         suppliersLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
 
         profileLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
-        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, performanceLabel, billGenerateLabel, billManagementLabel, suppliersLabel, profileLabel);
+        sidebar.getChildren().addAll(homeLabel, inventoryLabel, employeeLabel, performanceLabel, billGenerateLabel, suppliersLabel, profileLabel);
         sidebar.setPrefWidth(150);
         Root.setLeft(sidebar);
 
         // Home page
-
-        homePage.setHgap(10);
-        homePage.setVgap(10);
         homePage.setStyle("-fx-background-color: white;");
 
-        // Sales chart
-        LineChart<String, Number> lineChart = createLineChart();
-        homePage.add(lineChart, 0, 0);
+        VBox homeBox = new VBox(15);
+        homeBox.setPadding(new Insets(20));
 
-        // Pie chart
-        PieChart pieChart = createPieChart();
-        homePage.add(pieChart, 1, 0);
+        Label homeLabel = new Label("Welcome, " + "admin" + "!");
+        homeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 30px Helvetica; -fx-font-weight: bold;");
+
+        GridPane buttonGrid = new GridPane();
+        Button generateBillButton = new Button("Generate Bill");
+        generateBillButton.setStyle("-fx-background-color: #364958; -fx-text-fill: white; -fx-font: 17px Helvetica; -fx-font-weight: bold;");
+        generateBillButton.setMinWidth(300);
+        generateBillButton.setMinHeight(150);
+        Button manageEmployeeButton = new Button("Manage Employees");
+        manageEmployeeButton.setStyle("-fx-background-color: #364958; -fx-text-fill: white; -fx-font: 17px Helvetica; -fx-font-weight: bold;");
+        manageEmployeeButton.setMinWidth(300);
+        manageEmployeeButton.setMinHeight(150);
+        Button viewPerformanceButton = new Button("View Performance");
+        viewPerformanceButton.setStyle("-fx-background-color: #364958; -fx-text-fill: white; -fx-font: 17px Helvetica; -fx-font-weight: bold;");
+        viewPerformanceButton.setMinWidth(300);
+        viewPerformanceButton.setMinHeight(150);
+        Button manageInventoryButton = new Button("Manage Inventory");
+        manageInventoryButton.setStyle("-fx-background-color: #364958; -fx-text-fill: white; -fx-font: 17px Helvetica; -fx-font-weight: bold;");
+        manageInventoryButton.setMinWidth(300);
+        manageInventoryButton.setMinHeight(150);
+        buttonGrid.add(generateBillButton, 0, 0);
+        buttonGrid.add(manageEmployeeButton, 1, 0);
+        buttonGrid.add(viewPerformanceButton, 0, 1);
+        buttonGrid.add(manageInventoryButton, 1, 1);
+        buttonGrid.setHgap(20);
+        buttonGrid.setVgap(20);
+
+        homeBox.getChildren().addAll(homeLabel, buttonGrid);
+        homePage.getChildren().addAll(homeBox);
+
+        // Sales chart
+//        LineChart<String, Number> lineChart = createLineChart();
+//        homePage.add(lineChart, 0, 0);
+//
+//        // Pie chart
+//        PieChart pieChart = createPieChart();
+//        homePage.add(pieChart, 1, 0);
 
         Root.setCenter(homePage);
 
@@ -161,10 +161,6 @@ public class UserView extends Pane {
 
     public Label getSuppliersLabel() {
         return suppliersLabel;
-    }
-
-    public Label getBillManagementLabel() {
-        return billManagementLabel;
     }
 
     public Label getBillGenerateLabel() {
@@ -239,7 +235,7 @@ public class UserView extends Pane {
         return logoutItem;
     }
 
-    public GridPane getHomePage() {
+    public HBox getHomePage() {
         return homePage;
     }
 }

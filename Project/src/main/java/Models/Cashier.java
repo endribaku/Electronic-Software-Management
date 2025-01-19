@@ -23,22 +23,8 @@ public class Cashier extends User implements Serializable {
     }
     public void setSector(Sector sector) {this.sector.set(sector);}
 
-
-    public void createBill() {
-
-    }
-
-    public void trackTodayBills() {
-
-    }
-
-    public double getTotalBills() {
-        return 0;
-    }
-
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
-        outputStream.defaultWriteObject();
         outputStream.writeObject(sector.getValue());
     }
 

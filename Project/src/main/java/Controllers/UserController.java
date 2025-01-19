@@ -38,7 +38,6 @@ public class UserController {
         this.view.getExitItem().setOnAction(e -> System.exit(0));
         this.view.getNewBillItem().setOnAction(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getGenerateView().getBillGeneratePage()));
         this.view.getViewPerformanceItem().setOnAction(e -> this.view.getRoot().setCenter(new EmployeePerformanceController(currentUser).getView().getEmployeePerformancePage()));
-        this.view.getViewBillItem().setOnAction(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getManagementView().getBillManagePage()));
         this.view.getProfileItem().setOnAction(e -> this.view.getRoot().setCenter(new ProfileController(currentUser).getView().getProfilePage()));
         this.view.getLogoutItem().setOnAction(e -> System.exit(0));
 
@@ -48,7 +47,6 @@ public class UserController {
         this.view.getEmployeeLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new EmployeeManagementController(currentUser).getEmpListView().getEmployeesPage()));
         this.view.getPerformanceLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new EmployeePerformanceController(currentUser).getView().getEmployeePerformancePage()));
         this.view.getBillGenerateLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getGenerateView().getBillGeneratePage()));
-        this.view.getBillManagementLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getManagementView().getBillManagePage()));
         this.view.getSuppliersLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new SuppliersController(currentUser).getView().getSuppliersPage()));
         this.view.getProfileLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new ProfileController(currentUser).getView().getProfilePage()));
 

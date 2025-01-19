@@ -2,17 +2,14 @@ package Controllers;
 
 import DAO.BillFileHandler;
 import Views.BillGenerateView;
-import Views.BillManagementView;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import Models.*;
 import javafx.scene.control.Alert;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class BillManagementController {
-    private BillManagementView managementView = new BillManagementView();
     private BillGenerateView generateView = new BillGenerateView();
     private BillFileHandler billFileHandler = new BillFileHandler();
     private User currentUser;
@@ -28,10 +25,6 @@ public class BillManagementController {
         this.generateView.getAddToBillButton().setOnAction(e -> onAddToBill(e));
         this.generateView.getCreateBillButton().setOnAction(e -> onGenerateBill(e));
 
-    }
-
-    public BillManagementView getManagementView() {
-        return managementView;
     }
 
     public BillGenerateView getGenerateView() {
