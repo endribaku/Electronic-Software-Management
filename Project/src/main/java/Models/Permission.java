@@ -1,10 +1,10 @@
 package Models;
 
 public enum Permission {
-    InventoryAccess,
-    EmployeeManagement,
-    PerformanceView,
-    BillGeneration,
-    BillManagement,
-    SupplierManagement
+    INVENTORY_ACCESS,
+    EMPLOYEE_MANAGEMENT,
+    PERFORMANCE_VIEW,
+    BILL_GENERATION,
+    BILL_MANAGEMENT,
+    SUPPLIER_MANAGEMENT
 }
