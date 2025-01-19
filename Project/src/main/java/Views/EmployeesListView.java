@@ -34,8 +34,18 @@ public class EmployeesListView {
         TextField employeeSalaryField = new TextField();
         ObservableList<Access> accessLevels = FXCollections.observableArrayList(Access.Cashier, Access.Manager, Access.Administrator);
         ComboBox<Access> accessLevelList= new ComboBox<Access>(accessLevels);
-        ObservableList<String> permissions = FXCollections.observableArrayList(Permission.BILL_GENERATION.toString(), Permission.BILL_MANAGEMENT.toString(), Permission.EMPLOYEE_MANAGEMENT.toString(), Permission.INVENTORY_ACCESS.toString(), Permission.PERFORMANCE_VIEW.toString(), Permission.SUPPLIER_MANAGEMENT.toString());
+        ObservableList<String> permissions = FXCollections.observableArrayList
+                (Permission.BILL_GENERATION.toString(),
+                        Permission.BILL_MANAGEMENT.toString(),
+                        Permission.EMPLOYEE_MANAGEMENT.toString(),
+                        Permission.INVENTORY_ACCESS.toString(),
+                        Permission.PERFORMANCE_VIEW.toString(),
+                        Permission.SUPPLIER_MANAGEMENT.toString());
         ListView<String> permissionListView = new ListView<>(permissions);
+
+
+    //Change to toString of each sector available
+
         ObservableList<String> sectors = FXCollections.observableArrayList("Electronics", "Mobile Devices", "IT");
         ListView<String> sectorListView = new ListView<>(sectors);
 
@@ -47,7 +57,9 @@ public class EmployeesListView {
         TableColumn<User, String> employeeUsernameColumn = new TableColumn<>("Username");
         TableColumn<User, String> employeePasswordColumn = new TableColumn<>("Password");
         TableColumn<User, Access> employeeAccessLevelColumn = new TableColumn<>("Access Level");
-        TableColumn<User, String> employeeSectorColumn = new TableColumn<>("Sector");
+
+
+    TableColumn<User, String> employeeSectorColumn = new TableColumn<>("Sector");
         TableColumn<User, String> employeePermissionsColumn = new TableColumn<>("Permissions");
         TableColumn<User, LocalDate> employeeDOBColumn = new TableColumn<>("Date of Birth");
         TableColumn<User, String> employeeEmailColumn = new TableColumn<>("Email");
@@ -288,5 +300,51 @@ public class EmployeesListView {
         public Button getUpdateEmployeeListButton() {
             return updateEmployeeListButton;
         }
+
+
+        public ListView<String> getSectorListView() {
+            return sectorListView;
+        }
+
+        public void setSectorListView(ListView<String> sectorListView) {
+            this.sectorListView = sectorListView;
+        }
+
+        public ObservableList<String> getSectors() {
+            return sectors;
+        }
+
+        public void setSectors(ObservableList<String> sectors) {
+            this.sectors = sectors;
+        }
+
+        public ListView<String> getPermissionListView() {
+            return permissionListView;
+        }
+
+        public void setPermissionListView(ListView<String> permissionListView) {
+            this.permissionListView = permissionListView;
+        }
+
+        public ObservableList<String> getPermissions() {
+            return permissions;
+        }
+
+        public void setPermissions(ObservableList<String> permissions) {
+            this.permissions = permissions;
+        }
+
+    public ObservableList<Access> getAccessLevels() {
+        return accessLevels;
     }
+
+    public TableColumn<User, String> getEmployeeSectorColumn() {
+        return employeeSectorColumn;
+    }
+
+    public TableColumn<User, String> getEmployeePermissionsColumn() {
+        return employeePermissionsColumn;
+    }
+
+}
 

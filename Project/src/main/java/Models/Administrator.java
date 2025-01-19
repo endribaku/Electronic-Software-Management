@@ -10,15 +10,17 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 public class Administrator extends User implements Serializable {
 
 //    private final UserFileHandler  = new UserFileHandler();
     private transient ListProperty<User> employees;
-    public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) throws IOException, ClassNotFoundException
+    public Administrator (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, ObservableList<String> permissions, ObservableList<String> sectors)
     {
-        super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator);
+
+        super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Administrator, permissions, sectors);
         this.employees = new SimpleListProperty<>();
     }
 

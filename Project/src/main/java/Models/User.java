@@ -13,9 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
+import java.util.EnumSet;
 
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     private transient StringProperty userID;
     private transient StringProperty username;
     private transient StringProperty password;
@@ -25,9 +26,14 @@ public class User implements Serializable {
     private transient StringProperty email;
     private transient DoubleProperty salary;
     private transient Access accessLevel;
-    private transient ListProperty<Permission> permissionList;
 
-    public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, Access accessLevel) {
+
+
+    private EnumSet<Permission> permissions;
+    private List<String> sector;
+
+    public User(String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary,
+                Access accessLevel, ObservableList<String> permissions, ObservableList<String> sectorList) {
         this.username = new SimpleStringProperty(username);
         this.password = new SimpleStringProperty(password);
         this.fullName = new SimpleStringProperty(fullName);
@@ -39,6 +45,17 @@ public class User implements Serializable {
         this.salary = new SimpleDoubleProperty(salary);
         this.accessLevel = accessLevel;
         this.userID = new SimpleStringProperty(UUID.randomUUID().toString());
+        this.permissions = EnumSet.noneOf(Permission.class); // Initialize the EnumSet
+        for (String permissionString : permissions) {
+            try {
+                Permission permission = Permission.valueOf(permissionString); // Case-sensitive match
+                this.permissions.add(permission);
+            } catch (IllegalArgumentException e) {
+
+                System.err.println("Invalid permission: " + permissionString);
+            }
+        }
+        this.sector = new ArrayList<>(sectorList);
     }
 
     public StringProperty userIDProperty() {
@@ -133,51 +150,42 @@ public class User implements Serializable {
         this.salary.set(salary);
     }
 
-    public Access getAccessLevel() {
-        return accessLevel;
-    }
+    public Access getAccessLevel() {return accessLevel;}
 
-    public void setAccessLevel(Access accessLevel) {
-        this.accessLevel = accessLevel;
-    }
+    public void setAccessLevel(Access accessLevel) {this.accessLevel = accessLevel;}
 
-    public ObservableList<Permission> getPermissionList() {
-        return permissionList.get();
-    }
+    public EnumSet<Permission> getPermissions() {return permissions;}
 
-    public ListProperty<Permission> permissionListProperty() {
-        return permissionList;
-    }
+    public void setPermissions(EnumSet<Permission> permissions) {this.permissions = permissions;}
 
-    public void setPermissionList(ObservableList<Permission> permissionList) {
-        this.permissionList.set(permissionList);
-    }
+    public List<String> getSector() {return sector;}
+
+    public void setSector(List<String> sector) {this.sector = sector;}
 
     @Serial
-    private void writeObject(ObjectOutputStream outputStream) throws  IOException{
-        outputStream.defaultWriteObject();
-        outputStream.writeUTF(this.userID.getValueSafe());
-        outputStream.writeUTF(this.username.getValueSafe());
-        outputStream.writeUTF(this.password.getValueSafe());
-        outputStream.writeUTF(this.fullName.getValueSafe());
-        outputStream.writeObject(this.dateOfBirth.getValue());
-        outputStream.writeUTF(this.phoneNumber.getValueSafe());
-        outputStream.writeUTF(this.email.getValueSafe());
-        outputStream.writeDouble(this.salary.getValue());
-        outputStream.writeObject(this.accessLevel.name());
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject(); // Serialize non-transient fields
+        out.writeObject(userID.get());
+        out.writeObject(username.get());
+        out.writeObject(password.get());
+        out.writeObject(fullName.get());
+        out.writeObject(dateOfBirth.get());
+        out.writeObject(phoneNumber.get());
+        out.writeObject(email.get());
+        out.writeDouble(salary.get());
+        out.writeObject(accessLevel);
     }
-
     @Serial
-    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
-        this.userID = new SimpleStringProperty(inputStream.readUTF());
-        this.username = new SimpleStringProperty(inputStream.readUTF());
-        this.password = new SimpleStringProperty(inputStream.readUTF());
-        this.fullName = new SimpleStringProperty(inputStream.readUTF());
-        this.dateOfBirth = new SimpleObjectProperty<LocalDate>((LocalDate) inputStream.readObject());
-        this.phoneNumber = new SimpleStringProperty(inputStream.readUTF());
-        this.email = new SimpleStringProperty(inputStream.readUTF());
-        this.salary = new SimpleDoubleProperty(inputStream.readDouble());
-        String accessLevelName = (String) inputStream.readObject();
-        this.accessLevel = Access.valueOf(accessLevelName);
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject(); // Deserialize non-transient fields
+        this.userID = new SimpleStringProperty((String) in.readObject());
+        this.username = new SimpleStringProperty((String) in.readObject());
+        this.password = new SimpleStringProperty((String) in.readObject());
+        this.fullName = new SimpleStringProperty((String) in.readObject());
+        this.dateOfBirth = new SimpleObjectProperty<>((LocalDate) in.readObject());
+        this.phoneNumber = new SimpleStringProperty((String) in.readObject());
+        this.email = new SimpleStringProperty((String) in.readObject());
+        this.salary = new SimpleDoubleProperty(in.readDouble());
+        this.accessLevel = (Access) in.readObject();
     }
 }

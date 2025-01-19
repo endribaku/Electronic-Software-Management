@@ -3,11 +3,13 @@ package Controllers;
 import DAO.UserFileHandler;
 import Models.*;
 import Views.EmployeesListView;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
@@ -70,6 +72,7 @@ public class EmployeeManagementController {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setSalary(e.getNewValue());
         });
 
+
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> {
             if(this.employeeFileHandler.updateAll()) {
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
@@ -92,6 +95,10 @@ public class EmployeeManagementController {
         LocalDate employeeDOB = employeesListView.getEmployeeDOBField().getValue();
         String employeeEmail = employeesListView.getEmployeeEmailField().getText();
         String employeePhoneNumber = employeesListView.getEmployeePhoneNumberField().getText();
+        Access employeeAccessLevel = employeesListView.getAccessLevelList().getValue();
+        ObservableList<String> employeePermissionsSelected = employeesListView.getPermissionListView().getSelectionModel().getSelectedItems();
+        ObservableList<String> employeeSectorsSelected = employeesListView.getSectorListView().getSelectionModel().getSelectedItems();
+
         if(employeeDOB == null)
             employeeDOB = LocalDate.now();
         double employeeSalary;
@@ -100,16 +107,17 @@ public class EmployeeManagementController {
         } catch (NumberFormatException e) {
             employeeSalary = 0;
         }
-        Access employeeAccessLevel = employeesListView.getAccessLevelList().getValue();
+
         if(employeeAccessLevel == null)
             employeeAccessLevel = Access.Cashier;
-        if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty() || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0) {
+        if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty()
+                || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0 || employeePermissionsSelected.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
                 alert.show();
         } else {
-            employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel));
+            employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissionsSelected, employeeSectorsSelected));
         }
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
