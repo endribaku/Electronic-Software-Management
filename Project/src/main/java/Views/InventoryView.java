@@ -6,6 +6,7 @@ import Models.Supplier;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
@@ -19,6 +20,8 @@ public class InventoryView {
     ComboBox<Category> itemCategoryListView = new ComboBox<Category>();
     ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
     ComboBox<String> itemSupplierListView = new ComboBox<String>();
+    ObservableList<String> optionsList = FXCollections.observableArrayList("Add Item", "Add Category", "Add Sector");
+    ComboBox<String> optionsComboBox = new ComboBox<>(optionsList);
 
     ObservableList<Item> items;
     TableView<Item> inventoryTableView = new TableView<>(items);
@@ -26,18 +29,21 @@ public class InventoryView {
     BorderPane createBox = new BorderPane();
     VBox addItemPane = new VBox();
     VBox addCategoryPane = new VBox();
-    Button addItemPaneButton = new Button("Add Item");
-    Button addCategoryPaneButton = new Button("Add Category");
+    VBox addSectorPane = new VBox();
 
     TextField categoryNameField = new TextField();
     Button addCategoryButton = new Button("Create Category");
+
+    TextField sectorNameField = new TextField();
+    Button addSectorButton = new Button("Create Sector");
 
     TextField itemNameField = new TextField();
     TextField itemQuantityField = new TextField();
     TextField itemPPriceField = new TextField();;
     TextField itemSPriceField = new TextField();
     Button addItemButton = new Button("Create Item");
-    Button updateInventory = new Button("Update Inventory");
+
+    Button updateInventoryButton = new Button("Update Inventory");
 
     TableColumn<Item, Number> itemIDColumn = new TableColumn<>("ID");
     //employeeFullNameColumn.setCellValueFactory(cellData -> cellData.getValue().getFullName()); => needs to change fields to SimpleProperty's
@@ -55,13 +61,19 @@ public class InventoryView {
         createBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         createBox.setMinWidth(400);
 
+        //Options ComboBox
+        optionsComboBox.setStyle("-fx-font: 11pt Helvetica;");
+        optionsComboBox.getSelectionModel().select(0);
+        optionsComboBox.setMinWidth(370);
+        optionsComboBox.setMaxHeight(12);
+        createBox.setTop(optionsComboBox);
+
         //Create Item Pane
         HBox addItemHeader = new HBox();
         Label addItemLabel = new Label("Add Item");
         addItemLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
-        addCategoryPaneButton.setStyle("-fx-font: 11pt Helvetica;");
         addItemHeader.setSpacing(165);
-        addItemHeader.getChildren().addAll(addItemLabel, addCategoryPaneButton);
+        addItemHeader.getChildren().addAll(addItemLabel);
         GridPane addItemGrid = new GridPane();
         addItemGrid.setHgap(105);
         addItemGrid.setVgap(10);
@@ -100,15 +112,16 @@ public class InventoryView {
         addItemGrid.add(addItemButton, 1, 6);
         addItemPane.getChildren().addAll(addItemHeader, addItemGrid);
         addItemPane.setSpacing(10);
+        addItemPane.setPadding(new Insets(10));
         createBox.setCenter(addItemPane);
+
 
         //Create Category Pane
         HBox addCategoryHeader = new HBox();
         Label addCategoryLabel = new Label("Add Category");
         addCategoryLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
-        addItemPaneButton.setStyle("-fx-font: 11pt Helvetica;");
         addCategoryHeader.setSpacing(160);
-        addCategoryHeader.getChildren().addAll(addCategoryLabel, addItemPaneButton);
+        addCategoryHeader.getChildren().addAll(addCategoryLabel);
         GridPane addCategoryGrid = new GridPane();
         addCategoryGrid.setHgap(110);
         addCategoryGrid.setVgap(10);
@@ -121,13 +134,27 @@ public class InventoryView {
         addCategoryGrid.add(addCategoryButton, 1, 1);
         addCategoryPane.getChildren().addAll(addCategoryHeader, addCategoryGrid);
         addCategoryPane.setSpacing(10);
+        addCategoryPane.setPadding(new Insets(10));
 
-        addCategoryPaneButton.setOnAction(e -> {createBox.setCenter(addCategoryPane);});
-        addCategoryPaneButton.setStyle("-fx-font: 11pt Helvetica;");
-        addCategoryPaneButton.setMinWidth(Region.USE_PREF_SIZE);
-        addItemPaneButton.setOnAction(e -> {createBox.setCenter(addItemPane);});
-        addItemPaneButton.setStyle("-fx-font: 11pt Helvetica;");
-        addItemPaneButton.setMinWidth(Region.USE_PREF_SIZE);
+        //Create Supplier Pane
+        HBox addSectorHeader = new HBox();
+        Label addSectorLabel = new Label("Add Sector");
+        addSectorLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
+        addSectorHeader.setSpacing(160);
+        addSectorHeader.getChildren().addAll(addSectorLabel);
+        GridPane addSectorGrid = new GridPane();
+        addSectorGrid.setHgap(110);
+        addSectorGrid.setVgap(10);
+        Label sectorNameLabel = new Label("Sector Name:");
+        sectorNameLabel.setStyle("-fx-font: 11pt Helvetica;");
+        addSectorGrid.add(sectorNameLabel, 0, 0);
+        addSectorGrid.add(sectorNameField, 1, 0);
+        addSectorButton.setStyle("-fx-font: 11pt Helvetica;");
+        GridPane.setHalignment(addSectorButton, HPos.RIGHT);
+        addSectorGrid.add(addSectorButton, 1, 1);
+        addSectorPane.getChildren().addAll(addSectorHeader, addSectorGrid);
+        addSectorPane.setSpacing(10);
+        addSectorPane.setPadding(new Insets(10));
 
         //Display Employee's List
         VBox inventoryListBox = new VBox();
@@ -138,7 +165,8 @@ public class InventoryView {
 
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
         inventoryTableView.setPrefWidth(1000);
-        inventoryListBox.getChildren().addAll(inventoryListLabel, inventoryTableView);
+        updateInventoryButton.setStyle("-fx-font: 11pt Helvetica;");
+        inventoryListBox.getChildren().addAll(inventoryListLabel, inventoryTableView, updateInventoryButton);
 
         inventoryPage.getChildren().addAll(createBox, inventoryListBox);
         inventoryPage.setSpacing(10);
@@ -224,7 +252,47 @@ public class InventoryView {
         return addItemButton;
     }
 
-    public Button getUpdateInventory() {
-        return updateInventory;
+    public Button getUpdateInventoryButton() {
+        return updateInventoryButton;
+    }
+
+    public void setInventoryPage(HBox inventoryPage) {
+        this.inventoryPage = inventoryPage;
+    }
+
+    public void setCategories(ObservableList<String> categories) {
+        this.categories = categories;
+    }
+
+    public ObservableList<String> getOptionsList() {
+        return optionsList;
+    }
+
+    public ComboBox<String> getOptionsComboBox() {
+        return optionsComboBox;
+    }
+
+    public BorderPane getCreateBox() {
+        return createBox;
+    }
+
+    public VBox getAddItemPane() {
+        return addItemPane;
+    }
+
+    public VBox getAddCategoryPane() {
+        return addCategoryPane;
+    }
+
+    public VBox getAddSectorPane() {
+        return addSectorPane;
+    }
+
+    public Button getAddCategoryButton() {
+        return addCategoryButton;
+    }
+
+    public Button getAddSectorButton() {
+        return addSectorButton;
     }
 }

@@ -9,8 +9,6 @@ import Models.Item;
 import Models.Supplier;
 import Models.User;
 import Views.InventoryView;
-import javafx.beans.property.ListProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -38,6 +36,16 @@ public class InventoryController {
         this.inventoryListView.getItemCategoryColumn().setCellValueFactory(new PropertyValueFactory<Item,Category>(categoryFileHandler.getAllCategories().toString()));
         this.inventoryListView.getItemSupplierColumn().setCellValueFactory(new PropertyValueFactory<Item, Supplier>(suppliersFileHandler.getAllSuppliers().toString()));
         setEditListeners();
+
+        this.inventoryListView.getOptionsComboBox().setOnAction(e -> {
+            if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Item")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
+            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Category")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
+            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Sector")){
+                this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
+            }
+        });
     }
 
     public InventoryView getView() {
@@ -77,7 +85,7 @@ public class InventoryController {
             itemFIleHandler.getAllItems().get(e.getTablePosition().getRow()).setName(e.getNewValue().toString());
         });
 
-//        this.inventoryListView.getUpdateInventory().setOnAction(e -> {
+//        this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
 //            if (this.inventoryFileHandler.updateAll()) {
 //                Alert success = new Alert(Alert.AlertType.INFORMATION);
 //                success.setTitle("Success");
