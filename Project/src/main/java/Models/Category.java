@@ -37,17 +37,7 @@ public class Category implements Comparable<Category> , Serializable {
         return items.get();
     }
 
-    public String getSector() {
-        return sector.get();
-    }
 
-    public StringProperty sectorProperty() {
-        return sector;
-    }
-
-    public void setSector(String sector) {
-        this.sector.set(sector);
-    }
 
     public ObservableList<Item> getItems() {
         return items.get();
@@ -68,6 +58,8 @@ public class Category implements Comparable<Category> , Serializable {
     public void addItem(Item item){
         items.add(item);
     }
+
+    public void removeItem(Item item){ items.remove(item);}
 
     public Item getItemByName(String itemName) {
         for (Item i : items) {
@@ -96,7 +88,7 @@ public class Category implements Comparable<Category> , Serializable {
         outputStream.writeInt(this.items.size());
         for (Item i : items)
             outputStream.writeObject(i);
-        outputStream.writeUTF(this.sector.getValueSafe());
+
     }
 
     @Serial
@@ -108,7 +100,7 @@ public class Category implements Comparable<Category> , Serializable {
             itemList.add((Item) inputStream.readObject());
         }
         this.items = itemList;
-        this.sector = new SimpleStringProperty(inputStream.readUTF());
+
     }
 
     @Override

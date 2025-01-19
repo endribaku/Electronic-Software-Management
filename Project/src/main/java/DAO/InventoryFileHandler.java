@@ -1,5 +1,6 @@
 package DAO;
 
+import Models.Item;
 import Models.Category;
 import Models.Inventory;
 import Models.Sector;
@@ -15,54 +16,13 @@ import java.util.ArrayList;
 public class InventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
-    private static ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
-    private static ObjectProperty<Inventory> inventory;
 
-//    public ObservableList<Category> getInventory(){
-//        if(inventoryList == null)
-//            selectAllInventory();
-//        return inventoryList;
-//    }
-//
-//    public void insertInventory(Inventory inventory) {
-//        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
-//            ObjectOutputStream writer;
-//            if (DATA_FILE.length() > 0)
-//                writer = new HeaderlessObjectOutputStream(outputStream);
-//            else
-//                writer = new ObjectOutputStream(outputStream);
-//            writer.writeObject(inventory);
-//        } catch(IOException ioe) {
-//            ioe.getMessage();
-//        }
-//    }
-//
-//    public void deleteCategory(Category category) {
-//        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-//            for(Category c : inventoryList) {
-//                if(!c.equals(category))
-//                    outputStream.writeObject(c);
-//            }
-//            inventoryList.remove(category);
-//        } catch (IOException ex) {
-//            ex.getMessage();
-//        }
-//    }
-//
-//    public void deleteAll(ArrayList<Category> categoriesToRemove) {
-//        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-//            for(Category c : categoriesToRemove) {
-//                if (!categoriesToRemove.contains(c)) {
-//                    outputStream.writeObject(c);
-//                }
-//            }
-//            inventoryList.removeAll(categoriesToRemove);
-//        } catch(IOException ex) {
-//            ex.getMessage();
-//        }
-//    }
-//
-    public boolean updateAll() {
+    private static ObjectProperty<Inventory> inventory;
+    private static ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
+    private static ObservableList<Category> categoriesList = FXCollections.observableArrayList();
+    private static ObservableList<Item> itemsList = FXCollections.observableArrayList();
+
+    public static boolean updateAll() {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(Sector s : sectorsList) {
                 outputStream.writeObject(s);
@@ -73,20 +33,9 @@ public class InventoryFileHandler {
             return false;
         }
     }
-//
-//    public void selectAllInventory() {
-//        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-//            while(true) {
-//                Category category = (Category) reader.readObject();
-//                inventoryList.add(category);
-//            }
-//        }
-//        catch (EOFException ignored) {
-//        }
-//        catch (IOException | ClassNotFoundException ex) {
-//            System.out.println(ex.getMessage());
-//        }
-//    }
+
+
+
 
     public static ObjectProperty<Inventory> getInventory() {
         ObjectProperty<Inventory> inventoryProperty = new SimpleObjectProperty<>();
@@ -136,21 +85,148 @@ public class InventoryFileHandler {
     }
 
 
-    public static ObservableList<Sector> getSectorsList()
-    {
-        sectorsList = FXCollections.observableArrayList();
 
-        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Inventory inventory = (Inventory) reader.readObject();
-            if (inventory != null) {
-                sectorsList.addAll(inventory.getSectors());
+
+
+    //Adders for subsections
+    public static void addSector(Sector newSector) {
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Load or initialize it before adding sectors.");
+                return;
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("Inventory file not found. Returning an empty sectors list.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error reading inventory file: " + e.getMessage());
+        }
+        Inventory currentInventory = inventory.get();
+        currentInventory.getSectors().add(newSector);
+        sectorsList.add(newSector); // Update observable list
+        updateInventory(currentInventory); // Persist changes
+        System.out.println("Sector added and saved successfully.");
+    }
+
+    public static void addCategory(String sectorName, Category newCategory) {
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Load or initialize it before adding categories.");
+                return;
+            }
         }
 
+        Inventory currentInventory = inventory.get();
+
+        for(Sector s: sectorsList)
+        {
+            if(s.getSectorName().equals(sectorName))
+            {
+                s.addCategory(newCategory);
+            }
+        }
+
+
+        categoriesList.add(newCategory); // Update observable list
+        updateInventory(currentInventory); // Persist changes
+        System.out.println("Category added and saved successfully.");
+    }
+
+
+    public static void addItem(Category targetCategory, Item newItem) {
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Load or initialize it before adding items.");
+                return;
+            }
+        }
+
+        Inventory currentInventory = inventory.get();
+        boolean categoryFound = false;
+
+        for (Sector sector : currentInventory.getSectors()) {
+            if (sector.getCategories().contains(targetCategory)) {
+                // Add the item to the category
+                int categoryIndex = sector.getCategories().indexOf(targetCategory);
+                sector.getCategories().get(categoryIndex).getItems().add(newItem);
+                categoryFound = true;
+                break;
+            }
+        }
+
+        if (!categoryFound) {
+            System.err.println("Category not found in the inventory. Please add the category first.");
+            return;
+        }
+
+        itemsList.add(newItem);
+        updateInventory(currentInventory);
+        System.out.println("Item added and saved successfully.");
+    }
+
+    //Getters for subsections
+    public static ObservableList<Sector> getSectorsList() {
+        // Ensure inventory is initialized
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty sectors list.");
+                return sectorsList;
+            }
+        }
+
+        // Clear and populate the sectors list
+        sectorsList.clear();
+        sectorsList.addAll(inventory.get().getSectors());
         return sectorsList;
     }
+
+    public static ObservableList<Category> getCategoriesList() {
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty categories list.");
+                return categoriesList;
+            }
+        }
+        categoriesList.clear();
+        for (Sector sector : inventory.get().getSectors()) {
+            categoriesList.addAll(sector.getCategories());
+        }
+        return categoriesList;
+    }
+
+    public static ObservableList<Item> getItemsList() {
+        // Ensure inventory is initialized
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty items list.");
+                return itemsList;
+            }
+        }
+
+        // Clear and populate the items list
+        itemsList.clear();
+        for (Sector sector : inventory.get().getSectors()) {
+            for (Category category : sector.getCategories()) {
+                itemsList.addAll(category.getItems());
+            }
+        }
+        return itemsList;
+    }
+
+    public static ObservableList<String> getSectorNames()
+    {
+        ObservableList<String> sectorNames = FXCollections.observableArrayList();
+        for(Sector s: getSectorsList())
+        {
+            sectorNames.add(s.toString());
+        }
+        return sectorNames;
+    }
+
+
+
 }

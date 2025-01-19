@@ -22,8 +22,8 @@ public class Manager extends User implements Serializable {
     private transient ObjectProperty<Inventory> inventory = new SimpleObjectProperty<>();
     private transient ListProperty<Supplier> suppliers = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public Manager (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary) {
-        super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Manager);
+    public Manager (String username, String password, String fullName, LocalDate dateOfBirth, String phoneNumber, String email, double salary, ObservableList<String> permissions, ObservableList<String> sectors) {
+        super(username, password, fullName, dateOfBirth, phoneNumber, email, salary, Access.Manager, permissions, sectors);
     }
 
 

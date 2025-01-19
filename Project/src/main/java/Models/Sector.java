@@ -32,6 +32,11 @@ public class Sector implements Serializable {
         categories.add(category);
     }
 
+    public void removeCategory(Category category)
+    {
+        categories.remove(category);
+    }
+
     public ObservableList<Category> getCategories() {
         return categories.get();
     }
@@ -42,6 +47,18 @@ public class Sector implements Serializable {
 
     public void setCategories(ObservableList<Category> categories) {
         this.categories.set(categories);
+    }
+
+    public Category getCategoryByName(String categoryName)
+    {
+        for(Category c : categories.get())
+        {
+            if(c.getName().equals(categoryName))
+            {
+                return c;
+            }
+        }
+        return null;
     }
 
     @Serial

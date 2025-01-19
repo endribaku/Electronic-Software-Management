@@ -1,5 +1,6 @@
 package Views;
 
+import DAO.InventoryFileHandler;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +16,7 @@ public class InventoryView {
 
     HBox inventoryPage = new HBox();
 //    ObservableList<String> categories = FXCollections.observableArrayList();
-    ObservableList<Category> categories = FXCollections.observableArrayList();
+    ObservableList<Category> categories = FXCollections.observableArrayList(InventoryFileHandler.getCategoriesList());
     ComboBox<Category> itemCategoryListView = new ComboBox<Category>(categories);
     ObservableList<String> suppliers = FXCollections.observableArrayList("Apple", "Samsung", "Microsoft");
     ComboBox<String> itemSupplierListView = new ComboBox<String>(suppliers);
@@ -25,7 +26,7 @@ public class InventoryView {
     ObservableList<Item> items = FXCollections.observableArrayList();
     ListView<Item> itemListBox = new ListView<>(items);
 
-    ObservableList<String> sectors = FXCollections.observableArrayList("IT", "Furniture", "Youth");
+    ObservableList<String> sectors = FXCollections.observableArrayList(InventoryFileHandler.getSectorNames());
     ComboBox<String> sectorComboBox = new ComboBox<>(sectors);
 
     BorderPane createBox = new BorderPane();

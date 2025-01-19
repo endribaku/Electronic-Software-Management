@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Inventory implements Serializable{
     private transient ListProperty<Sector> sectors = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -45,21 +46,56 @@ public class Inventory implements Serializable{
         this.sectors.set(sectors);
     }
 
+
+    public void addSector(Sector sector) {sectors.add(sector);}
+    public void removeSector(Sector sector) {sectors.remove(sector);}
+
+
+    public void addCategory(String sectorName, Category category)
+    {
+        for(Sector s : sectors.get())
+        {
+            if(s.getSectorName().equals(sectorName))
+            {
+                s.addCategory(category);
+            }
+        }
+    }
+
+    public void removeCategory(String sectorName, Category category)
+    {
+        for(Sector s : sectors.get())
+        {
+            if(s.getSectorName().equals(sectorName))
+            {
+                s.removeCategory(category);
+            }
+        }
+    }
+
+
+
+
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
-        outputStream.writeObject(sectors.getValue());
-        outputStream.writeObject(managers.getValue());
+        outputStream.writeObject(new ArrayList<>(sectors.get())); // Serialize as ArrayList
+        outputStream.writeObject(new ArrayList<>(managers.get()));
     }
 
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException{
-        this.sectors = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Sector>) inputStream.readObject()));
-        this.managers = new SimpleListProperty<>(FXCollections.observableArrayList((ArrayList<Manager>) inputStream.readObject()));
+        inputStream.defaultReadObject();
+        List<Sector> loadedSectors = (List<Sector>) inputStream.readObject();
+        List<Manager> loadedManagers = (List<Manager>) inputStream.readObject();
+
+        this.sectors = new SimpleListProperty<>(FXCollections.observableArrayList(loadedSectors));
+        this.managers = new SimpleListProperty<>(FXCollections.observableArrayList(loadedManagers));
     }
-
-
-
-
-
 }
+
+
+
+
+
+
