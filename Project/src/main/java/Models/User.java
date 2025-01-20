@@ -162,6 +162,8 @@ public class User implements Serializable {
 
     public void setSector(List<String> sector) {this.sector = sector;}
 
+    public void addSector(String sector) {this.sector.add(sector);}
+
     @Serial
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject(); // Serialize non-transient fields
@@ -188,4 +190,6 @@ public class User implements Serializable {
         this.salary = new SimpleDoubleProperty(in.readDouble());
         this.accessLevel = (Access) in.readObject();
     }
+
+
 }

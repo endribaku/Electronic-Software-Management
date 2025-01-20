@@ -8,29 +8,23 @@ import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class InventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
 
+
     private static ObjectProperty<Inventory> inventory;
     private static ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
     private static ObservableList<Category> categoriesList = FXCollections.observableArrayList();
     private static ObservableList<Item> itemsList = FXCollections.observableArrayList();
+    private static ObservableList<Supplier> suppliersList = FXCollections.observableArrayList();
+    private static ObservableList<Item> itemsSuppliedList = FXCollections.observableArrayList();
 
-    public static boolean updateAll() {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(Sector s : sectorsList) {
-                outputStream.writeObject(s);
-            }
-            return true;
-        } catch (IOException ex) {
-            ex.getMessage();
-            return false;
-        }
-    }
 
-    public static ObjectProperty<Inventory> getInventory() {
+
+    public ObjectProperty<Inventory> getInventory() {
         ObjectProperty<Inventory> inventoryProperty = new SimpleObjectProperty<>();
         try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             Inventory inventory = (Inventory) reader.readObject();
@@ -45,7 +39,7 @@ public class InventoryFileHandler {
         return inventoryProperty;
     }
 
-    public static void setInventory(Inventory inventory) {
+    public void setInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully saved to file.");
@@ -56,20 +50,22 @@ public class InventoryFileHandler {
         }
     }
 
-    public static void updateInventory(Inventory inventory) {
+    public boolean updateInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully updated in file.");
+            return true;
         } catch (FileNotFoundException e) {
             System.err.println("Data file not found: " + e.getMessage());
+            return false;
         } catch (IOException e) {
             System.err.println("Error updating the inventory file: " + e.getMessage());
+            return false;
         }
     }
 
-    public static void deleteInventory()
-    {
-        try (FileWriter writer = new FileWriter(DATA_FILE, false)) { // Overwrite file with empty content
+    public void deleteInventory() {
+        try (FileWriter writer = new FileWriter(DATA_FILE, false)) {
             writer.write(""); // Empty the file
             System.out.println("Inventory file cleared successfully.");
         } catch (IOException e) {
@@ -78,14 +74,11 @@ public class InventoryFileHandler {
     }
 
 
-
-
-
     //Adders for subsections
-    public static void addSector(Sector newSector) {
+    public void addSector(Sector newSector) {
 
         if (inventory == null || inventory.get() == null) {
-            inventory = getInventory();
+            inventory = this.getInventory();
             if (inventory.get() == null) {
                 System.err.println("Inventory is null. Load or initialize it before adding sectors.");
                 return;
@@ -93,15 +86,15 @@ public class InventoryFileHandler {
         }
         Inventory currentInventory = inventory.get();
         currentInventory.getSectors().add(newSector);
-        sectorsList.add(newSector); // Update observable list
-        updateInventory(currentInventory); // Persist changes
+        sectorsList.add(newSector);
+        updateInventory(currentInventory);
         System.out.println("Sector added and saved successfully.");
     }
 
-    public static void addCategory(String sectorName, Category newCategory) {
+    public void addCategory(String sectorName, Category newCategory) {
 
         if (inventory == null || inventory.get() == null) {
-            inventory = getInventory();
+            inventory = this.getInventory();
             if (inventory.get() == null) {
                 System.err.println("Inventory is null. Load or initialize it before adding categories.");
                 return;
@@ -110,24 +103,22 @@ public class InventoryFileHandler {
 
         Inventory currentInventory = inventory.get();
 
-        for(Sector s: sectorsList)
-        {
-            if(s.getSectorName().equals(sectorName))
-            {
+        for (Sector s : sectorsList) {
+            if (s.getSectorName().equals(sectorName)) {
                 s.addCategory(newCategory);
             }
         }
 
 
-        categoriesList.add(newCategory); // Update observable list
-        updateInventory(currentInventory); // Persist changes
+        categoriesList.add(newCategory);
+        updateInventory(currentInventory);
         System.out.println("Category added and saved successfully.");
     }
 
 
-    public static void addItem(Category targetCategory, Supplier targetSupplier, Item newItem) {
+    public void addItem(Category targetCategory, Supplier targetSupplier, Item newItem) {
         if (inventory == null || inventory.get() == null) {
-            inventory = getInventory();
+            inventory = this.getInventory();
             if (inventory.get() == null) {
                 System.err.println("Inventory is null. Load or initialize it before adding items.");
                 return;
@@ -139,7 +130,6 @@ public class InventoryFileHandler {
 
         for (Sector sector : currentInventory.getSectors()) {
             if (sector.getCategories().contains(targetCategory)) {
-                // Add the item to the category
                 int categoryIndex = sector.getCategories().indexOf(targetCategory);
                 sector.getCategories().get(categoryIndex).getItems().add(newItem);
                 categoryFound = true;
@@ -149,7 +139,7 @@ public class InventoryFileHandler {
 
         boolean supplierFound = false;
 
-        if(SuppliersFileHandler.getSuppliers().contains(targetSupplier)) {
+        if (this.getSuppliersList().contains(targetSupplier)) {
             targetSupplier.getSuppliedItems().add(newItem);
             supplierFound = true;
         }
@@ -169,11 +159,33 @@ public class InventoryFileHandler {
         System.out.println("Item added and saved successfully.");
     }
 
+    public void addSupplier(Supplier supplier)
+    {
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Load or initialize it before adding items.");
+                return;
+            }
+        }
+
+        Inventory currentInventory = inventory.get();
+
+        currentInventory.addSupplier(supplier);
+        suppliersList.add(supplier);
+        updateInventory(currentInventory);
+
+        System.out.println("Supplier was added successfully.");
+    }
+
+
+
+
     //Getters for subsections
-    public static ObservableList<Sector> getSectorsList() {
+    public ObservableList<Sector> getSectorsList() {
         // Ensure inventory is initialized
         if (inventory == null || inventory.get() == null) {
-            inventory = getInventory();
+            inventory = this.getInventory();
             if (inventory.get() == null) {
                 System.err.println("Inventory is null. Returning an empty sectors list.");
                 return sectorsList;
@@ -186,7 +198,16 @@ public class InventoryFileHandler {
         return sectorsList;
     }
 
-    public static ObservableList<Category> getCategoriesList() {
+    public ObservableList<String> getSectorNames() {
+        ObservableList<String> sectorNames = FXCollections.observableArrayList();
+        for (Sector s : getSectorsList()) {
+            sectorNames.add(s.toString());
+        }
+        return sectorNames;
+    }
+
+
+    public ObservableList<Category> getCategoriesList() {
 
         if (inventory == null || inventory.get() == null) {
             inventory = getInventory();
@@ -202,10 +223,10 @@ public class InventoryFileHandler {
         return categoriesList;
     }
 
-    public static ObservableList<Item> getItemsList() {
+    public ObservableList<Item> getItemsList() {
         // Ensure inventory is initialized
         if (inventory == null || inventory.get() == null) {
-            inventory = getInventory();
+            inventory = this.getInventory();
             if (inventory.get() == null) {
                 System.err.println("Inventory is null. Returning an empty items list.");
                 return itemsList;
@@ -222,16 +243,122 @@ public class InventoryFileHandler {
         return itemsList;
     }
 
-    public static ObservableList<String> getSectorNames()
-    {
-        ObservableList<String> sectorNames = FXCollections.observableArrayList();
-        for(Sector s: getSectorsList())
-        {
-            sectorNames.add(s.toString());
+
+    //To get all the subsections that the user operates
+    public ObservableList<Category> getCategoriesOfUser(User user) {
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty categories list.");
+                return categoriesList;
+            }
         }
-        return sectorNames;
+        categoriesList.clear();
+        for (Sector sector : getSectorsOfUser(user)) {
+            categoriesList.addAll(sector.getCategories());
+        }
+        return categoriesList;
     }
 
 
 
+    public ObservableList<Item> getItemsOfUser(User user) {
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty items list.");
+                return itemsList;
+            }
+        }
+
+
+        itemsList.clear();
+        for (Sector sector : getSectorsOfUser(user)) {
+            for (Category category : sector.getCategories()) {
+                itemsList.addAll(category.getItems());
+            }
+        }
+        return itemsList;
+    }
+
+    public ObservableList<Sector> getSectorsOfUser(User user) {
+        ObservableList<Sector> userSectorsList = FXCollections.observableArrayList();
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty sectors list.");
+                return userSectorsList;
+            }
+        }
+
+        List<Sector> inventorySectors = inventory.get().getSectors();
+        List<String> userSectors = user.getSector();
+
+        sectorsList.clear();
+        for (Sector sector : inventorySectors) {
+            if (userSectors.contains(sector.toString())) {
+                sectorsList.add(sector);
+            }
+        }
+
+        return sectorsList;
+
+    }
+
+
+
+
+    public ObservableList<Supplier> getSuppliersList() {
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Returning an empty suppliers list.");
+                return suppliersList;
+            }
+        }
+        suppliersList.clear();
+        for (Supplier supplier : inventory.get().getSuppliers()) {
+            suppliersList.add(supplier);
+        }
+
+        return suppliersList;
+    }
+
+    public ObservableList<Item> getSuppliedItems()
+    {
+        ObservableList<Supplier> supplierList = getSuppliersList();
+        itemsSuppliedList.clear();
+        if(getSuppliersList() == null)
+        {
+            for(Supplier s: supplierList)
+            {
+                itemsSuppliedList.addAll(s.getSuppliedItems());
+            }
+        } else {
+            return itemsSuppliedList;
+        }
+        return itemsSuppliedList;
+    }
+
+    public void updateInventoryFile() {
+        Inventory currentInventory = this.getInventory().get();
+        if (currentInventory != null) {
+            this.updateInventory(currentInventory);
+        } else {
+            System.err.println("Failed to update inventory file: Inventory is null.");
+        }
+    }
+
+
+
+
+
+
+
 }
+
+
+

@@ -6,6 +6,7 @@ import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
 import Models.*;
 import Views.InventoryView;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
@@ -27,15 +28,16 @@ public class InventoryController {
     }
 
     // Controller setting the currentUser as the one who controls
-    public InventoryController(User user) {
-        this.currentUser = user;
+    public InventoryController(User currentUser) {
+        this.currentUser = currentUser;
         this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
         this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
-        this.inventoryListView.getInventoryTableView().setItems(InventoryFileHandler.getItemsList());
-        this.inventoryListView.getItemCategoryListView().setItems(InventoryFileHandler.getCategoriesList());
-        this.inventoryListView.getItemSupplierListView().setItems(suppliersFileHandler.getSuppliers());
-        this.inventoryListView.getItems().addAll(itemFileHandler.getAllItems());
+        this.inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsOfUser(currentUser));
+        this.inventoryListView.getItemCategoryListView().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
+        this.inventoryListView.getItemSupplierListView().setItems(inventoryFileHandler.getSuppliersList());
+        this.inventoryListView.getItems().addAll(inventoryFileHandler.getItemsList());
+        this.inventoryListView.getSectorComboBox().setItems(getSectorNamesOfUser(currentUser));
 
         this.inventoryListView.getOptionsComboBox().setOnAction(e -> {
             if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Item")){
@@ -59,43 +61,50 @@ public class InventoryController {
 
     public void setEditRows() {
         this.inventoryListView.getItemIDColumn().setOnEditCommit(e -> {
-            InventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setItemID(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setItemID(e.getNewValue().toString());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemNameColumn().setOnEditCommit(e -> {
-            InventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setName(e.getNewValue());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setName(e.getNewValue());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e -> {
-            InventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setCategory(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setCategory(e.getNewValue().toString());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemSupplierColumn().setOnEditCommit(e -> {
-            InventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setSupplier(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setSupplier(e.getNewValue().toString());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemQuantityColumn().setOnEditCommit(e -> {
-            InventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setQuantity((int) e.getNewValue());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setQuantity(e.getNewValue());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemPPriceColumn().setOnEditCommit(e -> {
-            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setPurchasePrice((double) e.getNewValue());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setPurchasePrice(e.getNewValue());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemSPriceColumn().setOnEditCommit(e -> {
-            itemFileHandler.getAllItems().get(e.getTablePosition().getRow()).setSellingPrice((double) e.getNewValue());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setSellingPrice(e.getNewValue());
+            inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
-            if (this.inventoryFileHandler.updateAll()) {
+            if (this.inventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get())) {
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
                 success.setTitle("Success");
-                success.setHeaderText("Employee Table Updated Successfully");
+                success.setHeaderText("Inventory Table Updated Successfully");
                 success.show();
             } else {
                 Alert fail = new Alert(Alert.AlertType.ERROR);
                 fail.setTitle("Success");
-                fail.setHeaderText("Employee Table Update Error");
+                fail.setHeaderText("Inventory Table Update Error");
                 fail.show();
             }
         });
@@ -120,8 +129,8 @@ public class InventoryController {
                 alert.show();
             } else {
 
-                InventoryFileHandler.addItem(selectedCategory, selectedSupplier, new Item(itemName, itemCategory, itemSupplier, LocalDate.now(), itemPPrice, itemSPrice, itemQuantity));
-                inventoryListView.getInventoryTableView().setItems(InventoryFileHandler.getItemsList());
+                inventoryFileHandler.addItem(selectedCategory, selectedSupplier, new Item(itemName, itemCategory, itemSupplier, LocalDate.now(), itemPPrice, itemSPrice, itemQuantity));
+                inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsList());
 
                 inventoryListView.getItemNameField().clear();
                 inventoryListView.getCategoryNameField().clear();
@@ -153,7 +162,7 @@ public class InventoryController {
                 alert.setHeaderText("Invalid Input");
                 alert.show();
             } else {
-                InventoryFileHandler.addCategory(sectorName, new Category(categoryName, itemList, sectorName));
+                inventoryFileHandler.addCategory(sectorName, new Category(categoryName, itemList, sectorName));
                 //inventoryListView.getItemCategoryListView().setItems(categoryFileHandler.getAllCategories());
                 inventoryListView.getItemNameField().clear();
                 inventoryListView.getCategoryNameField().clear();
@@ -185,12 +194,11 @@ public class InventoryController {
                 alert.show();
             }
             else {
-                InventoryFileHandler.addSector(new Sector(sectorName, categoriesList));
+                inventoryFileHandler.addSector(new Sector(sectorName, categoriesList));
                 inventoryListView.getSectorNameField().clear();
                 inventoryListView.getSectorCategoryListView().getSelectionModel().clearSelection();
                 inventoryListView.getOptionsComboBox().setValue("Add Sector");
 
-                inventoryListView.getSectorComboBox().getItems().setAll(InventoryFileHandler.getSectorNames());
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Success");
@@ -200,5 +208,18 @@ public class InventoryController {
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private ObservableList<String> getSectorNamesOfUser(User user)
+    {
+        ObservableList<String> sectorNames = inventoryListView.getSectors();
+        ObservableList<Sector> userSectors = inventoryFileHandler.getSectorsOfUser(user);
+
+        for(Sector s: userSectors)
+        {
+            sectorNames.add(s.toString());
+        }
+
+        return sectorNames;
     }
 }

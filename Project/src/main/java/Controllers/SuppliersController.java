@@ -20,8 +20,8 @@ public class SuppliersController {
     public SuppliersController(User user) {
         this.currentUser = user;
         this.view.getAddSupplierButton().setOnAction(e -> onSupplierAdd());
-        this.view.getSuppliersTableView().setItems(handler.getSuppliers());
-        this.view.getItemBoxList().setItems(InventoryFileHandler.getItemsList());
+        this.view.getSuppliersTableView().setItems(inventoryHandler.getSuppliersList());
+        this.view.getItemBoxList().setItems(inventoryHandler.getSuppliedItems());
         setEditRows();
     }
 

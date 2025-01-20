@@ -1,5 +1,6 @@
 package Views;
 
+import DAO.InventoryFileHandler;
 import DAO.UserFileHandler;
 import Models.Access;
 import Models.Permission;
@@ -46,7 +47,7 @@ public class EmployeesListView {
 
     //Change to toString of each sector available
 
-        ObservableList<String> sectors = FXCollections.observableArrayList("Electronics", "Mobile Devices", "IT");
+        ObservableList<String> sectors = FXCollections.observableArrayList(new InventoryFileHandler().getSectorNames());
         ListView<String> sectorListView = new ListView<>(sectors);
 
         Button addEmployeeButton = new Button("Register Employee");

@@ -71,8 +71,8 @@ public class Supplier implements Serializable {
         this.suppliedItems = itemsList;
     }
 
-//    @Override
-//    public String toString() {
-//        return name.getValueSafe();
-//    }
+    @Override
+    public String toString() {
+        return name.getValueSafe();
+    }
 }

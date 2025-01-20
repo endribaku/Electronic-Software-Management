@@ -137,7 +137,7 @@ public class EmployeeManagementController {
             alert.show();
         } else {
             employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissionsSelected, employeeSectorsSelected));
-
+            System.out.println(employeeAccessLevel);
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
             employeesListView.getEmployeeFullNameField().clear();

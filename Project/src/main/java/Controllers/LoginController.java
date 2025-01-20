@@ -43,10 +43,10 @@ public class LoginController {
             permissions.add("INVENTORY_ACCESS");
             ObservableList<String> sectors = FXCollections.observableArrayList();
             sectors.add("Electronics");
-//            User currentUser = handler.authenticateUser(username, password);
-            User currentUser = new User("endri", "123456",
-                    "Endri Baku", LocalDate.of(1999, 12,
-                    12), "050505", "endri.bakuak", 5000, Access.Administrator, permissions, sectors );
+            User currentUser = handler.authenticateUser(username, password);
+//            User currentUser = new User("endri", "123456",
+//                    "Endri Baku", LocalDate.of(1999, 12,
+//                    12), "050505", "endri.bakuak", 5000, Access.Administrator, permissions, sectors );
 
             if ((currentUser != null)) {
                 showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, " + username + "!");

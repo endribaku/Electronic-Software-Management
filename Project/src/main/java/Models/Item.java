@@ -18,6 +18,71 @@ public class Item implements Serializable {
     private transient DoubleProperty purchasePrice;
     private transient DoubleProperty sellingPrice;
     private transient IntegerProperty quantity;
+
+    public StringProperty itemIDProperty() {
+        return itemID;
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public StringProperty categoryProperty() {
+        return category;
+    }
+
+    public Category getCategoryProperty() {
+        return categoryProperty.get();
+    }
+
+    public ObjectProperty<Category> categoryPropertyProperty() {
+        return categoryProperty;
+    }
+
+    public void setCategoryProperty(Category categoryProperty) {
+        this.categoryProperty.set(categoryProperty);
+    }
+
+    public StringProperty supplierProperty() {
+        return supplier;
+    }
+
+    public Supplier getSupplierProperty() {
+        return supplierProperty.get();
+    }
+
+    public ObjectProperty<Supplier> supplierPropertyProperty() {
+        return supplierProperty;
+    }
+
+    public void setSupplierProperty(Supplier supplierProperty) {
+        this.supplierProperty.set(supplierProperty);
+    }
+
+    public ObjectProperty<LocalDate> purchaseDateProperty() {
+        return purchaseDate;
+    }
+
+    public DoubleProperty purchasePriceProperty() {
+        return purchasePrice;
+    }
+
+    public DoubleProperty sellingPriceProperty() {
+        return sellingPrice;
+    }
+
+    public IntegerProperty quantityProperty() {
+        return quantity;
+    }
+
+    public static int getStockThreshold() {
+        return stockThreshold;
+    }
+
+    public static void setStockThreshold(int stockThreshold) {
+        Item.stockThreshold = stockThreshold;
+    }
+
     private static int stockThreshold = 5;
 
     public Item(String name, String category,
@@ -160,5 +225,6 @@ public class Item implements Serializable {
         getQuantity += quantityToRestock;
         setQuantity(getQuantity);
     }
+
 
 }

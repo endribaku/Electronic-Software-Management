@@ -10,13 +10,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 public class InventoryView {
 
     HBox inventoryPage = new HBox();
 //    ObservableList<String> categories = FXCollections.observableArrayList();
-    ObservableList<Category> categories = FXCollections.observableArrayList(InventoryFileHandler.getCategoriesList());
+    ObservableList<Category> categories = FXCollections.observableArrayList();
     ComboBox<Category> itemCategoryListView = new ComboBox<Category>(categories);
     ListView<Category> sectorCategoryListView = new ListView<>(categories);
     ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
@@ -27,7 +29,9 @@ public class InventoryView {
     ObservableList<Item> items = FXCollections.observableArrayList();
     ListView<Item> itemListBox = new ListView<>(items);
 
-    ObservableList<String> sectors = FXCollections.observableArrayList(InventoryFileHandler.getSectorNames());
+
+
+    ObservableList<String> sectors = FXCollections.observableArrayList();
     ComboBox<String> sectorComboBox = new ComboBox<>(sectors);
 
     BorderPane createBox = new BorderPane();
@@ -54,9 +58,9 @@ public class InventoryView {
     TableColumn<Item, String> itemNameColumn = new TableColumn<>("Name");
     TableColumn<Item, String> itemCategoryColumn = new TableColumn<>("Category");
     TableColumn<Item, String> itemSupplierColumn = new TableColumn<>("Supplier");
-    TableColumn<Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
-    TableColumn<Item, Number> itemPPriceColumn = new TableColumn<>("Purchase Price");
-    TableColumn<Item, Number> itemSPriceColumn = new TableColumn<>("Selling Price");
+    TableColumn<Item, Integer> itemQuantityColumn = new TableColumn<>("Quantity");
+    TableColumn<Item, Double> itemPPriceColumn = new TableColumn<>("Purchase Price");
+    TableColumn<Item, Double> itemSPriceColumn = new TableColumn<>("Selling Price");
 
 
     public InventoryView() {
@@ -207,17 +211,17 @@ public class InventoryView {
         itemSupplierColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         itemSupplierColumn.setOnEditCommit(e -> e.getRowValue().setSupplier(e.getNewValue()));
         itemQuantityColumn.setPrefWidth(100);
-        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("quantity"));
-        itemQuantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<Item, Integer>("quantity"));
+        itemQuantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         itemQuantityColumn.setOnEditCommit(e -> e.getRowValue().setQuantity(e.getNewValue().intValue()));
         itemPPriceColumn.setPrefWidth(100);
-        itemPPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("purchasePrice"));
-        itemPPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-        itemPPriceColumn.setOnEditCommit(e -> e.getRowValue().setPurchasePrice(e.getNewValue().intValue()));
+        itemPPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Double>("purchasePrice"));
+        itemPPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        itemPPriceColumn.setOnEditCommit(e -> e.getRowValue().setPurchasePrice(e.getNewValue().doubleValue()));
         itemSPriceColumn.setPrefWidth(100);
-        itemSPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Number>("sellingPrice"));
-        itemSPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
-        itemSPriceColumn.setOnEditCommit(e -> e.getRowValue().setSellingPrice(e.getNewValue().intValue()));
+        itemSPriceColumn.setCellValueFactory(new PropertyValueFactory<Item, Double>("sellingPrice"));
+        itemSPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        itemSPriceColumn.setOnEditCommit(e -> e.getRowValue().setSellingPrice(e.getNewValue().doubleValue()));
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
         inventoryTableView.setMaxWidth(1000);
         updateInventoryButton.setStyle("-fx-font: 11pt Helvetica;");
@@ -243,15 +247,15 @@ public class InventoryView {
         return itemSupplierColumn;
     }
 
-    public TableColumn<Item, Number> getItemQuantityColumn() {
+    public TableColumn<Item, Integer> getItemQuantityColumn() {
         return itemQuantityColumn;
     }
 
-    public TableColumn<Item, Number> getItemPPriceColumn() {
+    public TableColumn<Item, Double> getItemPPriceColumn() {
         return itemPPriceColumn;
     }
 
-    public TableColumn<Item, Number> getItemSPriceColumn() {
+    public TableColumn<Item, Double> getItemSPriceColumn() {
         return itemSPriceColumn;
     }
 
@@ -383,6 +387,20 @@ public class InventoryView {
         this.itemCategoryListView = itemCategoryListView;
     }
 
+
+
+    public ListView<Category> getSectorCategoryListView() {
+        return sectorCategoryListView;
+    }
+
+    public void setSectorCategoryListView(ListView<Category> sectorCategoryListView) {
+        this.sectorCategoryListView = sectorCategoryListView;
+    }
+
+    public TextField getSectorNameField() {
+        return sectorNameField;
+    }
+
     public ObservableList<String> getSectors() {
         return sectors;
     }
@@ -397,17 +415,5 @@ public class InventoryView {
 
     public void setSectorComboBox(ComboBox<String> sectorComboBox) {
         this.sectorComboBox = sectorComboBox;
-    }
-
-    public ListView<Category> getSectorCategoryListView() {
-        return sectorCategoryListView;
-    }
-
-    public void setSectorCategoryListView(ListView<Category> sectorCategoryListView) {
-        this.sectorCategoryListView = sectorCategoryListView;
-    }
-
-    public TextField getSectorNameField() {
-        return sectorNameField;
     }
 }

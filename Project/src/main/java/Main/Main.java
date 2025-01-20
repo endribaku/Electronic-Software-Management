@@ -28,82 +28,95 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-//        // Create Items
-//        Item item1 = new Item(
-//                "Laptop",
-//                "Electronics",
-//                "TechSupplier Inc.",
-//                LocalDate.of(2025, 1, 1),
-//                800.00,
-//                1200.00,
-//                10
-//        );
-//
-//        Item item2 = new Item(
-//                "Headphones",
-//                "Electronics",
-//                "AudioWorld Co.",
-//                LocalDate.of(2025, 1, 2),
-//                50.00,
-//                80.00,
-//                25
-//        );
-//
-//        Item item3 = new Item(
-//                "Apple",
-//                "Groceries",
-//                "FreshFarms",
-//                LocalDate.of(2025, 1, 3),
-//                0.50,
-//                1.00,
-//                50
-//        );
-//
-//        Item item4 = new Item(
-//                "Milk",
-//                "Groceries",
-//                "DairySupplies Ltd.",
-//                LocalDate.of(2025, 1, 4),
-//                1.20,
-//                2.00,
-//                20
-//        );
-//
-//        // Create Categories
-//        ArrayList<Item> electronicsItems = new ArrayList<>();
-//        electronicsItems.add(item1);
-//        electronicsItems.add(item2);
-//
-//        Category electronics = new Category("Electronics", electronicsItems);
-//
-//        ArrayList<Item> groceriesItems = new ArrayList<>();
-//        groceriesItems.add(item3);
-//        groceriesItems.add(item4);
-//
-//        Category groceries = new Category("Groceries", groceriesItems);
-//
-//        // Create Sectors
-//        ArrayList<Category> retailCategories = new ArrayList<>();
-//        retailCategories.add(electronics);
-//        retailCategories.add(groceries);
-//
-//        Sector retail = new Sector("Retail", retailCategories);
-//
-//        ArrayList<Category> servicesCategories = new ArrayList<>();
-//        Sector services = new Sector("Services", servicesCategories); // Empty category list for Services
-//
-//        // Add Sectors to Inventory
-//        ArrayList<Sector> inventorySectors = new ArrayList<>();
-//        inventorySectors.add(retail);
-//        inventorySectors.add(services);
-//
-//        Inventory inventory = new Inventory();
-//        inventory.setSectors(FXCollections.observableArrayList(inventorySectors));
-//
-//        InventoryFileHandler.setInventory(inventory);
-//        System.out.println("Inventory setup complete:");
-//        System.out.println("Sectors: " + inventory.getSectors());
-//        System.out.println("Categories in Retail Sector: " + retail.getCategories());
+        // Create Items for Categories
+        Item laptop = new Item("Laptop", "Electronics", "TechSupplier", LocalDate.now().minusDays(30), 500.0, 700.0, 25);
+        Item smartphone = new Item("Smartphone", "Electronics", "TechSupplier", LocalDate.now().minusDays(20), 300.0, 500.0, 40);
+
+        Item sofa = new Item("Sofa", "Furniture", "HomeSupplier", LocalDate.now().minusDays(60), 200.0, 350.0, 10);
+        Item table = new Item("Table", "Furniture", "HomeSupplier", LocalDate.now().minusDays(50), 150.0, 250.0, 15);
+
+        Item keyboard = new Item("Keyboard", "Electronics", "PeripheralSupplier", LocalDate.now().minusDays(15), 25.0, 40.0, 50);
+        Item mouse = new Item("Mouse", "Electronics", "PeripheralSupplier", LocalDate.now().minusDays(10), 15.0, 25.0, 75);
+
+        // Create Categories and Assign Items
+        ArrayList<Item> electronicsItems = new ArrayList<>();
+        electronicsItems.add(laptop);
+        electronicsItems.add(smartphone);
+
+        ArrayList<Item> furnitureItems = new ArrayList<>();
+        furnitureItems.add(sofa);
+        furnitureItems.add(table);
+
+        ArrayList<Item> peripheralItems = new ArrayList<>();
+        peripheralItems.add(keyboard);
+        peripheralItems.add(mouse);
+
+        Category electronics = new Category("Electronics", electronicsItems, "Technology");
+        Category furniture = new Category("Furniture", furnitureItems, "Home");
+        Category peripherals = new Category("Peripherals", peripheralItems, "Technology");
+
+        // Create Sectors and Assign Categories
+        ArrayList<Category> techCategories = new ArrayList<>();
+        techCategories.add(electronics);
+        techCategories.add(peripherals);
+
+        ArrayList<Category> homeCategories = new ArrayList<>();
+        homeCategories.add(furniture);
+
+        Sector techSector = new Sector("Technology", techCategories);
+        Sector homeSector = new Sector("Home", homeCategories);
+
+        // Create Suppliers and Assign Items
+        ArrayList<Item> techSupplierItems = new ArrayList<>();
+        techSupplierItems.add(laptop);
+        techSupplierItems.add(smartphone);
+
+        ArrayList<Item> homeSupplierItems = new ArrayList<>();
+        homeSupplierItems.add(sofa);
+        homeSupplierItems.add(table);
+
+        ArrayList<Item> peripheralSupplierItems = new ArrayList<>();
+        peripheralSupplierItems.add(keyboard);
+        peripheralSupplierItems.add(mouse);
+
+        Supplier techSupplier = new Supplier("TechSupplier", techSupplierItems);
+        Supplier homeSupplier = new Supplier("HomeSupplier", homeSupplierItems);
+        Supplier peripheralSupplier = new Supplier("PeripheralSupplier", peripheralSupplierItems);
+
+        // Create Inventory and Assign Sectors and Suppliers
+        Inventory inventory = new Inventory();
+
+        inventory.addSector(techSector);
+        inventory.addSector(homeSector);
+
+        inventory.addSupplier(techSupplier);
+        inventory.addSupplier(homeSupplier);
+        inventory.addSupplier(peripheralSupplier);
+
+        // Print Inventory Details
+        System.out.println("Inventory Sectors:");
+        for (Sector sector : inventory.getSectors()) {
+            System.out.println("Sector: " + sector.getSectorName());
+            for (Category category : sector.getCategories()) {
+                System.out.println("  Category: " + category.getName());
+                for (Item item : category.getItems()) {
+                    System.out.println("    Item: " + item.getName() + ", Quantity: " + item.getQuantity());
+                }
+            }
+        }
+
+        System.out.println("\nInventory Suppliers:");
+        for (Supplier supplier : inventory.getSuppliers()) {
+            System.out.println("Supplier: " + supplier.getName());
+            for (Item item : supplier.getSuppliedItems()) {
+                System.out.println("  Item: " + item.getName() + ", Quantity: " + item.getQuantity());
+            }
+        }
+
+
+
+
+
 
         launch(args);
     }
