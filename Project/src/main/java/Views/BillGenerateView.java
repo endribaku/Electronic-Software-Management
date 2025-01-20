@@ -16,6 +16,9 @@ import java.util.Date;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
+
 public class BillGenerateView {
     HBox billGeneratePage = new HBox();
 
@@ -45,6 +48,8 @@ public class BillGenerateView {
 
     TextField searchBar = new TextField();
 
+    TextField quantityTextField = new TextField();
+
     ListView<Item> itemListView = new ListView<>(filteredItemList);
 
     ObservableList<Bill_Item> billList = FXCollections.observableArrayList();
@@ -55,9 +60,9 @@ public class BillGenerateView {
 
     TableView<Bill_Item> billTableView = new TableView<>(billList);
 
-    TableColumn<Bill_Item, Number> itemIDColumn = new TableColumn<>("ID");
+    TableColumn<Bill_Item, String> itemIDColumn = new TableColumn<>("ID");
     TableColumn<Bill_Item, String> itemNameColumn = new TableColumn<>("Name");
-    TableColumn<Bill_Item, Number> itemQuantityColumn = new TableColumn<>("Quantity");
+    TableColumn<Bill_Item, Integer> itemQuantityColumn = new TableColumn<>("Quantity");
     TableColumn<Bill_Item, Double> itemPriceColumn = new TableColumn<>("Price");
     Button createBillButton = new Button("Create Bill");
 
@@ -80,14 +85,6 @@ public class BillGenerateView {
         });
 
         //Setting values of columns to be automatically added on the columns based on the billlist
-        itemIDColumn.setCellValueFactory(new PropertyValueFactory<>("itemId"));
-        itemNameColumn.setCellValueFactory(new PropertyValueFactory<>("itemName"));
-        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        itemPriceColumn.setCellValueFactory(cellData -> {
-            Bill_Item billItem = cellData.getValue();
-            return new SimpleDoubleProperty(billItem.getTotalPrice()).asObject();
-        });
-
 
 //        itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -119,7 +116,6 @@ public class BillGenerateView {
 
         GridPane quantityGrid = new GridPane();
         Label quantityLabel = new Label("Quantity:");
-        TextField quantityTextField = new TextField();
         quantityLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
         quantityTextField.setStyle("-fx-font: 11pt Helvetica;");
         quantityGrid.add(quantityLabel, 0, 0);
@@ -139,6 +135,19 @@ public class BillGenerateView {
         billListLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
         billListBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 20px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         billListBox.setSpacing(10);
+
+        itemIDColumn.setMinWidth(200);
+        itemNameColumn.setMinWidth(200);
+        itemQuantityColumn.setMinWidth(200);
+        itemPriceColumn.setMinWidth(200);
+        itemIDColumn.setCellValueFactory(new PropertyValueFactory<>("itemID"));
+        itemNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        itemQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        itemPriceColumn.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        itemIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        itemPriceColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        itemQuantityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         billTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemQuantityColumn, itemPriceColumn);
         billTableView.setPrefWidth(1000);
@@ -188,15 +197,39 @@ public class BillGenerateView {
         return billList;
     }
 
-    public ListView<Bill_Item> getBillListView() {
-        return billListView;
-    }
-
     public Button getAddToBillButton() {
         return addToBillButton;
     }
 
     public Button getCreateBillButton() {
         return createBillButton;
+    }
+
+    public TextField getQuantityTextField() {
+        return quantityTextField;
+    }
+
+    public VBox getBillListBox() {
+        return billListBox;
+    }
+
+    public TableView<Bill_Item> getBillTableView() {
+        return billTableView;
+    }
+
+    public TableColumn<Bill_Item, String> getItemIDColumn() {
+        return itemIDColumn;
+    }
+
+    public TableColumn<Bill_Item, String> getItemNameColumn() {
+        return itemNameColumn;
+    }
+
+    public TableColumn<Bill_Item, Integer> getItemQuantityColumn() {
+        return itemQuantityColumn;
+    }
+
+    public TableColumn<Bill_Item, Double> getItemPriceColumn() {
+        return itemPriceColumn;
     }
 }

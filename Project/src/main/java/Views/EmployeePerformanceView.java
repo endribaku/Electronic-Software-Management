@@ -6,10 +6,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.IntegerStringConverter;
+import javafx.util.converter.LocalDateStringConverter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class EmployeePerformanceView {
     private HBox employeePerformancePage = new HBox();
@@ -22,10 +27,10 @@ public class EmployeePerformanceView {
     FilteredList<Bill> filteredBills = new FilteredList<>(bills, p -> true);
 
     TableView<Bill> billTableView = new TableView<>(filteredBills);
-    TableColumn<Bill, Number> billNumberColumn = new TableColumn<>("ID");
-    TableColumn<Bill, Cashier> cashierColumn = new TableColumn<>("Cashier");
-    TableColumn<Bill, Sector> sectorColumn = new TableColumn<>("Sector");
-    TableColumn<Bill, Item> itemsSoldColumn = new TableColumn<>("Items Sold");
+    TableColumn<Bill, Integer> billNumberColumn = new TableColumn<>("ID");
+    TableColumn<Bill, User> cashierColumn = new TableColumn<>("Cashier");
+//    TableColumn<Bill, Sector> sectorColumn = new TableColumn<>("Sector");
+    TableColumn<Bill, ArrayList<Bill_Item>> itemsSoldColumn = new TableColumn<>("Items Sold");
     TableColumn<Bill, Number> totalPriceColumn = new TableColumn<>("Total Price");
     TableColumn<Bill, LocalDate> dateOfSaleColumn = new TableColumn<>("Date of Sale");
 
@@ -50,11 +55,22 @@ public class EmployeePerformanceView {
                 if (newValue == null || newValue.isEmpty()) {
                     return true; // Show all items
                 }
-                return bill.getCashier().getFullName().toLowerCase().contains(newValue.toLowerCase()); // Filter items
+                return bill.getUser().getFullName().toLowerCase().contains(newValue.toLowerCase()); // Filter items
             });
         });
 
-        billTableView.getColumns().addAll(billNumberColumn, cashierColumn, sectorColumn, itemsSoldColumn, totalPriceColumn, dateOfSaleColumn);
+        billTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        billTableView.setEditable(false);
+        billNumberColumn.setCellValueFactory(new PropertyValueFactory<>("billNumber"));
+        billNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        cashierColumn.setCellValueFactory(new PropertyValueFactory<>("user"));
+        itemsSoldColumn.setCellValueFactory(new PropertyValueFactory<>("itemsSold"));
+        totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+        dateOfSaleColumn.setCellValueFactory(new PropertyValueFactory<>("dateOfSale"));
+        dateOfSaleColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter()));
+
+
+        billTableView.getColumns().addAll(billNumberColumn, cashierColumn, itemsSoldColumn, totalPriceColumn, dateOfSaleColumn);
         billTableView.setPrefWidth(500);
 
         billListBox.getChildren().addAll(employeePerformanceLabel, billDateFilter, searchBar, billTableView);
@@ -103,20 +119,16 @@ public class EmployeePerformanceView {
         return billTableView;
     }
 
-    public TableColumn<Bill, Number> getBillNumberColumn() {
+    public TableColumn<Bill, Integer> getBillNumberColumn() {
         return billNumberColumn;
     }
 
-    public TableColumn<Bill, Cashier> getCashierColumn() {
+    public TableColumn<Bill, User> getCashierColumn() {
         return cashierColumn;
     }
 
-    public TableColumn<Bill, Item> getItemsSoldColumn() {
+    public TableColumn<Bill, ArrayList<Bill_Item>> getItemsSoldColumn() {
         return itemsSoldColumn;
-    }
-
-    public TableColumn<Bill, Sector> getSectorColumn() {
-        return sectorColumn;
     }
 
     public TableColumn<Bill, Number> getTotalPriceColumn() {

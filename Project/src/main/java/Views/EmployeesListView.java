@@ -67,7 +67,10 @@ public class EmployeesListView {
         TableColumn<User, String> employeePhoneNumberColumn = new TableColumn<>("Phone Number");
         TableColumn<User, Double> employeeSalaryColumn = new TableColumn<>("Salary");
 
+        HBox updateTableButtons = new HBox();
         Button updateEmployeeListButton = new Button("Update Table");
+        Button deleteEmployeeButton = new Button("Delete Employee");
+        Button editEmployeeButton = new Button("Edit Employee");
 
 
         public EmployeesListView() {
@@ -212,9 +215,14 @@ public class EmployeesListView {
             ));
             employeeSalaryColumn.setOnEditCommit(e -> e.getRowValue().setSalary(e.getNewValue()));
             employeesTableView.getColumns().addAll(employeeIDColumn, employeeFullNameColumn, employeeAccessLevelColumn, employeeSectorColumn, employeePermissionsColumn, employeeUsernameColumn, employeePasswordColumn, employeeDOBColumn, employeeEmailColumn, employeePhoneNumberColumn, employeeSalaryColumn);
-            updateEmployeeListButton.setStyle("-fx-font: 11pt Helvetica;");
 
-            employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView, updateEmployeeListButton);
+            updateEmployeeListButton.setStyle("-fx-font: 11pt Helvetica;");
+            editEmployeeButton.setStyle("-fx-font: 11pt Helvetica");
+            deleteEmployeeButton.setStyle("-fx-font: 11pt Helvetica");
+            updateTableButtons.setSpacing(200);
+            updateTableButtons.getChildren().addAll(updateEmployeeListButton, editEmployeeButton, deleteEmployeeButton);
+
+            employeeListBox.getChildren().addAll(employeeListLabel, employeesTableView, updateTableButtons);
             employeesPage.getChildren().addAll(addEmployeeBox, employeeListBox);
             employeesPage.setSpacing(10);
         }
@@ -349,5 +357,16 @@ public class EmployeesListView {
         return employeePermissionsColumn;
     }
 
+    public HBox getUpdateTableButtons() {
+        return updateTableButtons;
+    }
+
+    public Button getDeleteEmployeeButton() {
+        return deleteEmployeeButton;
+    }
+
+    public Button getEditEmployeeButton() {
+        return editEmployeeButton;
+    }
 }
 

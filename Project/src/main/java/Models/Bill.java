@@ -1,106 +1,157 @@
 package Models;
 
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.io.*;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
-public class Bill {
-    private int billNumber;
-    private User cashier;
-    private Sector sector;
-    private ArrayList<Bill_Item> itemsSold;
-    private double totalAmount;
-    private LocalDate dateOfSale;
-    private static int counter = 0;
+public class Bill implements Serializable {
+    private transient IntegerProperty billNumber;
+    private transient ObjectProperty<User> user;
+    private transient ListProperty<Bill_Item> itemsSold;
+    private transient DoubleProperty totalAmount;
+    //private transient ObjectProperty<Sector> sector;
+    private transient ObjectProperty<LocalDate> dateOfSale;
+    private static int counter = 1;
 
-    public Bill(Cashier cashier, Sector sector) {
-        this.billNumber = counter + 1;
-        this.cashier = cashier;
-        this.sector = sector;
-        this.totalAmount = 0.0;
-        this.dateOfSale = LocalDate.now();
+    public Bill(User user, ListProperty<Bill_Item> itemsSold, double totalAmount) {
+        this.billNumber = new SimpleIntegerProperty(counter);
+        this.user = new SimpleObjectProperty<>(user);
+        this.itemsSold = new SimpleListProperty<Bill_Item>(itemsSold);
+        this.totalAmount = new SimpleDoubleProperty(totalAmount);
+        this.dateOfSale = new SimpleObjectProperty<>(LocalDate.now());
+        counter++;
     }
 
-    public Bill(){
-        this.billNumber = 1;
+    public Bill() {
+        this.billNumber = new SimpleIntegerProperty(counter);
+        this.user = new SimpleObjectProperty<>();
+        this.itemsSold = new SimpleListProperty<Bill_Item>(FXCollections.observableArrayList());
+        this.totalAmount = new SimpleDoubleProperty();
+        this.dateOfSale = new SimpleObjectProperty<>(LocalDate.now());
+        counter++;
     }
 
     public int getBillNumber() {
+        return billNumber.get();
+    }
+
+    public IntegerProperty billNumberProperty() {
         return billNumber;
     }
 
     public void setBillNumber(int billNumber) {
-        this.billNumber = billNumber;
+        this.billNumber.set(billNumber);
     }
 
-    public User getCashier() {
-        return cashier;
+    public User getUser() {
+        return user.get();
     }
 
-    public void setCashier(User cashier) {
-        this.cashier = cashier;
+    public ObjectProperty<User> userProperty() {
+        return user;
     }
 
-    public Sector getSector() {
-        return sector;
+    public void setUser(User user) {
+        this.user.set(user);
     }
 
-    public void setSector(Sector sector) {
-        this.sector = sector;
+    public ListProperty<Bill_Item> itemsSoldProperty() {
+        return itemsSold;
     }
 
-    public Double getTotalAmount() {
+    public void setItemsSold(ObservableList<Bill_Item> itemsSold) {
+        this.itemsSold.set(itemsSold);
+    }
+
+    public double getTotalAmount() {
+        return totalAmount.get();
+    }
+
+    public DoubleProperty totalAmountProperty() {
         return totalAmount;
     }
 
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount.set(totalAmount);
+    }
+
+//    public Sector getSector() {
+//        return sector.get();
+//    }
+//
+//    public ObjectProperty<Sector> sectorProperty() {
+//        return sector;
+//    }
+//
+//    public void setSector(Sector sector) {
+//        this.sector.set(sector);
+//    }
+
     public LocalDate getDateOfSale() {
+        return dateOfSale.get();
+    }
+
+    public ObjectProperty<LocalDate> dateOfSaleProperty() {
         return dateOfSale;
     }
 
-    public void setDateOfSale(LocalDate dateOfSale) {this.dateOfSale = dateOfSale;}
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setDateOfSale(LocalDate dateOfSale) {
+        this.dateOfSale.set(dateOfSale);
     }
 
     public void setTotalAmountfromItemsSold() {
         for (Bill_Item item : itemsSold) {
-            this.totalAmount += item.getTotalPrice();
+            this.totalAmount.set(this.totalAmount.get() + item.getTotalPrice());
         }
     }
 
-    public ArrayList<Bill_Item> getItemsSold() {return itemsSold;}
-    public void setItemsSold(ArrayList<Bill_Item> itemsSold) {this.itemsSold = itemsSold;}
-
-    public void addBillItem(Item item, int quantityToReduce) {
-
-        if(item.getQuantity() == 0) {
-            String message = String.format("Item %s is out of stock!", item.getName());
-            //sector.getManager().notifyManager(message);
-            return;
-        }
-
-        if(quantityToReduce > item.getQuantity()) {
-            String message = String.format("Not enough stock for item %s!", item.getName());
-            return;
-        }
-
-            Bill_Item billItem = new Bill_Item(item, quantityToReduce, item.getSellingPrice());
-            item.reduceStock(quantityToReduce);
-            itemsSold.add(billItem);
-            totalAmount += billItem.getTotalPrice();
-            if(item.getQuantity() == 0)
-            {
-                String message = String.format("Item %s has been sold out!", item.getName());
-                //sector.getManager().notifyManager(message);
-            }
-
-            if(item.needsRestocking())
-            {
-                String message = String.format("Category %s needs restocking!", item.getCategory());
-                //sector.getManager().notifyManager(message);
-            }
-
+    public ObservableList<Bill_Item> getItemsSold() {
+        return itemsSold.get();
     }
+
+    public double getTotalAmountfromItemsSold() {
+        for (Bill_Item item : itemsSold) {
+            this.totalAmount.set(this.totalAmount.get() + item.getTotalPrice());
+        }
+        return this.totalAmount.get();
+    }
+
+//    public void addBillItem(Item item, int quantityToReduce) {
+//
+//        if(item.getQuantity() == 0) {
+//            String message = String.format("Item %s is out of stock!", item.getName());
+//            //sector.getManager().notifyManager(message);
+//            return;
+//        }
+//
+//        if(quantityToReduce > item.getQuantity()) {
+//            String message = String.format("Not enough %s items in stock!", item.getName());
+//            return;
+//        }
+//
+//            Bill_Item billItem = new Bill_Item(item, quantityToReduce, item.getSellingPrice());
+//            item.reduceStock(quantityToReduce);
+//            itemsSold.add(billItem);
+//            totalAmount += billItem.getTotalPrice();
+//            if(item.getQuantity() == 0)
+//            {
+//                String message = String.format("Item %s has been sold out!", item.getName());
+//                //sector.getManager().notifyManager(message);
+//            }
+//
+//            if(item.needsRestocking())
+//            {
+//                String message = String.format("Category %s needs restocking!", item.getCategory());
+//                //sector.getManager().notifyManager(message);
+//            }
+//
+//    }
 
 //    public Bill_Item getBillItem(Bill_Item item){
 //        for (Bill_Item b : itemsSold){
@@ -110,41 +161,73 @@ public class Bill {
 //        return null;
 //    }
 
-    public String generateBillText() {
-        StringBuilder billText = new StringBuilder();
+//    public String generateBillText() {
+//        StringBuilder billText = new StringBuilder();
+//
+//        // Add header
+//        billText.append("-----------------------------------------\n");
+//        billText.append("                ELECTRONIC STORE         \n");
+//        billText.append("-----------------------------------------\n");
+//        billText.append(String.format("Bill Number:    %d%n", billNumber));
+//        billText.append(String.format("Cashier ID:   %s%n", user.getUser()));
+////        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
+//        billText.append(String.format("Date:           %s%n", dateOfSale));
+//        billText.append("\n");
+//
+//        // Add items and quantities
+//        billText.append("-----------------------------------------\n");
+//        billText.append("Items               Quantity     Price\n");
+//        billText.append("-----------------------------------------\n");
+//        for (Bill_Item item : itemsSold) {
+//            billText.append(String.format("%-20s %-10d %.2f%n",
+//                    item.getItem().getName(),
+//                    item.getQuantity(),
+//                    item.getTotalPrice()));
+//        }
+//
+//        // Add total amount
+//        billText.append("-----------------------------------------\n");
+//        billText.append(String.format("Total Price:        $%.2f%n", totalAmount));
+//        billText.append("-----------------------------------------\n");
+//        billText.append("         Thank you for shopping with us! \n");
+//        billText.append("-----------------------------------------\n");
+//
+//        // Print the bill
+//        System.out.println(billText.toString());
+//        return billText.toString();
+//    }
 
-        // Add header
-        billText.append("-----------------------------------------\n");
-        billText.append("                ELECTRONIC STORE         \n");
-        billText.append("-----------------------------------------\n");
-        billText.append(String.format("Bill Number:    %d%n", billNumber));
-        billText.append(String.format("Cashier ID:   %s%n", cashier.getUserID()));
-//        billText.append(String.format("Sector:         %s%n", sector.getSectorName()));
-        billText.append(String.format("Date:           %s%n", dateOfSale));
-        billText.append("\n");
-
-        // Add items and quantities
-        billText.append("-----------------------------------------\n");
-        billText.append("Items               Quantity     Price\n");
-        billText.append("-----------------------------------------\n");
-        for (Bill_Item item : itemsSold) {
-            billText.append(String.format("%-20s %-10d %.2f%n",
-                    item.getItem().getName(),
-                    item.getQuantity(),
-                    item.getTotalPrice()));
-        }
-
-        // Add total amount
-        billText.append("-----------------------------------------\n");
-        billText.append(String.format("Total Price:        $%.2f%n", totalAmount));
-        billText.append("-----------------------------------------\n");
-        billText.append("         Thank you for shopping with us! \n");
-        billText.append("-----------------------------------------\n");
-
-        // Print the bill
-        System.out.println(billText.toString());
-        return billText.toString();
+    @Serial
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
+        outputStream.writeInt(billNumber.get());
+        outputStream.writeObject(user.get());
+        outputStream.writeInt(itemsSold.size());
+        for (Bill_Item item : itemsSold)
+            outputStream.writeObject(item);
+        outputStream.writeDouble(totalAmount.get());
+//        outputStream.writeObject(sector.get());
+        outputStream.writeObject(dateOfSale.get());
     }
 
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        this.billNumber = new SimpleIntegerProperty(inputStream.readInt());
+        this.user = new SimpleObjectProperty<>((User) inputStream.readObject());
+        int size = inputStream.readInt();
+        ListProperty<Bill_Item> itemsList = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for(int i = 0; i < size; i++) {
+            itemsList.add((Bill_Item) inputStream.readObject());
+        }
+        this.itemsSold = itemsList;
+        this.totalAmount = new SimpleDoubleProperty(inputStream.readDouble());
+//        this.sector = new SimpleObjectProperty<>((Sector) inputStream.readObject());
+        this.dateOfSale = new SimpleObjectProperty<>((LocalDate) inputStream.readObject());
+    }
+
+    @Override
+    public String toString() {
+        return "Bill Nr." + billNumber.get();
+    }
 
 }

@@ -29,8 +29,6 @@ public class InventoryView {
     ObservableList<Item> items = FXCollections.observableArrayList();
     ListView<Item> itemListBox = new ListView<>(items);
 
-
-
     ObservableList<String> sectors = FXCollections.observableArrayList();
     ComboBox<String> sectorComboBox = new ComboBox<>(sectors);
 
@@ -51,6 +49,9 @@ public class InventoryView {
     TextField itemSPriceField = new TextField();
     Button addItemButton = new Button("Create Item");
 
+    HBox updateInventoryButtonsList = new HBox();
+    Button editItemButton = new Button("Edit Item");
+    Button deleteItemButton = new Button("Delete Item");
     Button updateInventoryButton = new Button("Update Inventory");
 
     TableView<Item> inventoryTableView = new TableView<>();
@@ -225,6 +226,10 @@ public class InventoryView {
         inventoryTableView.getColumns().addAll(itemIDColumn, itemNameColumn, itemCategoryColumn, itemSupplierColumn, itemQuantityColumn, itemPPriceColumn, itemSPriceColumn);
         inventoryTableView.setMaxWidth(1000);
         updateInventoryButton.setStyle("-fx-font: 11pt Helvetica;");
+        editItemButton.setStyle("-fx-font: 11pt Helvetica");
+        deleteItemButton.setStyle("-fx-font: 11pt Helvetica");
+        updateInventoryButtonsList.setSpacing(200);
+        updateInventoryButtonsList.getChildren().addAll(updateInventoryButton, editItemButton, deleteItemButton);
         inventoryListBox.getChildren().addAll(inventoryListLabel, inventoryTableView, updateInventoryButton);
 
         inventoryPage.getChildren().addAll(createBox, inventoryListBox);
@@ -415,5 +420,17 @@ public class InventoryView {
 
     public void setSectorComboBox(ComboBox<String> sectorComboBox) {
         this.sectorComboBox = sectorComboBox;
+    }
+
+    public HBox getUpdateInventoryButtonsList() {
+        return updateInventoryButtonsList;
+    }
+
+    public Button getEditItemButton() {
+        return editItemButton;
+    }
+
+    public Button getDeleteItemButton() {
+        return deleteItemButton;
     }
 }

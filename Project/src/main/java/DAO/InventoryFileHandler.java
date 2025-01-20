@@ -115,7 +115,6 @@ public class InventoryFileHandler {
         System.out.println("Category added and saved successfully.");
     }
 
-
     public void addItem(Category targetCategory, Supplier targetSupplier, Item newItem) {
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
@@ -305,10 +304,7 @@ public class InventoryFileHandler {
         }
 
         return sectorsList;
-
     }
-
-
 
 
     public ObservableList<Supplier> getSuppliersList() {

@@ -147,7 +147,7 @@ public class EmployeeManagementController {
             employeesListView.getEmployeeEmailField().clear();
             employeesListView.getEmployeePhoneNumberField().clear();
             employeesListView.getEmployeeSalaryField().clear();
-            employeesListView.getAccessLevelList().setValue(null);
+            employeesListView.getAccessLevelList().setValue(Access.Cashier);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");

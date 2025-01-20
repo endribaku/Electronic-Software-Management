@@ -23,14 +23,12 @@ public class EmployeePerformanceController {
     private UserFileHandler userFileHandler = new UserFileHandler();
     private ItemFileHandler itemFileHandler = new ItemFileHandler();
     private BillFileHandler billFileHandler = new BillFileHandler();
-    private SectorFileHandler sectorFileHandler = new SectorFileHandler();
     private User currentUser;
     public EmployeePerformanceController() {
-        this.view.getBillTableView().setItems(billFileHandler.getBillsFromDirectory());
+        this.view.getBillTableView().setItems(BillFileHandler.getBills());
         setupBillDateFilter();
         setupSearchBar();
     }
-
 
     // Controller setting the currentUser as the one who controls
     public EmployeePerformanceController(User user) {
@@ -60,10 +58,7 @@ public class EmployeePerformanceController {
             billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getBillNumber();});
 
         this.view.getCashierColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getCashier().toString();});
-
-        this.view.getSectorColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getSector().toString();});
+            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getUser().toString();});
 
         this.view.getTotalPriceColumn().setOnEditCommit(e->{
             billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getTotalAmount();});
@@ -146,7 +141,7 @@ public class EmployeePerformanceController {
                 }
 
                 // Compare cashier names ignoring case
-                return bill.getCashier().getUsername().toLowerCase().contains(newValue.toLowerCase());
+                return bill.getUser().getUsername().toLowerCase().contains(newValue.toLowerCase());
             });
         });
     }
