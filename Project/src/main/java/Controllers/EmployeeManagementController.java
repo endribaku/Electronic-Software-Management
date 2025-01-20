@@ -5,6 +5,7 @@ import Models.*;
 import Views.EmployeesListView;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.SelectionMode;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,22 @@ public class EmployeeManagementController {
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
+        this.employeesListView.getAccessLevelList().setOnAction(e -> {
+            if(this.employeesListView.getAccessLevelList().getValue().equals(Access.Cashier)) {
+                this.employeesListView.getPermissionListView().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+                this.employeesListView.getSectorListView().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            }
+            if(this.employeesListView.getAccessLevelList().getValue().equals(Access.Manager)) {
+                this.employeesListView.getPermissionListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                this.employeesListView.getSectorListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            }
+            if(this.employeesListView.getAccessLevelList().getValue().equals(Access.Administrator)) {
+                this.employeesListView.getPermissionListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                this.employeesListView.getSectorListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                this.employeesListView.getPermissionListView().getSelectionModel().selectAll();
+                this.employeesListView.getSectorListView().getSelectionModel().selectAll();
+            }
+        });
         setEditRows();
     }
 
@@ -105,14 +122,19 @@ public class EmployeeManagementController {
             employeeSalary = 0;
         }
 
-        if(employeeAccessLevel == null)
-            employeeAccessLevel = Access.Cashier;
         if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty()
                 || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0 || employeePermissionsSelected.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
                 alert.show();
+        } else if(employeeAccessLevel == Access.Administrator
+                && (employeePermissionsSelected.size() != this.employeesListView.getPermissionListView().getItems().size()
+                || employeeSectorsSelected.size() != this.employeesListView.getSectorListView().getItems().size() )) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Admin must have all permissions and sectors selected!");
+            alert.show();
         } else {
             employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissionsSelected, employeeSectorsSelected));
 

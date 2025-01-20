@@ -137,8 +137,10 @@ public class EmployeesListView {
             employeeSectorLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
             addEmployeeGrid.add(employeeSectorLabel, 1, 8);
             permissionListView.setStyle("-fx-font: 11pt Helvetica;");
+            permissionListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             addEmployeeGrid.add(permissionListView, 0, 9);
             sectorListView.setStyle("-fx-font: 11pt Helvetica;");
+            sectorListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             addEmployeeGrid.add(sectorListView, 1, 9);
             //Create User Button
             addEmployeeButton.setStyle("-fx-font: 11pt Helvetica;");
@@ -175,10 +177,10 @@ public class EmployeesListView {
             employeeAccessLevelColumn.setCellValueFactory(new PropertyValueFactory<User, Access>("accessLevel"));
             employeeAccessLevelColumn.setCellFactory(ComboBoxTableCell.forTableColumn(new Access[] { Access.Cashier, Access.Manager, Access.Administrator }));
             employeeAccessLevelColumn.setOnEditCommit(e -> e.getRowValue().setAccessLevel(e.getNewValue()));
-            employeeSectorColumn.setPrefWidth(80);
+            employeeSectorColumn.setMaxWidth(80);
             employeeSectorColumn.setCellValueFactory(new PropertyValueFactory<>("sector"));
             employeeSectorColumn.setCellFactory(ComboBoxTableCell.forTableColumn(sectors));
-            employeePermissionsColumn.setPrefWidth(80);
+            employeePermissionsColumn.setMaxWidth(80);
             employeePermissionsColumn.setCellValueFactory(new PropertyValueFactory<>("permissions"));
             employeePermissionsColumn.setCellFactory(ComboBoxTableCell.forTableColumn(permissions));
             employeeDOBColumn.setPrefWidth(80);
