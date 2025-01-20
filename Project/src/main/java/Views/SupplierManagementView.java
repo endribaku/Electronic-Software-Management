@@ -24,7 +24,7 @@ public class SupplierManagementView {
 
     private TextField suppliersNameField = new TextField();
     private ObservableList<Item> itemList = FXCollections.observableArrayList();
-    private ComboBox<Item> itemBoxList= new ComboBox<Item>(itemList);
+    private ListView<Item> itemBoxList= new ListView<Item>(itemList);
 
     private Button addSupplierButton = new Button("Register Supplier");
 
@@ -46,18 +46,26 @@ public class SupplierManagementView {
         Label addSupplierLabel = new Label("Register new Supplier");
         addSupplierLabel.setStyle("-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;");
         GridPane addSupplierGrid = new GridPane();
-        addSupplierGrid.setHgap(10);
+        addSupplierGrid.setHgap(100);
         addSupplierGrid.setVgap(10);
         Label supplierNameLabel = new Label("Full Name:");
         supplierNameLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
         addSupplierGrid.add(supplierNameLabel, 0, 0);
         suppliersNameField.setStyle("-fx-font: 11pt Helvetica;");
         addSupplierGrid.add(suppliersNameField, 1, 0);
+        Label itemBoxLabel = new Label("Supplied Items:");
+        itemBoxLabel.setStyle("-fx-text-fill: #364958; -fx-font: 11pt Helvetica;");
+        addSupplierGrid.add(itemBoxLabel, 0, 1);
+        itemBoxList.setStyle("-fx-font: 11pt Helvetica;");
+        itemBoxList.setMaxWidth(200);
+        itemBoxList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        addSupplierGrid.add(itemBoxList, 1, 1);
         //Create User Button
         addSupplierButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addSupplierButton, HPos.RIGHT);
-        addSupplierGrid.add(addSupplierButton, 1, 1);
+        addSupplierGrid.add(addSupplierButton, 1, 2);
         addSupplierBox.getChildren().addAll(addSupplierLabel, addSupplierGrid);
+        addSupplierBox.setPrefWidth(450);
 
         //Display Suppliers' List
         VBox supplierListBox = new VBox();
@@ -68,20 +76,19 @@ public class SupplierManagementView {
         suppliersTableView.setEditable(true);
         suppliersTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         suppliersTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        supplierIDColumn.setMinWidth(100);
-        supplierIDColumn.setMaxWidth(200);
+        supplierIDColumn.setMinWidth(200);
         supplierNameColumn.setMinWidth(200);
         supplierIDColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("supplierID"));
         supplierIDColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         supplierIDColumn.setOnEditCommit(e -> e.getRowValue().setSupplierID(e.getNewValue()));
-        supplierNameColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("supplierName"));
+        supplierNameColumn.setCellValueFactory(new PropertyValueFactory<Supplier, String>("name"));
         supplierNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         supplierNameColumn.setOnEditCommit(e -> e.getRowValue().setName(e.getNewValue()));
         supplierItemListColumn.setMinWidth(200);
         supplierItemListColumn.setCellValueFactory(new PropertyValueFactory<Supplier, Item>("suppliedItems"));
         supplierItemListColumn.setCellFactory(ComboBoxTableCell.forTableColumn(itemList));
         suppliersTableView.getColumns().addAll(supplierIDColumn, supplierNameColumn, supplierItemListColumn);
-        suppliersTableView.setPrefWidth(1000);
+        suppliersTableView.setPrefWidth(800);
         updateSupplierListButton.setStyle("-fx-font: 11pt Helvetica;");
 
         supplierListBox.getChildren().addAll(supplierListLabel, suppliersTableView, updateSupplierListButton);
@@ -101,7 +108,7 @@ public class SupplierManagementView {
         return itemList;
     }
 
-    public ComboBox<Item> getItemBoxList() {
+    public ListView<Item> getItemBoxList() {
         return itemBoxList;
     }
 

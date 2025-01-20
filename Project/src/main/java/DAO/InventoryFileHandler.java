@@ -1,10 +1,6 @@
 package DAO;
 
-import Models.Item;
-import Models.Category;
-import Models.Inventory;
-import Models.Sector;
-import Models.User;
+import Models.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -33,9 +29,6 @@ public class InventoryFileHandler {
             return false;
         }
     }
-
-
-
 
     public static ObjectProperty<Inventory> getInventory() {
         ObjectProperty<Inventory> inventoryProperty = new SimpleObjectProperty<>();
@@ -132,7 +125,7 @@ public class InventoryFileHandler {
     }
 
 
-    public static void addItem(Category targetCategory, Item newItem) {
+    public static void addItem(Category targetCategory, Supplier targetSupplier, Item newItem) {
         if (inventory == null || inventory.get() == null) {
             inventory = getInventory();
             if (inventory.get() == null) {
@@ -154,8 +147,20 @@ public class InventoryFileHandler {
             }
         }
 
+        boolean supplierFound = false;
+
+        if(SuppliersFileHandler.getSuppliers().contains(targetSupplier)) {
+            targetSupplier.getSuppliedItems().add(newItem);
+            supplierFound = true;
+        }
+
         if (!categoryFound) {
             System.err.println("Category not found in the inventory. Please add the category first.");
+            return;
+        }
+
+        if (!supplierFound) {
+            System.err.println("Supplier not found in the inventory. Please add the supplier first.");
             return;
         }
 

@@ -6,10 +6,7 @@ import Views.EmployeesListView;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.EnumSet;
 
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
@@ -22,7 +19,7 @@ public class EmployeeManagementController {
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
-        setEditListeners();
+        setEditRows();
     }
 
     // Controller setting the currentUser as the one who controls
@@ -32,7 +29,7 @@ public class EmployeeManagementController {
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
-        setEditListeners();
+        setEditRows();
     }
 
     public EmployeesListView getEmpListView() {
@@ -43,7 +40,7 @@ public class EmployeeManagementController {
         return employeeFileHandler;
     }
 
-    private void setEditListeners() {
+    private void setEditRows() {
         this.employeesListView.getEmployeeIDColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setUserID(e.getNewValue());
         });
@@ -118,7 +115,7 @@ public class EmployeeManagementController {
                 alert.show();
         } else {
             employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissionsSelected, employeeSectorsSelected));
-        }
+
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
             employeesListView.getEmployeeFullNameField().clear();
@@ -134,23 +131,7 @@ public class EmployeeManagementController {
             alert.setTitle("Success");
             alert.setHeaderText("Employee Registered Successfully");
             alert.show();
-
-//        } catch(FileNotFoundException fnfe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("File not found");
-//            alert.setHeaderText("Input File not found");
-//            alert.show();
-//        } catch(IOException ioe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("IOException problem");
-//            alert.show();
-//        } catch(ClassNotFoundException cnfe) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR);
-//            alert.setTitle("Error");
-//            alert.setHeaderText("Class Not Found file problem");
-//            alert.show();
-//        }
+        }
     }
 
 }

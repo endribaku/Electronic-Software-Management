@@ -18,8 +18,9 @@ public class InventoryView {
 //    ObservableList<String> categories = FXCollections.observableArrayList();
     ObservableList<Category> categories = FXCollections.observableArrayList(InventoryFileHandler.getCategoriesList());
     ComboBox<Category> itemCategoryListView = new ComboBox<Category>(categories);
-    ObservableList<String> suppliers = FXCollections.observableArrayList("Apple", "Samsung", "Microsoft");
-    ComboBox<String> itemSupplierListView = new ComboBox<String>(suppliers);
+    ListView<Category> sectorCategoryListView = new ListView<>(categories);
+    ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
+    ComboBox<Supplier> itemSupplierListView = new ComboBox<Supplier>(suppliers);
     ObservableList<String> optionsList = FXCollections.observableArrayList("Add Item", "Add Category", "Add Sector");
     ComboBox<String> optionsComboBox = new ComboBox<>(optionsList);
 
@@ -164,9 +165,16 @@ public class InventoryView {
         sectorNameLabel.setStyle("-fx-font: 11pt Helvetica;");
         addSectorGrid.add(sectorNameLabel, 0, 0);
         addSectorGrid.add(sectorNameField, 1, 0);
+        Label categoryListViewLabel = new Label("Category:");
+        categoryListViewLabel.setStyle("-fx-font: 11pt Helvetica;");
+        addSectorGrid.add(categoryListViewLabel, 0, 1);
+        sectorCategoryListView.setStyle("-fx-font: 11pt Helvetica;");
+        sectorCategoryListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        sectorCategoryListView.setMaxHeight(150);
+        addSectorGrid.add(sectorCategoryListView, 1, 1);
         addSectorButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addSectorButton, HPos.RIGHT);
-        addSectorGrid.add(addSectorButton, 1, 1);
+        addSectorGrid.add(addSectorButton, 1, 2);
         addSectorPane.getChildren().addAll(addSectorHeader, addSectorGrid);
         addSectorPane.setSpacing(10);
         addSectorPane.setPadding(new Insets(10));
@@ -259,11 +267,11 @@ public class InventoryView {
         return itemCategoryListView;
     }
 
-    public ObservableList<String> getSuppliers() {
+    public ObservableList<Supplier> getSuppliers() {
         return suppliers;
     }
 
-    public ComboBox<String> getItemSupplierListView() {
+    public ComboBox<Supplier> getItemSupplierListView() {
         return itemSupplierListView;
     }
 
@@ -355,11 +363,11 @@ public class InventoryView {
         this.itemListBox = itemListBox;
     }
 
-    public void setSuppliers(ObservableList<String> suppliers) {
+    public void setSuppliers(ObservableList<Supplier> suppliers) {
         this.suppliers = suppliers;
     }
 
-    public void setItemSupplierListView(ComboBox<String> itemSupplierListView) {
+    public void setItemSupplierListView(ComboBox<Supplier> itemSupplierListView) {
         this.itemSupplierListView = itemSupplierListView;
     }
 
@@ -389,5 +397,17 @@ public class InventoryView {
 
     public void setSectorComboBox(ComboBox<String> sectorComboBox) {
         this.sectorComboBox = sectorComboBox;
+    }
+
+    public ListView<Category> getSectorCategoryListView() {
+        return sectorCategoryListView;
+    }
+
+    public void setSectorCategoryListView(ListView<Category> sectorCategoryListView) {
+        this.sectorCategoryListView = sectorCategoryListView;
+    }
+
+    public TextField getSectorNameField() {
+        return sectorNameField;
     }
 }

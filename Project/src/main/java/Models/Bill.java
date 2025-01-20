@@ -12,7 +12,7 @@ public class Bill {
     private LocalDate dateOfSale;
     private static int counter = 0;
 
-    public Bill(int billNumber, Cashier cashier, Sector sector) {
+    public Bill(Cashier cashier, Sector sector) {
         this.billNumber = counter + 1;
         this.cashier = cashier;
         this.sector = sector;

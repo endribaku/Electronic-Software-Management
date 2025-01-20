@@ -3,6 +3,8 @@ package DAO;
 import Models.Category;
 import Models.Supplier;
 import Models.User;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -12,14 +14,15 @@ import java.util.ArrayList;
 public class SuppliersFileHandler {
     public static final String FILE_PATH = "Project/Data/suppliers.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
-    private final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
 
-    public ObservableList<Supplier> getAllSuppliers() {
-        if(suppliers.isEmpty()) {
-            selectAllSuppliers();
-        }
-        return suppliers;
-    }
+    private static final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
+
+//    public static ObservableList<Supplier> getAllSuppliers() {
+//        if(suppliers.isEmpty()) {
+//            getSuppliers();
+//        }
+//        return suppliers;
+//    }
 
     public void insertSupplier(Supplier supplier) {
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
@@ -29,6 +32,7 @@ public class SuppliersFileHandler {
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(supplier);
+            suppliers.add(supplier);
         } catch(IOException ioe) {
             ioe.getMessage();
         }
@@ -78,11 +82,12 @@ public class SuppliersFileHandler {
 
     public Supplier selectSupplier(String supplierName){
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Supplier supplier;
             while(true) {
-                supplier = (Supplier) reader.readObject();
-                if(supplier.getName().equals(supplierName))
-                    return supplier;
+                if(reader.readObject() instanceof Supplier) {
+                    if(((Supplier) reader.readObject()).getName().equals(supplierName)) {
+                        return (Supplier) reader.readObject();
+                    }
+                }
             }
         }
         catch (EOFException ignored) {
@@ -93,18 +98,17 @@ public class SuppliersFileHandler {
         return null;
     }
 
-    public void selectAllSuppliers() {
+    public static ObservableList<Supplier> getSuppliers() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            Supplier supplier;
             while(true) {
-                supplier = (Supplier) reader.readObject();
+                Supplier supplier = (Supplier) reader.readObject();
                 suppliers.add(supplier);
             }
-        }
-        catch (EOFException ignored) {
-        }
-        catch (IOException | ClassNotFoundException ex) {
+        }catch(EOFException ignored) {
+
+        }catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
+        return suppliers;
     }
 }

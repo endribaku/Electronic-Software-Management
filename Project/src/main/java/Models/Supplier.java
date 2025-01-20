@@ -10,14 +10,15 @@ import javafx.collections.ObservableList;
 import javax.imageio.IIOException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Supplier implements Serializable {
     private transient StringProperty supplierID;
     private transient StringProperty name;
     private transient ListProperty<Item> suppliedItems;
 
-    public Supplier(String supplierID, String name, ArrayList<Item> suppliedItems) {
-        this.supplierID = new SimpleStringProperty(supplierID);
+    public Supplier(String name, ArrayList<Item> suppliedItems) {
+        this.supplierID = new SimpleStringProperty(UUID.randomUUID().toString());
         this.name = new SimpleStringProperty(name);
         this.suppliedItems = new SimpleListProperty<>(FXCollections.observableArrayList(suppliedItems));
     }
@@ -69,4 +70,9 @@ public class Supplier implements Serializable {
         }
         this.suppliedItems = itemsList;
     }
+
+//    @Override
+//    public String toString() {
+//        return name.getValueSafe();
+//    }
 }
