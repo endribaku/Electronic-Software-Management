@@ -2,6 +2,7 @@ package Controllers;
 
 import DAO.InventoryFileHandler;
 import DAO.SuppliersFileHandler;
+import Exceptions.SupplierCreationException;
 import Models.Item;
 import Models.Supplier;
 import Models.User;
@@ -37,7 +38,7 @@ public class SuppliersController {
         return inventoryHandler;
     }
 
-    private void onSupplierAdd() {
+    private void onSupplierAdd() throws SupplierCreationException {
         String supplierName = view.getSuppliersNameField().getText();
         ArrayList<Item> itemList = new ArrayList<>(view.getItemBoxList().getSelectionModel().getSelectedItems());
 

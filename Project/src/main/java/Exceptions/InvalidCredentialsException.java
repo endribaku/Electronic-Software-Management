@@ -1,10 +1,15 @@
 package Exceptions;
 
-public class InvalidCredentialsException extends Exception{
+import javafx.scene.control.Alert;
+
+public class InvalidCredentialsException extends RuntimeException{
     String message = "Invalid username or password.";
 
     public InvalidCredentialsException() {
-        System.out.println(this.getMessage());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.show();
     }
 
     public InvalidCredentialsException(String message) {

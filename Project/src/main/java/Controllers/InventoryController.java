@@ -4,6 +4,7 @@ import DAO.CategoryFileHandler;
 import DAO.InventoryFileHandler;
 import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
+import Exceptions.CategoryCreationException;
 import Exceptions.SectorCreationException;
 import Models.*;
 import Views.InventoryView;
@@ -33,13 +34,7 @@ public class InventoryController {
         this.currentUser = currentUser;
         this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
-        this.inventoryListView.getAddSectorButton().setOnAction(e -> {
-            try {
-                onSectorAdd();
-            } catch (SectorCreationException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        this.inventoryListView.getAddSectorButton().setOnAction(e -> {onSectorAdd();});
         this.inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsOfUser(currentUser));
         this.inventoryListView.getItemCategoryListView().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
         this.inventoryListView.getItemSupplierListView().setItems(inventoryFileHandler.getSuppliersList());
@@ -157,7 +152,7 @@ public class InventoryController {
         }
     }
 
-    private void onCategoryAdd(){
+    private void onCategoryAdd() throws CategoryCreationException {
         String categoryName = inventoryListView.getCategoryNameField().getText();
         String sectorName = inventoryListView.getSectorComboBox().getValue().toString();
         ArrayList<Item> itemList = new ArrayList<>(inventoryListView.getItemListBox().getSelectionModel().getSelectedItems());

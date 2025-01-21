@@ -1,7 +1,12 @@
 package Exceptions;
 
-public class SupplierCreationException extends Exception {
+import javafx.scene.control.Alert;
+
+public class SupplierCreationException extends RuntimeException {
     public SupplierCreationException(String message) {
-        super(message);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.show();
     }
 }
