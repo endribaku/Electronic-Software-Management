@@ -4,6 +4,7 @@ import DAO.UserFileHandler;
 import Exceptions.InvalidCredentialsException;
 import Models.User;
 import Views.ProfileView;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
@@ -51,24 +52,11 @@ public class ProfileController {
         String emailEdit = this.view.getEditEmailTextField().getText();
         String phoneEdit = this.view.getEditPhoneTextField().getText();
         String username = this.view.getEditUsernameTextField().getText();
-        if(handler.selectUser(username) != null)
-            throw new InvalidCredentialsException("You cannot use this username.");
         String passConfirm = this.view.getEditPasswordTextField().getText();
         if(!passConfirm.equals(currentUser.getPassword()))
             throw new InvalidCredentialsException("Passwords do not match.");
 
-        if(dobEdit != null)
-            currentUser.setDateOfBirth(dobEdit);
-        if(!fnameEdit.isEmpty())
-            currentUser.setFullName(fnameEdit);
-        if(!emailEdit.isEmpty())
-            currentUser.setEmail(emailEdit);
-        if(!phoneEdit.isEmpty())
-            currentUser.setPhoneNumber(phoneEdit);
-        if(!username.isEmpty())
-            currentUser.setUsername(username);
-
-        if(this.handler.updateAll()) {
+        if(this.handler.updateProfile(username, fnameEdit, emailEdit, passConfirm, phoneEdit, dobEdit)) {
             Alert success = new Alert(Alert.AlertType.INFORMATION);
             success.setTitle("Success");
             success.setHeaderText("Profile Updated Successfully");

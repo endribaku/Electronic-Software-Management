@@ -15,6 +15,8 @@ public class UserController {
     private UserView view;
     private UserFileHandler handler;
     private User currentUser;
+    private InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
+    private UserFileHandler userFileHandler = new UserFileHandler();
 
     public UserController(User user) {
         this.view = new UserView();

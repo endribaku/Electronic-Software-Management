@@ -18,6 +18,11 @@ public class Sector implements Serializable {
         this.categories.set(FXCollections.observableArrayList(categories));
     }
 
+    public Sector(String sectorName) {
+        this.sectorName = new SimpleStringProperty(sectorName);
+        this.categories.set(FXCollections.observableArrayList());
+    }
+
     public Sector() {
         this.sectorName = new SimpleStringProperty();
         this.categories = new SimpleListProperty<>(FXCollections.observableArrayList());

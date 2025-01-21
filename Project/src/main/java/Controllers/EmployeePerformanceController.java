@@ -54,33 +54,6 @@ public class EmployeePerformanceController {
         return billFileHandler;
     }
 
-    public void setEditListeners(){
-        this.view.getBillNumberColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getBillNumber();});
-
-        this.view.getCashierColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getUsername();});
-
-        this.view.getTotalPriceColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getTotalAmount();});
-
-        this.view.getDateOfSaleColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getDateOfSale().toString();});
-
-//        this.view.getEmployeePerformanceButton.setOnAction(e -> {
-//            if(this.billFileHandler.updateAll()) {
-//                Alert success = new Alert(Alert.AlertType.INFORMATION);
-//                success.setTitle("Success");
-//                success.setHeaderText("Employee Table Updated Successfully");
-//                success.show();
-//            } else {
-//                Alert fail = new Alert(Alert.AlertType.ERROR);
-//                fail.setTitle("Success");
-//                fail.setHeaderText("Employee Table Update Error");
-//                fail.show();
-//            }
-//        });
-    }
 
     public void setupBillDateFilter(){
         ComboBox<String> billDateFilter = view.getBillDateFilter();

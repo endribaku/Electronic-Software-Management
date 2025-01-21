@@ -1,8 +1,6 @@
 package DAO;
 
-import Models.Category;
-import Models.Supplier;
-import Models.User;
+import Models.*;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -66,6 +64,31 @@ public class SuppliersFileHandler {
         } catch(IOException ex) {
             ex.getMessage();
         }
+    }
+
+    public boolean updateSupplier(String supplierID, String supplierName) {
+        boolean updated = false;
+        ObservableList<Supplier> currentSuppliers = getSuppliers();
+
+        // Update the specific sector
+        for(Supplier s : currentSuppliers) {
+            if(s.getSupplierID().equals(supplierID)) {
+                currentSuppliers.remove(s);
+                s.setName(supplierName);
+                currentSuppliers.add(s);
+                updated = true;
+                break;
+            }
+        }
+        suppliers.clear();
+        suppliers.setAll(currentSuppliers);
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateAll();
+        }
+        return(updated && saved);
     }
 
     public boolean updateAll() {

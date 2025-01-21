@@ -18,9 +18,6 @@ import java.util.ArrayList;
 public class InventoryController {
     // Endri = from now on use only inventoryfilehandler for any operation (categories, sectors, items)
     private final InventoryView inventoryListView = new InventoryView();
-    private final ItemFileHandler itemFileHandler = new ItemFileHandler();
-    private final CategoryFileHandler categoryFileHandler = new CategoryFileHandler();
-    private final SuppliersFileHandler suppliersFileHandler = new SuppliersFileHandler();
     private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
     private User currentUser;
 
@@ -28,14 +25,41 @@ public class InventoryController {
     // Controller setting the currentUser as the one who controls
     public InventoryController(User currentUser) {
         this.currentUser = currentUser;
+
         this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
-        this.inventoryListView.getAddSectorButton().setOnAction(e -> {onSectorAdd();});
+        this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
+
+        this.inventoryListView.getEditItemButton().setOnAction(e -> onItemEdit());
+        this.inventoryListView.getEditCategoryButton().setOnAction(e -> onCategoryEdit());
+        this.inventoryListView.getEditSectorButton().setOnAction(e -> onSectorEdit());
+
+        this.inventoryListView.getCancelUpdateItemButton().setOnAction(e -> {
+            this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+            this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
+        });
+        this.inventoryListView.getCancelUpdateCategoryButton().setOnAction(e -> {
+            this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+            this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
+        });
+        this.inventoryListView.getCancelUpdateSectorButton().setOnAction(e -> {
+            this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+            this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
+        });
+
         this.inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsOfUser(currentUser));
+
         this.inventoryListView.getItemCategoryListView().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
+        this.inventoryListView.getEditItemCategoriesBox().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
+        this.inventoryListView.getEditCategoryListBox().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
+
         this.inventoryListView.getItemSupplierListView().setItems(inventoryFileHandler.getSuppliersList());
-        this.inventoryListView.getItems().addAll(inventoryFileHandler.getItemsList());
+        this.inventoryListView.getEditSupplierBox().setItems(inventoryFileHandler.getSuppliersList());
+
         this.inventoryListView.getSectorComboBox().setItems(getSectorNamesOfUser(currentUser));
+        this.inventoryListView.getEditCategorySectorsBox().setItems(getSectorNamesOfUser(currentUser));
+
+        this.inventoryListView.getEditSectorListBox().setItems(inventoryFileHandler.getSectorsOfUser(currentUser));
 
         this.inventoryListView.getOptionsComboBox().setOnAction(e -> {
             if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Item")){
@@ -46,6 +70,7 @@ public class InventoryController {
                 this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
             }
         });
+
         setEditRows();
         sendAlertforLowStock();
     }
@@ -153,7 +178,6 @@ public class InventoryController {
     private void onCategoryAdd() throws CategoryCreationException {
         String categoryName = inventoryListView.getCategoryNameField().getText();
         String sectorName = inventoryListView.getSectorComboBox().getValue().toString();
-        ArrayList<Item> itemList = new ArrayList<>(inventoryListView.getItemListBox().getSelectionModel().getSelectedItems());
 
         try{
             if(categoryName.isEmpty() || sectorName.isEmpty()){
@@ -162,7 +186,7 @@ public class InventoryController {
                 alert.setHeaderText("Invalid Input");
                 alert.show();
             } else {
-                inventoryFileHandler.addCategory(sectorName, new Category(categoryName, itemList, sectorName));
+                inventoryFileHandler.addCategory(sectorName, new Category(categoryName, sectorName));
                 //inventoryListView.getItemCategoryListView().setItems(categoryFileHandler.getAllCategories());
                 inventoryListView.getItemNameField().clear();
                 inventoryListView.getCategoryNameField().clear();
@@ -184,12 +208,10 @@ public class InventoryController {
 
     private void onSectorAdd() throws SectorCreationException {
         String sectorName = inventoryListView.getSectorNameField().getText();
-        ArrayList<Category> categoriesList = new ArrayList<>(inventoryListView.getSectorCategoryListView().getSelectionModel().getSelectedItems());
 
         if (!(sectorName.isEmpty())) {
-            inventoryFileHandler.addSector(new Sector(sectorName, categoriesList));
+            inventoryFileHandler.addSector(new Sector(sectorName));
             inventoryListView.getSectorNameField().clear();
-            inventoryListView.getSectorCategoryListView().getSelectionModel().clearSelection();
             inventoryListView.getOptionsComboBox().setValue("Add Sector");
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -225,5 +247,89 @@ public class InventoryController {
                 alert.show();
             }
         }
+    }
+
+    private void onItemEdit() {
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditItemPane());
+        this.inventoryListView.getCreateBox().getChildren().remove(this.inventoryListView.getOptionsComboBox());
+
+        Item selectedItem = this.inventoryListView.getInventoryTableView().getSelectionModel().getSelectedItem();
+
+        this.inventoryListView.getItemEditNameField().setText(selectedItem.getName());
+        this.inventoryListView.getItemEditQuantityField().setText(selectedItem.getQuantity() + "");
+        this.inventoryListView.getItemEditPPriceField().setText(selectedItem.getPurchasePrice() + "");
+        this.inventoryListView.getItemEditSPriceField().setText(selectedItem.getSellingPrice() + "");
+
+        this.inventoryListView.getUpdateItemButton().setOnAction(e -> {
+            onItemUpdate(selectedItem);
+        });
+    }
+
+    private void onItemUpdate(Item item) {
+
+        String itemName = this.inventoryListView.getItemEditNameField().getText();
+        String category = this.inventoryListView.getEditItemCategoriesBox().getValue().toString();
+        String supplier = this.inventoryListView.getEditSupplierBox().getValue().toString();
+        double purchasePrice = Double.parseDouble(this.inventoryListView.getItemEditPPriceField().getText());
+        double sellingPrice = Double.parseDouble(this.inventoryListView.getItemEditSPriceField().getText());
+        int quantity = Integer.parseInt(this.inventoryListView.getItemEditQuantityField().getText());
+
+        inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
+        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
+
+    }
+
+    private void onCategoryEdit() {
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditCategoryPane());
+        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getEditCategoryListBox());
+
+        this.inventoryListView.getEditCategoryListBox().setOnAction(e -> {
+            onCategoryEditSelect();
+        });
+    }
+
+    private void onCategoryEditSelect() {
+
+        Category selectedCategory = this.inventoryListView.getEditCategoryListBox().getValue();
+        this.inventoryListView.getCategoryEditNameField().setText(selectedCategory.getName());
+
+        this.inventoryListView.getUpdateCategoryButton().setOnAction(e -> onCategoryUpdate(selectedCategory));
+    }
+
+    private void onCategoryUpdate(Category selectedCategory) {
+
+        String name = this.inventoryListView.getCategoryEditNameField().getText();
+        String sector = this.inventoryListView.getEditCategorySectorsBox().getSelectionModel().getSelectedItem();
+
+        inventoryFileHandler.updateCategory(selectedCategory, name, sector);
+
+        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
+    }
+
+    private void onSectorEdit() {
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditSectorPane());
+        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getEditSectorListBox());
+
+        this.inventoryListView.getEditSectorListBox().setOnAction(e -> {
+            onSectorEditSelect();
+        });
+    }
+
+    private void onSectorEditSelect() {
+        Sector selectedSector = this.inventoryListView.getEditSectorListBox().getValue();
+        this.inventoryListView.getSectorEditNameField().setText(selectedSector.getSectorName());
+
+        this.inventoryListView.getUpdateSectorButton().setOnAction(e -> onSectorUpdate(selectedSector));
+    }
+
+    private void onSectorUpdate(Sector sector) {
+        String name = this.inventoryListView.getSectorEditNameField().getText();
+
+        inventoryFileHandler.updateSector(sector, name);
+
+        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
+        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
     }
 }

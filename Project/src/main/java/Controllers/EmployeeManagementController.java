@@ -2,6 +2,7 @@ package Controllers;
 
 import DAO.UserFileHandler;
 import Exceptions.EmployeeCreationException;
+import Exceptions.InvalidCredentialsException;
 import Models.*;
 import Views.EmployeesListView;
 import javafx.collections.ObservableList;
@@ -9,6 +10,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.SelectionMode;
 
 import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.List;
 
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
@@ -31,6 +34,11 @@ public class EmployeeManagementController {
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
+        this.employeesListView.getEditEmployeeButton().setOnAction(e -> onEditEmployee());
+        this.employeesListView.getCancelUpdateButton().setOnAction(e -> {
+            this.employeesListView.getManageEmployeeBox().getChildren().remove(this.employeesListView.getEditEmployeeBox());
+            this.employeesListView.getManageEmployeeBox().getChildren().add(this.employeesListView.getCreateEmployeeBox());
+        });
         this.employeesListView.getAccessLevelList().setOnAction(e -> {
             if(this.employeesListView.getAccessLevelList().getValue().equals(Access.Cashier)) {
                 this.employeesListView.getPermissionListView().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -88,16 +96,16 @@ public class EmployeeManagementController {
         });
 
 
-        this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> {
-            if(this.employeeFileHandler.updateAll()) {
-                Alert success = new Alert(Alert.AlertType.INFORMATION);
-                success.setTitle("Success");
-                success.setHeaderText("Employee Table Updated Successfully");
-                success.show();
-            }
-            else
-                throw new EmployeeCreationException("Invalid input on table. Please try again.");
-        });
+//        this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> {
+//            if(this.employeeFileHandler.updateAll(users)) {
+//                Alert success = new Alert(Alert.AlertType.INFORMATION);
+//                success.setTitle("Success");
+//                success.setHeaderText("Employee Table Updated Successfully");
+//                success.show();
+//            }
+//            else
+//                throw new EmployeeCreationException("Invalid input on table. Please try again.");
+//        });
     }
 
     private void onEmployeeAdd() {
@@ -152,6 +160,56 @@ public class EmployeeManagementController {
             alert.setHeaderText("Employee Registered Successfully");
             alert.show();
         }
+    }
+
+    public void onEditEmployee() {
+        this.employeesListView.getManageEmployeeBox().getChildren().remove(this.employeesListView.getCreateEmployeeBox());
+        this.employeesListView.getManageEmployeeBox().getChildren().add(this.employeesListView.getEditEmployeeBox());
+
+        User selectedUser = this.employeesListView.getEmployeesTableView().getSelectionModel().getSelectedItem();
+
+        this.employeesListView.getEmployeeEditFullNameField().setText(selectedUser.getFullName());
+        this.employeesListView.getEmployeeEditUsernameField().setText(selectedUser.getUsername());
+        this.employeesListView.getEmployeeEditEmailField().setText(selectedUser.getEmail());
+        this.employeesListView.getEmployeeEditPasswordField().setText(selectedUser.getPassword());
+        this.employeesListView.getEmployeeEditPhoneNumberField().setText(selectedUser.getPhoneNumber());
+        this.employeesListView.getEmployeeEditDOBField().setValue(selectedUser.getDateOfBirth());
+        this.employeesListView.getEmployeeEditSalaryField().setText(selectedUser.getSalary() + "");
+        this.employeesListView.getSectorEditListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for(int i = 0; i<selectedUser.getSector().size(); i++) {
+            this.employeesListView.getSectorEditListView().getSelectionModel().select(selectedUser.getSector().get(i));
+        }
+        this.employeesListView.getPermissionEditListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        this.employeesListView.getPermissionEditListView().getSelectionModel().select(selectedUser.getPermissions().toString());
+        this.employeesListView.getAccessLevelEditList().getSelectionModel().select(selectedUser.getAccessLevel());
+
+        this.employeesListView.getUpdateEmployeeButton().setOnAction(e -> onUpdateEmployee());
+    }
+
+    public void onUpdateEmployee() throws InvalidCredentialsException {
+        LocalDate dobEdit = this.employeesListView.getEmployeeEditDOBField().getValue();
+        String fnameEdit = this.employeesListView.getEmployeeEditFullNameField().getText();
+        String emailEdit = this.employeesListView.getEmployeeEditEmailField().getText();
+        String phoneEdit = this.employeesListView.getEmployeeEditPhoneNumberField().getText();
+        String username = this.employeesListView.getEmployeeEditUsernameField().getText();
+        String password = this.employeesListView.getEmployeeEditPasswordField().getText();
+        double salary = Double.parseDouble(this.employeesListView.getEmployeeEditSalaryField().getText());
+        Access accessLevel = this.employeesListView.getAccessLevelEditList().getSelectionModel().getSelectedItem();
+        ObservableList<String> permissions = this.employeesListView.getPermissionEditListView().getSelectionModel().getSelectedItems();
+        List<String> sector = this.employeesListView.getSectorEditListView().getSelectionModel().getSelectedItems();
+
+        if(this.employeeFileHandler.updateUser(username, password, fnameEdit, dobEdit, phoneEdit, emailEdit, salary, accessLevel, permissions, sector)) {
+            Alert success = new Alert(Alert.AlertType.INFORMATION);
+            success.setTitle("Success");
+            success.setHeaderText("Profile Updated Successfully");
+            success.show();
+
+            this.employeesListView.getManageEmployeeBox().getChildren().remove(this.employeesListView.getEditEmployeeBox());
+            this.employeesListView.getManageEmployeeBox().getChildren().add(this.employeesListView.getCreateEmployeeBox());
+        }
+        else
+            throw new InvalidCredentialsException("Invalid credentials. Please try again");
+
     }
 
 }

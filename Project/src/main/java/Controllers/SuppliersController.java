@@ -23,6 +23,14 @@ public class SuppliersController {
         this.view.getAddSupplierButton().setOnAction(e -> onSupplierAdd());
         this.view.getSuppliersTableView().setItems(inventoryHandler.getSuppliersList());
         this.view.getItemBoxList().setItems(inventoryHandler.getSuppliedItems());
+        this.view.getDeleteSupplierListButton().setOnAction(e -> onSupplierDelete());
+        this.view.getEditSupplierListButton().setOnAction(e -> {
+            onSupplierEdit();
+        });
+        this.view.getCancelUpdateButton().setOnAction(e -> {
+            this.view.getManageSupplierBox().getChildren().remove(this.view.getEditSupplierBox());
+            this.view.getManageSupplierBox().getChildren().add(this.view.getAddSupplierBox());
+        });
         setEditRows();
     }
 
@@ -86,5 +94,30 @@ public class SuppliersController {
                 fail.show();
             }
         });
+    }
+
+    private void onSupplierEdit() {
+        this.view.getManageSupplierBox().getChildren().remove(this.view.getAddSupplierBox());
+        this.view.getManageSupplierBox().getChildren().add(this.view.getEditSupplierBox());
+
+        Supplier selectedSupplier = this.view.getSuppliersTableView().getSelectionModel().getSelectedItem();
+        this.view.getSuppliersEditNameField().setText(selectedSupplier.getName());
+
+        this.view.getUpdateSupplierButton().setOnAction(e -> {
+            onSupplierUpdate(selectedSupplier);
+        });
+    }
+
+    private void onSupplierUpdate(Supplier supplier) {
+        inventoryHandler.updateSupplier(supplier.getSupplierID(), this.view.getSuppliersEditNameField().getText());
+
+        this.view.getManageSupplierBox().getChildren().remove(this.view.getEditSupplierBox());
+        this.view.getManageSupplierBox().getChildren().add(this.view.getAddSupplierBox());
+    }
+
+    private void onSupplierDelete() {
+        Supplier selectedSupplier = this.view.getSuppliersTableView().getSelectionModel().getSelectedItem();
+
+        inventoryHandler.deleteSupplier(selectedSupplier);
     }
 }

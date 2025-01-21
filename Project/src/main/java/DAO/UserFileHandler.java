@@ -1,11 +1,15 @@
 package DAO;
 
+import Models.Access;
+import Models.Permission;
 import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class UserFileHandler {
@@ -13,6 +17,10 @@ public class UserFileHandler {
     public static final String FILE_PATH = "Project/Data/employees.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<User> users = FXCollections.observableArrayList();
+
+    public UserFileHandler() {
+        selectAllUser();
+    }
 
     public ObservableList<User> getAllUsers() {
         if(users.isEmpty()) {
@@ -60,14 +68,88 @@ public class UserFileHandler {
         }
     }
 
-    public boolean updateAll() {
+    public boolean updateUser(String username, String password, String fullName, LocalDate dob, String pNumber, String email, double salary, Access accessLevel, ObservableList<String> permissions, List<String> sector) {
+        boolean updated = false;
+
+        // Update the specific sector
+        for(User u : users) {
+            if(u.getUsername().equals(username)) {
+                users.remove(u);
+                u.setPassword(password);
+                u.setFullName(fullName);
+                u.setDateOfBirth(dob);
+                u.setPhoneNumber(pNumber);
+                u.setEmail(email);
+                u.setSalary(salary);
+                u.setAccessLevel(accessLevel);
+                EnumSet<Permission> permissionsSet = EnumSet.noneOf(Permission.class);
+                for (String permissionString : permissions) {
+                    try {
+                        Permission permission = Permission.valueOf(permissionString);
+                        permissionsSet.add(permission);
+                    } catch (IllegalArgumentException e) {
+
+                        System.err.println("Invalid permission: " + permissionString);
+                    }
+                }
+                u.setPermissions(permissionsSet);
+                u.setSector(sector);
+                users.add(u);
+                System.out.println("User updated successfully");
+                updated = true;
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateAll(users);
+            System.out.println("Users saved in file");
+        }
+        return(updated && saved);
+    }
+
+    public boolean updateProfile(String username, String fullName, String email, String password, String phoneNumber, LocalDate dateOfBirth) {
+        boolean updated = false;
+
+        // Update the specific sector
+        for(User u : users) {
+            if(u.getUsername().equals(username)) {
+                users.remove(u);
+                u.setPassword(password);
+                u.setFullName(fullName);
+                u.setDateOfBirth(dateOfBirth);
+                u.setPhoneNumber(phoneNumber);
+                u.setEmail(email);
+                users.add(u);
+                System.out.println("User updated successfully");
+                updated = true;
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateAll(users);
+            System.out.println("Users saved in file");
+        }
+        return(updated && saved);
+    }
+
+    public static boolean updateAll(ObservableList<User> users) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(User u : users) {
                 outputStream.writeObject(u);
             }
+            System.out.println("Users successfully updated in file.");
             return true;
-        } catch (IOException ex) {
-            ex.getMessage();
+        } catch (FileNotFoundException e) {
+            System.err.println("Data file not found: " + e.getMessage());
+            return false;
+        } catch (IOException e) {
+            System.err.println("Error updating the inventory file: " + e.getMessage());
             return false;
         }
     }

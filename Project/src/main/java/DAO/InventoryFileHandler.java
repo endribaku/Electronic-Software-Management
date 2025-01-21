@@ -7,8 +7,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class InventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
@@ -22,6 +24,9 @@ public class InventoryFileHandler {
     private static ObservableList<Supplier> suppliersList = FXCollections.observableArrayList();
     private static ObservableList<Item> itemsSuppliedList = FXCollections.observableArrayList();
 
+    public InventoryFileHandler() {
+        inventory = getInventory();
+    }
 
 
     public ObjectProperty<Inventory> getInventory() {
@@ -60,7 +65,7 @@ public class InventoryFileHandler {
         return lowStockItems;
     }
 
-    public boolean updateInventory(Inventory inventory) {
+    public static boolean updateInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully updated in file.");
@@ -187,7 +192,182 @@ public class InventoryFileHandler {
         System.out.println("Supplier was added successfully.");
     }
 
+    //Update methods for specific instances
+    public boolean updateItem(String itemID, String itemName, String itemCategory, String itemSupplier, LocalDate date, double pPrice, double sPrice, int quantity) {
+        boolean updated = false;
+        Inventory currentInventory = inventory.get();
 
+        // Update the specific item
+        for (Item i : itemsList) {
+            if (i.getItemID().equals(itemID)) {
+                itemsList.remove(i);
+                i.setName(itemName);
+                i.setCategory(itemCategory);
+                i.setSupplier(itemSupplier);
+                i.setPurchaseDate(date);
+                i.setPurchasePrice(pPrice);
+                i.setSellingPrice(sPrice);
+                i.setQuantity(quantity);
+                updated = true;
+                itemsList.add(i);
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if (updated) {
+            saved = updateInventory(currentInventory);
+        }
+        return (updated && saved);
+    }
+
+    public boolean updateCategory(Category category, String categoryName, String sectorName) {
+        boolean updated = false;
+        Inventory currentInventory = inventory.get();
+
+        // Update the specific category
+        for(Category c : categoriesList) {
+            if(c == category) {
+                categoriesList.remove(c);
+                c.setName(categoryName);
+                c.setSector(sectorName);
+                categoriesList.add(c);
+                for(Item i : c.getItems()){
+                    i.setCategory(categoryName);
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateInventory(currentInventory);
+        }
+        return(updated && saved);
+    }
+
+    public boolean updateSector(Sector sector, String sectorName) {
+        boolean updated = false;
+        Inventory currentInventory = inventory.get();
+        ObservableList<User> usersToChange = new UserFileHandler().getAllUsers();
+
+        // Update the specific sector
+        for(Sector s : sectorsList) {
+            if(s == sector) {
+                sectorsList.remove(s);
+
+                for(User u : usersToChange){
+                    for(String str : u.getSector()){
+                        if(str.equals(sector.getSectorName())) {
+                            u.getSector().remove(str);
+                            u.getSector().add(sectorName);
+                        }
+                    }
+                }
+                System.out.println("Updated sectors in User");
+                for(Category c : s.getCategories()){
+                    c.setSector(sectorName);
+                }
+                System.out.println("Updated sectors in Category");
+                s.setSectorName(sectorName);
+                sectorsList.add(s);
+                updated = true;
+                System.out.println("Boolean set to true");
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateInventory(currentInventory);
+            System.out.println("Sector saved to file");
+        }
+        return(updated && saved);
+    }
+
+    public boolean updateSupplier(String supplierID, String supplierName) {
+        boolean updated = false;
+        Inventory currentInventory = inventory.get();
+
+        // Update the specific sector
+        for(Supplier s : suppliersList) {
+            if(s.getSupplierID().equals(supplierID)) {
+                suppliersList.remove(s);
+                s.setName(supplierName);
+                suppliersList.add(s);
+                for(Item i : s.getSuppliedItems()){
+                    i.setSupplier(supplierName);
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        // Write the updated list back to the file
+        boolean saved = false;
+        if(updated) {
+            saved = updateInventory(currentInventory);
+        }
+        return(updated && saved);
+    }
+
+    //Delete Methods
+    public void deleteItem(Item item) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            itemsList.remove(item);
+            for(Item i : itemsList) {
+                outputStream.writeObject(i);
+            }
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void deleteCategory(Category category) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            categoriesList.remove(category);
+            for(Category c : categoriesList) {
+                outputStream.writeObject(c);
+            }
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void deleteSector(Sector sector) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            sectorsList.remove(sector);
+            for(Sector s : sectorsList) {
+                outputStream.writeObject(s);
+            }
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void deleteSupplier(Supplier supplier) {
+        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            suppliersList.remove(supplier);
+            for(Supplier s : suppliersList) {
+                outputStream.writeObject(s);
+                System.out.println("Supplier deleted");
+            }
+        } catch(EOFException eofe) {
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
 
 
     //Getters for subsections

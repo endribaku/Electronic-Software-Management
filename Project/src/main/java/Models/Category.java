@@ -19,9 +19,16 @@ public class Category implements Comparable<Category> , Serializable {
         this.sector = new SimpleStringProperty(sector);
     }
 
+    public Category(String name, String sector) {
+        this.name = new SimpleStringProperty(name);
+        this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
+        this.sector = new SimpleStringProperty(sector);
+    }
+
     public Category(String name, ArrayList<Item> items)  {
         this.name = new SimpleStringProperty(name);
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList(items));
+        this.sector = new SimpleStringProperty();
     }
 
     @Override
@@ -61,6 +68,18 @@ public class Category implements Comparable<Category> , Serializable {
     }
 
     public void removeItem(Item item){ items.remove(item);}
+
+    public String getSector() {
+        return sector.get();
+    }
+
+    public StringProperty sectorProperty() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector.set(sector);
+    }
 
     public Item getItemByName(String itemName) {
         for (Item i : items) {
