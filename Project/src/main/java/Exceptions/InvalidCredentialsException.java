@@ -13,8 +13,10 @@ public class InvalidCredentialsException extends RuntimeException{
     }
 
     public InvalidCredentialsException(String message) {
-        this.message = message;
-        System.out.println(this.getMessage());
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.show();
     }
 
     @Override

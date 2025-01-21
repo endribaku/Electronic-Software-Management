@@ -5,6 +5,7 @@ import DAO.InventoryFileHandler;
 import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
 import Exceptions.CategoryCreationException;
+import Exceptions.ItemCreationException;
 import Exceptions.SectorCreationException;
 import Models.*;
 import Views.InventoryView;
@@ -23,11 +24,6 @@ public class InventoryController {
     private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
     private User currentUser;
 
-
-    public InventoryController() {
-        this.inventoryListView.getInventoryTableView().setItems(itemFileHandler.getAllItems());
-        setEditRows();
-    }
 
     // Controller setting the currentUser as the one who controls
     public InventoryController(User currentUser) {
@@ -51,6 +47,7 @@ public class InventoryController {
             }
         });
         setEditRows();
+        sendAlertforLowStock();
     }
 
     public InventoryView getView() {
@@ -61,7 +58,7 @@ public class InventoryController {
         return inventoryFileHandler;
     }
 
-    public void setEditRows() {
+    public void setEditRows() throws ItemCreationException {
         this.inventoryListView.getItemIDColumn().setOnEditCommit(e -> {
             inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setItemID(e.getNewValue().toString());
             inventoryFileHandler.updateInventoryFile();
@@ -98,7 +95,8 @@ public class InventoryController {
         });
 
         this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
-            if (this.inventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get())) {
+            boolean updated = this.inventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get());
+            if (updated) {
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
                 success.setTitle("Success");
                 success.setHeaderText("Inventory Table Updated Successfully");
@@ -214,5 +212,18 @@ public class InventoryController {
         }
 
         return sectorNames;
+    }
+
+    private void sendAlertforLowStock() {
+        if(currentUser.getAccessLevel() == Access.Manager || currentUser.getAccessLevel() == Access.Administrator) {
+            ObservableList<Item> lowStockItems = InventoryFileHandler.checkForLowStock();
+            if(lowStockItems.isEmpty()) return;
+            else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Item Stock is Low!");
+                alert.setHeaderText("Item Stock is low! Please restock these items:" + lowStockItems.toString());
+                alert.show();
+            }
+        }
     }
 }

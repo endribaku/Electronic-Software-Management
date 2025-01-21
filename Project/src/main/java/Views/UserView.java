@@ -1,6 +1,7 @@
 package Views;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.chart.*;
 import javafx.scene.control.Button;
@@ -31,14 +32,18 @@ public class UserView extends Pane {
     MenuItem inventoryItem = new MenuItem("Inventory");
     MenuItem employeeItem = new MenuItem("Employees");
     MenuItem exitItem = new MenuItem("Exit");
-    Menu billMenu = new Menu("Bills");
 
+    Menu billMenu = new Menu("Bills");
     MenuItem newBillItem = new MenuItem("Generate Bill");
     MenuItem viewPerformanceItem = new MenuItem("View Performance");
     MenuItem viewBillItem = new MenuItem("View Bills");
+
     Menu profileMenu = new Menu("Profile");
     MenuItem profileItem = new MenuItem("View Profile");
     MenuItem logoutItem = new MenuItem("Logout");
+
+    Label homeWelcomeLabel = new Label("Welcome, " + "admin" + "!");
+    FlowPane buttonGrid = new FlowPane(Orientation.HORIZONTAL, 20, 20);
 
     Button generateBillButton = new Button();
     Button manageEmployeeButton = new Button();
@@ -87,14 +92,11 @@ public class UserView extends Pane {
         VBox homeBox = new VBox();
         homeBox.setPadding(new Insets(10));
 
-        Label homeLabel = new Label("Welcome, " + "admin" + "!");
-        homeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 40px Helvetica; -fx-font-weight: bold;");
+        homeWelcomeLabel.setStyle("-fx-text-fill: #364958; -fx-font: 40px Helvetica; -fx-font-weight: bold;");
 
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setBrightness(1);
         colorAdjust.setSaturation(-1);
-
-        GridPane buttonGrid = new GridPane();
 
         //Generate Bill Button
         generateBillButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
@@ -233,14 +235,9 @@ public class UserView extends Pane {
         manageSuppliersButton.setMinHeight(150);
 
         //Grid Modification
-        buttonGrid.add(generateBillButton, 0, 0);
-        buttonGrid.add(manageEmployeeButton, 1, 0);
-        buttonGrid.add(viewPerformanceButton, 0, 1);
-        buttonGrid.add(manageInventoryButton, 1, 1);
-        buttonGrid.add(profileButton, 0, 2);
-        buttonGrid.add(manageSuppliersButton, 1, 2);
-        buttonGrid.setHgap(20);
-        buttonGrid.setVgap(20);
+        buttonGrid.setPrefWrapLength(700);
+        buttonGrid.setMaxWidth(1000);
+        buttonGrid.getChildren().addAll(generateBillButton, manageEmployeeButton, viewPerformanceButton, manageInventoryButton, profileButton, manageSuppliersButton);
 
         //Graph Box
         VBox graphBox = new VBox();
@@ -259,25 +256,14 @@ public class UserView extends Pane {
         graphBox.getChildren().addAll(graphBoxLabel, lineChart, pieChart);
 
 
-        homeBox.getChildren().addAll(homeLabel, buttonGrid);
+        homeBox.getChildren().addAll(homeWelcomeLabel, buttonGrid);
         homeBox.setSpacing(20);
         homePage.getChildren().addAll(homeBox, graphBox);
         homePage.setSpacing(50);
         homePage.setPadding(new Insets(20));
 
 
-
         Root.setCenter(homePage);
-
-        // Add content to center
-//        homeLabel.onMouseClickedProperty().set(e -> Root.setCenter(homePage));
-//        inventoryLabel.onMouseClickedProperty().set(e -> Root.setCenter(new InventoryController().getView().getInventoryPage()));
-//        performanceHomeLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
-//        performanceLabel.onMouseClickedProperty().set(e -> Root.setCenter(new EmployeePerformanceController().getView().getEmployeePerformancePage()));
-//        billGenerateLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getGenerateView().getBillGeneratePage()));
-//        billManagementLabel.onMouseClickedProperty().set(e -> Root.setCenter(new BillManagementController().getManagementView().getBillManagePage()));
-//        suppliersLabel.onMouseClickedProperty().set(e -> Root.setCenter(new SuppliersController().getView().getSuppliersPage()));
-//        profileLabel.onMouseClickedProperty().set(e -> Root.setCenter(new ProfileController().getView().getProfilePage()));
     }
 
     public BorderPane getRoot() {
@@ -310,6 +296,33 @@ public class UserView extends Pane {
         return pieChart;
     }
 
+    public Label getHomeWelcomeLabel() {
+        return homeWelcomeLabel;
+    }
+
+    public Button getGenerateBillButton() {
+        return generateBillButton;
+    }
+
+    public Button getManageEmployeeButton() {
+        return manageEmployeeButton;
+    }
+
+    public Button getViewPerformanceButton() {
+        return viewPerformanceButton;
+    }
+
+    public Button getManageInventoryButton() {
+        return manageInventoryButton;
+    }
+
+    public Button getProfileButton() {
+        return profileButton;
+    }
+
+    public Button getManageSuppliersButton() {
+        return manageSuppliersButton;
+    }
 
     public Label getProfileLabel() {
         return profileLabel;
@@ -393,6 +406,10 @@ public class UserView extends Pane {
 
     public HBox getHomePage() {
         return homePage;
+    }
+
+    public FlowPane getButtonGrid() {
+        return buttonGrid;
     }
 }
 

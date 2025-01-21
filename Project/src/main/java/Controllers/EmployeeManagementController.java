@@ -58,7 +58,7 @@ public class EmployeeManagementController {
         return employeeFileHandler;
     }
 
-    private void setEditRows() {
+    private void setEditRows() throws EmployeeCreationException {
         this.employeesListView.getEmployeeIDColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setUserID(e.getNewValue());
         });
@@ -94,16 +94,13 @@ public class EmployeeManagementController {
                 success.setTitle("Success");
                 success.setHeaderText("Employee Table Updated Successfully");
                 success.show();
-            } else {
-                Alert fail = new Alert(Alert.AlertType.ERROR);
-                fail.setTitle("Success");
-                fail.setHeaderText("Employee Table Update Error");
-                fail.show();
             }
+            else
+                throw new EmployeeCreationException("Invalid input on table. Please try again.");
         });
     }
 
-    private void onEmployeeAdd(){
+    private void onEmployeeAdd() {
         String employeeFullName = employeesListView.getEmployeeFullNameField().getText();
         String employeeUsername = employeesListView.getEmployeeUsernameField().getText();
         String employeePassword = employeesListView.getEmployeePasswordField().getText();

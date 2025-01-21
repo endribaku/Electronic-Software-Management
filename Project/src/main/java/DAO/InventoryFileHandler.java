@@ -50,6 +50,16 @@ public class InventoryFileHandler {
         }
     }
 
+    public static ObservableList<Item> checkForLowStock() {
+        ObservableList<Item> lowStockItems = FXCollections.observableArrayList();
+        for(Item i : itemsList) {
+            if(i.getQuantity() < 5) {
+                lowStockItems.add(i);
+            }
+        }
+        return lowStockItems;
+    }
+
     public boolean updateInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             writer.writeObject(inventory);

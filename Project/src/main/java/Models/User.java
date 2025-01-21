@@ -26,9 +26,6 @@ public class User implements Serializable {
     private transient StringProperty email;
     private transient DoubleProperty salary;
     private transient Access accessLevel;
-
-
-
     private EnumSet<Permission> permissions;
     private List<String> sector;
 
@@ -56,6 +53,10 @@ public class User implements Serializable {
             }
         }
         this.sector = new ArrayList<>(sectorList);
+    }
+
+    public boolean hasPermission(Permission permission) {
+        return permissions.contains(permission);
     }
 
     public StringProperty userIDProperty() {

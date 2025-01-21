@@ -25,7 +25,7 @@ public class EmployeePerformanceController {
     private BillFileHandler billFileHandler = new BillFileHandler();
     private User currentUser;
     public EmployeePerformanceController() {
-        this.view.getBills().addAll(BillFileHandler.getBills());
+        this.view.getBills().addAll(billFileHandler.getBillsFromDirectory());
         setupBillDateFilter();
         setupSearchBar();
     }
