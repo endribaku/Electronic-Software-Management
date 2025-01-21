@@ -1,6 +1,7 @@
 package Controllers;
 
 import DAO.UserFileHandler;
+import Exceptions.EmployeeCreationException;
 import Models.*;
 import Views.EmployeesListView;
 import javafx.collections.ObservableList;
@@ -102,7 +103,7 @@ public class EmployeeManagementController {
         });
     }
 
-    private void onEmployeeAdd() {
+    private void onEmployeeAdd(){
         String employeeFullName = employeesListView.getEmployeeFullNameField().getText();
         String employeeUsername = employeesListView.getEmployeeUsernameField().getText();
         String employeePassword = employeesListView.getEmployeePasswordField().getText();

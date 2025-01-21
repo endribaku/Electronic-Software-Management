@@ -2,6 +2,7 @@ package Controllers;
 
 import DAO.BillFileHandler;
 import DAO.InventoryFileHandler;
+import Exceptions.BillCreationException;
 import Views.BillGenerateView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -84,7 +85,7 @@ public class BillManagementController {
         }
     }
 
-    private void onGenerateBill(ActionEvent actionEvent) {
+    private void onGenerateBill(ActionEvent actionEvent) throws BillCreationException {
        ObservableList<Bill_Item> billItems = this.generateView.getBillList();
        if (billItems.isEmpty()) {
            Alert alert = new Alert(Alert.AlertType.ERROR);
