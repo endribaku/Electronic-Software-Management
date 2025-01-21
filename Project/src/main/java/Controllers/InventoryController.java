@@ -4,6 +4,7 @@ import DAO.CategoryFileHandler;
 import DAO.InventoryFileHandler;
 import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
+import Exceptions.SectorCreationException;
 import Models.*;
 import Views.InventoryView;
 import javafx.collections.ObservableList;
@@ -32,7 +33,13 @@ public class InventoryController {
         this.currentUser = currentUser;
         this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
-        this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
+        this.inventoryListView.getAddSectorButton().setOnAction(e -> {
+            try {
+                onSectorAdd();
+            } catch (SectorCreationException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         this.inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsOfUser(currentUser));
         this.inventoryListView.getItemCategoryListView().setItems(inventoryFileHandler.getCategoriesOfUser(currentUser));
         this.inventoryListView.getItemSupplierListView().setItems(inventoryFileHandler.getSuppliersList());
@@ -182,32 +189,23 @@ public class InventoryController {
         }
     }
 
-    private void onSectorAdd(){
+    private void onSectorAdd() throws SectorCreationException {
         String sectorName = inventoryListView.getSectorNameField().getText();
         ArrayList<Category> categoriesList = new ArrayList<>(inventoryListView.getSectorCategoryListView().getSelectionModel().getSelectedItems());
 
-        try {
-            if (sectorName.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Invalid Input");
-                alert.show();
-            }
-            else {
-                inventoryFileHandler.addSector(new Sector(sectorName, categoriesList));
-                inventoryListView.getSectorNameField().clear();
-                inventoryListView.getSectorCategoryListView().getSelectionModel().clearSelection();
-                inventoryListView.getOptionsComboBox().setValue("Add Sector");
+        if (!(sectorName.isEmpty())) {
+            inventoryFileHandler.addSector(new Sector(sectorName, categoriesList));
+            inventoryListView.getSectorNameField().clear();
+            inventoryListView.getSectorCategoryListView().getSelectionModel().clearSelection();
+            inventoryListView.getOptionsComboBox().setValue("Add Sector");
 
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText("Sector Added Successfully");
-                alert.show();
-            }
-        } catch(Exception e) {
-            System.out.println(e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Sector Added Successfully");
+            alert.show();
         }
+        else
+            throw new SectorCreationException("Please write Sector name!");
     }
 
     private ObservableList<String> getSectorNamesOfUser(User user)
