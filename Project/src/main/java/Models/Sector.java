@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Sector implements Serializable {
+    private static final long serialVersionUID = 1L;
     private transient StringProperty sectorName;
     private transient ListProperty<Category> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
 

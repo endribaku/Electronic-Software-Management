@@ -191,5 +191,10 @@ public class User implements Serializable {
         this.accessLevel = (Access) in.readObject();
     }
 
+    @Override
+    public String toString()
+    {
+        return getFullName();
+    }
 
 }

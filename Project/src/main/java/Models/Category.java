@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Category implements Comparable<Category> , Serializable {
+    private static final long serialVersionUID = 1L;
     private transient StringProperty name;
     private transient ListProperty<Item> items;
     private transient StringProperty sector;

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Supplier implements Serializable {
+    private static final long serialVersionUID = 1L;
     private transient StringProperty supplierID;
     private transient StringProperty name;
     private transient ListProperty<Item> suppliedItems;

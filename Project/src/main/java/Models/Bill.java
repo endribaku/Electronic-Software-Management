@@ -8,16 +8,22 @@ import java.io.*;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Bill implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private transient IntegerProperty billNumber;
     private transient ObjectProperty<User> user;
     private transient ListProperty<Bill_Item> itemsSold;
     private transient DoubleProperty totalAmount;
     //private transient ObjectProperty<Sector> sector;
     private transient ObjectProperty<LocalDate> dateOfSale;
-    private static int counter = 1;
+    private static final String BILLS_DIRECTORY = "Project/Data/BillsRepository";
+    private static int counter = loadNextBillNumber();
 
     public Bill(User user, ListProperty<Bill_Item> itemsSold, double totalAmount) {
         this.billNumber = new SimpleIntegerProperty(counter);
@@ -25,7 +31,6 @@ public class Bill implements Serializable {
         this.itemsSold = new SimpleListProperty<Bill_Item>(itemsSold);
         this.totalAmount = new SimpleDoubleProperty(totalAmount);
         this.dateOfSale = new SimpleObjectProperty<>(LocalDate.now());
-        counter++;
     }
 
     public Bill() {
@@ -197,31 +202,53 @@ public class Bill implements Serializable {
 //        return billText.toString();
 //    }
 
+
+    // custom method to collect bill nr from text file
+    private static int loadNextBillNumber() {
+        File directory = new File(BILLS_DIRECTORY);
+
+        if (!directory.exists() || !directory.isDirectory()) {
+            directory.mkdirs(); // Create directory if it doesn't exist
+            return 1; // Start at 1 if no bills exist
+        }
+
+        int maxBillNumber = 0;
+        // Updated regex to match "Bill{number}{date}.txt"
+        Pattern pattern = Pattern.compile("Bill(\\d+)\\d{2}-\\d{2}-\\d{4}\\.txt");
+
+        for (File file : directory.listFiles()) {
+            Matcher matcher = pattern.matcher(file.getName());
+            if (matcher.matches()) {
+                int billNumber = Integer.parseInt(matcher.group(1));
+                if (billNumber > maxBillNumber) {
+                    maxBillNumber = billNumber;
+                }
+            }
+        }
+
+        return maxBillNumber + 1; // Start at the next number
+    }
+
     @Serial
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
         outputStream.writeInt(billNumber.get());
         outputStream.writeObject(user.get());
-        outputStream.writeInt(itemsSold.size());
-        for (Bill_Item item : itemsSold)
-            outputStream.writeObject(item);
+        outputStream.writeObject(new ArrayList<>(itemsSold));
         outputStream.writeDouble(totalAmount.get());
-//        outputStream.writeObject(sector.get());
         outputStream.writeObject(dateOfSale.get());
     }
 
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+
+        // Deserialize the values and initialize the transient properties
         this.billNumber = new SimpleIntegerProperty(inputStream.readInt());
         this.user = new SimpleObjectProperty<>((User) inputStream.readObject());
-        int size = inputStream.readInt();
-        ListProperty<Bill_Item> itemsList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        for(int i = 0; i < size; i++) {
-            itemsList.add((Bill_Item) inputStream.readObject());
-        }
-        this.itemsSold = itemsList;
+        List<Bill_Item> itemsSoldList = (List<Bill_Item>) inputStream.readObject();
+        this.itemsSold = new SimpleListProperty<>(FXCollections.observableArrayList(itemsSoldList));
         this.totalAmount = new SimpleDoubleProperty(inputStream.readDouble());
-//        this.sector = new SimpleObjectProperty<>((Sector) inputStream.readObject());
         this.dateOfSale = new SimpleObjectProperty<>((LocalDate) inputStream.readObject());
     }
 

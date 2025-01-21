@@ -25,9 +25,14 @@ public class BillFileHandler {
 
     public static ObservableList<Bill> getBills() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            bills.clear();
             while(true) {
-                Bill bill = (Bill) reader.readObject();
-                bills.add(bill);
+                Object obj = reader.readObject();
+                if (obj instanceof Bill) {
+                    Bill bill = (Bill) obj;
+                    System.out.println("Deserialized Bill with User: " + bill.getUser());
+                    bills.add(bill);
+                }
             }
         }catch(EOFException eof) {
 
@@ -44,6 +49,7 @@ public class BillFileHandler {
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
+            System.out.println("Writing Bill with User: " + (bill.getUser() != null ? bill.getUser().getUsername() : "null"));
             writer.writeObject(bill);
             bills.add(bill);
         } catch(IOException ioe) {
@@ -147,7 +153,7 @@ public class BillFileHandler {
         String billText = generateBillText(bill);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDate = bill.getDateOfSale().format(formatter);
-        String filename = "Bill" + bill.getBillNumber() + ".txt";
+        String filename = "Bill" + bill.getBillNumber() + formattedDate +  ".txt";
         try(PrintWriter fileWriter = new PrintWriter(BILLS_DIRECTORY + "/" + filename))
         {
             fileWriter.write(billText);

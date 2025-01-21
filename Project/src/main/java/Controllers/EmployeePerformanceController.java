@@ -25,7 +25,7 @@ public class EmployeePerformanceController {
     private BillFileHandler billFileHandler = new BillFileHandler();
     private User currentUser;
     public EmployeePerformanceController() {
-        this.view.getBillTableView().setItems(BillFileHandler.getBills());
+        this.view.getBills().addAll(BillFileHandler.getBills());
         setupBillDateFilter();
         setupSearchBar();
     }
@@ -33,7 +33,8 @@ public class EmployeePerformanceController {
     // Controller setting the currentUser as the one who controls
     public EmployeePerformanceController(User user) {
         this.currentUser = user;
-        this.view.getBillTableView().setItems(billFileHandler.getBillsFromDirectory());
+        this.view.getBills().addAll(BillFileHandler.getBills());
+
         setupBillDateFilter();
         setupSearchBar();
     }

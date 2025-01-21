@@ -1,5 +1,6 @@
 package Views;
 
+import DAO.BillFileHandler;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +27,7 @@ public class EmployeePerformanceView {
     TextField searchBar = new TextField();
     FilteredList<Bill> filteredBills = new FilteredList<>(bills, p -> true);
 
-    TableView<Bill> billTableView = new TableView<>(filteredBills);
+    TableView<Bill> billTableView = new TableView<>(bills);
     TableColumn<Bill, Integer> billNumberColumn = new TableColumn<>("ID");
     TableColumn<Bill, User> cashierColumn = new TableColumn<>("Cashier");
 //    TableColumn<Bill, Sector> sectorColumn = new TableColumn<>("Sector");

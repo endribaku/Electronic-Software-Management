@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory implements Serializable{
+    private static final long serialVersionUID = 1L;
     private transient ListProperty<Sector> sectors = new SimpleListProperty<>(FXCollections.observableArrayList());
     private transient ListProperty<Manager> managers = new SimpleListProperty<>(FXCollections.observableArrayList());
     private transient ListProperty<Supplier> suppliers = new SimpleListProperty<>(FXCollections.observableArrayList());

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Item implements Serializable {
+    private static final long serialVersionUID = 1L;
     private transient StringProperty itemID;
     private transient StringProperty name;
     private transient StringProperty category;

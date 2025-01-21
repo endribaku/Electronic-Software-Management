@@ -102,24 +102,29 @@ public class Bill_Item implements Serializable {
 
     @Serial
     private void readObject(ObjectInputStream reader) throws IOException, ClassNotFoundException {
-        reader.defaultReadObject();
-        this.item = new SimpleObjectProperty<>((Item) reader.readObject());
-        this.quantity = new SimpleIntegerProperty(reader.readInt());
-        this.unitPrice = new SimpleDoubleProperty(reader.readDouble());
-        this.totalPrice = new SimpleDoubleProperty(reader.readDouble());
-        this.itemID = new SimpleStringProperty(reader.readUTF());
-        this.name = new SimpleStringProperty(reader.readUTF());
+        String itemID = (String) reader.readObject();
+        String name = (String) reader.readObject();
+        Item item = (Item) reader.readObject();
+        int quantity = reader.readInt();
+        double unitPrice = reader.readDouble();
+
+        this.itemID = new SimpleStringProperty(itemID);
+        this.name = new SimpleStringProperty(name);
+        this.item = new SimpleObjectProperty<>(item);
+        this.quantity = new SimpleIntegerProperty(quantity);
+        this.unitPrice = new SimpleDoubleProperty(unitPrice);
+        this.totalPrice = new SimpleDoubleProperty(quantity * unitPrice);
     }
 
     @Serial
     private void writeObject(ObjectOutputStream writer) throws IOException {
         writer.defaultWriteObject();
-        writer.writeObject(this.item.get());
-        writer.writeInt(this.quantity.get());
-        writer.writeDouble(this.unitPrice.get());
-        writer.writeDouble(this.totalPrice.get());
-        writer.writeUTF(this.itemID.getValueSafe());
-        writer.writeUTF(this.name.getValueSafe());
+        writer.writeObject(itemID.get());
+        writer.writeObject(name.get());
+        writer.writeObject(item.get());
+        writer.writeInt(quantity.get());
+        writer.writeDouble(unitPrice.get());
+        writer.writeDouble(totalPrice.get());
     }
 
     @Override
