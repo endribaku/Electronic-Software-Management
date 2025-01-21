@@ -50,7 +50,7 @@ public class SuppliersController {
                 alert.show();
             }
             else {
-                handler.insertSupplier(new Supplier(supplierName, itemList));
+                inventoryHandler.addSupplier(new Supplier(supplierName, itemList));
 
                 view.getSuppliersNameField().clear();
                 view.getItemBoxList().getSelectionModel().clearSelection();

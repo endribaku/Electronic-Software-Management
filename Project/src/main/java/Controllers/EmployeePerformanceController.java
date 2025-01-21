@@ -59,7 +59,7 @@ public class EmployeePerformanceController {
             billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getBillNumber();});
 
         this.view.getCashierColumn().setOnEditCommit(e->{
-            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getUser().toString();});
+            billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getUsername();});
 
         this.view.getTotalPriceColumn().setOnEditCommit(e->{
             billFileHandler.getBillsFromDirectory().get(e.getTablePosition().getRow()).getTotalAmount();});
@@ -142,7 +142,7 @@ public class EmployeePerformanceController {
                 }
 
                 // Compare cashier names ignoring case
-                return bill.getUser().getUsername().toLowerCase().contains(newValue.toLowerCase());
+                return bill.getUsername().toLowerCase().contains(newValue.toLowerCase());
             });
         });
     }

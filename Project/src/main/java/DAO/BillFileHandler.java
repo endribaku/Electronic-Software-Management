@@ -30,7 +30,7 @@ public class BillFileHandler {
                 Object obj = reader.readObject();
                 if (obj instanceof Bill) {
                     Bill bill = (Bill) obj;
-                    System.out.println("Deserialized Bill with User: " + bill.getUser());
+                    System.out.println("Deserialized Bill with User: " + bill.getUsername());
                     bills.add(bill);
                 }
             }
@@ -49,7 +49,7 @@ public class BillFileHandler {
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
-            System.out.println("Writing Bill with User: " + (bill.getUser() != null ? bill.getUser().getUsername() : "null"));
+            System.out.println("Writing Bill with User: " + (bill.getUsername() != null ? bill.getUsername() : "null"));
             writer.writeObject(bill);
             bills.add(bill);
         } catch(IOException ioe) {
@@ -135,7 +135,7 @@ public class BillFileHandler {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             while(true) {
                 if(reader.readObject() instanceof Bill) {
-                    if(((Bill) reader.readObject()).getUser().getUsername().equals(cashierName)) {
+                    if(((Bill) reader.readObject()).getUsername().equals(cashierName)) {
                         return (Bill) reader.readObject();
                     }
                 }
@@ -199,7 +199,7 @@ public class BillFileHandler {
                 {
                     String cashierId = line.split(":")[1].trim();
                     UserFileHandler cashierSelecter = new UserFileHandler();
-                    bill.setUser((Cashier) cashierSelecter.selectUserFromId(cashierId));
+                    bill.setUsername(cashierSelecter.selectUserFromId(cashierId).getUsername());
                 }
                 else if(line.startsWith("Cashier User Name:")) {
                     String cashierName = line.split(":")[1].trim();
@@ -261,7 +261,7 @@ public class BillFileHandler {
         billText.append("                ELECTRONIC STORE         \n");
         billText.append("-----------------------------------------\n");
         billText.append(String.format("Bill Number:    %d%n", bill.getBillNumber()));
-        billText.append(String.format("Cashier Name:   %s%n", bill.getUser().getUsername()));
+        billText.append(String.format("Cashier Name:   %s%n", bill.getUsername()));
         billText.append(String.format("Date:           %s%n", bill.getDateOfSale().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
         billText.append("%n");
 

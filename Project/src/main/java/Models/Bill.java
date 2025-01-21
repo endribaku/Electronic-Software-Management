@@ -17,7 +17,10 @@ public class Bill implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private transient IntegerProperty billNumber;
-    private transient ObjectProperty<User> user;
+
+
+
+    private transient StringProperty username;
     private transient ListProperty<Bill_Item> itemsSold;
     private transient DoubleProperty totalAmount;
     //private transient ObjectProperty<Sector> sector;
@@ -27,7 +30,7 @@ public class Bill implements Serializable {
 
     public Bill(User user, ListProperty<Bill_Item> itemsSold, double totalAmount) {
         this.billNumber = new SimpleIntegerProperty(counter);
-        this.user = new SimpleObjectProperty<>(user);
+        this.username = new SimpleStringProperty(user.getUsername());
         this.itemsSold = new SimpleListProperty<Bill_Item>(itemsSold);
         this.totalAmount = new SimpleDoubleProperty(totalAmount);
         this.dateOfSale = new SimpleObjectProperty<>(LocalDate.now());
@@ -35,7 +38,7 @@ public class Bill implements Serializable {
 
     public Bill() {
         this.billNumber = new SimpleIntegerProperty(counter);
-        this.user = new SimpleObjectProperty<>();
+        this.username = new SimpleStringProperty();
         this.itemsSold = new SimpleListProperty<Bill_Item>(FXCollections.observableArrayList());
         this.totalAmount = new SimpleDoubleProperty();
         this.dateOfSale = new SimpleObjectProperty<>(LocalDate.now());
@@ -54,17 +57,9 @@ public class Bill implements Serializable {
         this.billNumber.set(billNumber);
     }
 
-    public User getUser() {
-        return user.get();
-    }
 
-    public ObjectProperty<User> userProperty() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user.set(user);
-    }
+
 
     public ListProperty<Bill_Item> itemsSoldProperty() {
         return itemsSold;
@@ -125,6 +120,22 @@ public class Bill implements Serializable {
             this.totalAmount.set(this.totalAmount.get() + item.getTotalPrice());
         }
         return this.totalAmount.get();
+    }
+
+    public String getUsername() {
+        return username.get();
+    }
+
+    public StringProperty usernameProperty() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username.set(username);
+    }
+
+    public void setUser(User user) {
+        this.username.set(user.getUsername());
     }
 
 //    public void addBillItem(Item item, int quantityToReduce) {
@@ -233,8 +244,8 @@ public class Bill implements Serializable {
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
         outputStream.writeInt(billNumber.get());
-        outputStream.writeObject(user.get());
-        outputStream.writeObject(new ArrayList<>(itemsSold));
+        outputStream.writeUTF(username.get());
+        outputStream.writeObject(new ArrayList<>(itemsSold.get()));
         outputStream.writeDouble(totalAmount.get());
         outputStream.writeObject(dateOfSale.get());
     }
@@ -245,7 +256,7 @@ public class Bill implements Serializable {
 
         // Deserialize the values and initialize the transient properties
         this.billNumber = new SimpleIntegerProperty(inputStream.readInt());
-        this.user = new SimpleObjectProperty<>((User) inputStream.readObject());
+        this.username = new SimpleStringProperty(inputStream.readUTF());
         List<Bill_Item> itemsSoldList = (List<Bill_Item>) inputStream.readObject();
         this.itemsSold = new SimpleListProperty<>(FXCollections.observableArrayList(itemsSoldList));
         this.totalAmount = new SimpleDoubleProperty(inputStream.readDouble());

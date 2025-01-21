@@ -37,6 +37,7 @@ public class EmployeesListView {
         ComboBox<Access> accessLevelList= new ComboBox<Access>(accessLevels);
         ObservableList<String> permissions = FXCollections.observableArrayList
                 (Permission.BILL_GENERATION.toString(),
+                        Permission.BILL_MANAGEMENT.toString(),
                         Permission.EMPLOYEE_MANAGEMENT.toString(),
                         Permission.INVENTORY_ACCESS.toString(),
                         Permission.PERFORMANCE_VIEW.toString(),

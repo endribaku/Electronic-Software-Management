@@ -29,7 +29,7 @@ public class EmployeePerformanceView {
 
     TableView<Bill> billTableView = new TableView<>(bills);
     TableColumn<Bill, Integer> billNumberColumn = new TableColumn<>("ID");
-    TableColumn<Bill, User> cashierColumn = new TableColumn<>("Cashier");
+    TableColumn<Bill, String> cashierColumn = new TableColumn<>("Cashier");
 //    TableColumn<Bill, Sector> sectorColumn = new TableColumn<>("Sector");
     TableColumn<Bill, ArrayList<Bill_Item>> itemsSoldColumn = new TableColumn<>("Items Sold");
     TableColumn<Bill, Number> totalPriceColumn = new TableColumn<>("Total Price");
@@ -56,7 +56,7 @@ public class EmployeePerformanceView {
                 if (newValue == null || newValue.isEmpty()) {
                     return true; // Show all items
                 }
-                return bill.getUser().getFullName().toLowerCase().contains(newValue.toLowerCase()); // Filter items
+                return bill.getUsername().toLowerCase().contains(newValue.toLowerCase()); // Filter items
             });
         });
 
@@ -64,7 +64,7 @@ public class EmployeePerformanceView {
         billTableView.setEditable(false);
         billNumberColumn.setCellValueFactory(new PropertyValueFactory<>("billNumber"));
         billNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        cashierColumn.setCellValueFactory(new PropertyValueFactory<>("user"));
+        cashierColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         itemsSoldColumn.setCellValueFactory(new PropertyValueFactory<>("itemsSold"));
         totalPriceColumn.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
         dateOfSaleColumn.setCellValueFactory(new PropertyValueFactory<>("dateOfSale"));
@@ -124,7 +124,7 @@ public class EmployeePerformanceView {
         return billNumberColumn;
     }
 
-    public TableColumn<Bill, User> getCashierColumn() {
+    public TableColumn<Bill, String> getCashierColumn() {
         return cashierColumn;
     }
 
