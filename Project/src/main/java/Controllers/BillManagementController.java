@@ -88,32 +88,49 @@ public class BillManagementController {
     }
 
     //to fix bill tomorrow
+//    private void onBillGenerateQuantities(ObservableList<Bill_Item> billItemsList) {
+//        System.out.println("Size of billItemsList: " + billItemsList.size());
+//        ObservableList<Item> itemsInBill = FXCollections.observableArrayList();
+//        for(Bill_Item item: billItemsList) {
+//            itemsInBill.add(item.getItem());
+//        }
+//
+//        if (billItemsList.size() != itemsInBill.size()) {
+//            System.err.println("Mismatch between billItemsList and itemsInBill sizes.");
+//            return;
+//        }
+//
+//        int[] quantitySold = new int[billItemsList.size()];
+//        for(int i = 0; i < billItemsList.size(); i++) {
+//            quantitySold[i] = billItemsList.get(i).getQuantity();
+//        }
+//        for(int i = 0; i < itemsInBill.size(); i++) {
+//            itemsInBill.get(i).setQuantity(itemsInBill.get(i).getQuantity() - quantitySold[i]);
+//        }
+//
+//        //Update item with new quantity in inventory
+//        for(int i = 0; i < itemsInBill.size(); i++) {
+//            Item item = itemsInBill.get(i);
+//            new InventoryFileHandler().updateItem(item.getItemID(), item.getName(),
+//                    item.getCategory(), item.getSupplier(), item.getPurchaseDate(),
+//                    item.getPurchasePrice(), item.getSellingPrice(), item.getQuantity());
+//        }
+//    }
+
     private void onBillGenerateQuantities(ObservableList<Bill_Item> billItemsList) {
-        System.out.println("Size of billItemsList: " + billItemsList.size());
-        ObservableList<Item> itemsInBill = FXCollections.observableArrayList();
-        for(Bill_Item item: billItemsList) {
-            itemsInBill.add(item.getItem());
-        }
+        for (Bill_Item billItem : billItemsList) {
+            Item item = billItem.getItem();
+            int soldQuantity = billItem.getQuantity();
+            int newQuantity = item.getQuantity() - soldQuantity;
+            if (newQuantity < 0) {
+                System.err.println("Error: Stock quantity cannot be negative. Item: " + item.getName());
+                continue;
+            }
+            item.setQuantity(newQuantity);
 
-        if (billItemsList.size() != itemsInBill.size()) {
-            System.err.println("Mismatch between billItemsList and itemsInBill sizes.");
-            return;
-        }
-
-        int[] quantitySold = new int[billItemsList.size()];
-        for(int i = 0; i < billItemsList.size(); i++) {
-            quantitySold[i] = billItemsList.get(i).getQuantity();
-        }
-        for(int i = 0; i < itemsInBill.size(); i++) {
-            itemsInBill.get(i).setQuantity(itemsInBill.get(i).getQuantity() - quantitySold[i]);
-        }
-
-        //Update item with new quantity in inventory
-        for(int i = 0; i < itemsInBill.size(); i++) {
-            Item item = itemsInBill.get(i);
-            new InventoryFileHandler().updateItem(item.getItemID(), item.getName(),
+            InventoryFileHandler.updateItem(item.getItemID(), item.getName(),
                     item.getCategory(), item.getSupplier(), item.getPurchaseDate(),
-                    item.getPurchasePrice(), item.getSellingPrice(), item.getQuantity());
+                    item.getPurchasePrice(), item.getSellingPrice(), newQuantity);
         }
     }
 }

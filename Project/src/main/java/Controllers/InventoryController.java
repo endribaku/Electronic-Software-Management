@@ -6,6 +6,7 @@ import DAO.ItemFileHandler;
 import DAO.SuppliersFileHandler;
 import Exceptions.CategoryCreationException;
 import Exceptions.ItemCreationException;
+import Exceptions.ItemStockException;
 import Exceptions.SectorCreationException;
 import Models.*;
 import Views.InventoryView;
@@ -149,7 +150,7 @@ public class InventoryController {
         Supplier selectedSupplier = inventoryListView.getItemSupplierListView().getSelectionModel().getSelectedItem();
 
         try{
-            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity == 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.isEmpty()){
+            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity <= 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Invalid Input");
@@ -276,7 +277,32 @@ public class InventoryController {
         double sellingPrice = Double.parseDouble(this.inventoryListView.getItemEditSPriceField().getText());
         int quantity = Integer.parseInt(this.inventoryListView.getItemEditQuantityField().getText());
 
-        inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
+        if(quantity < 0)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid stock update");
+            alert.setHeaderText("Negative quantity not allowed");
+            alert.show();
+        } else if(quantity == 0)
+        {
+            inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Item is now out of stock");
+            alert.setHeaderText("Item is now out of stock");
+            alert.show();
+
+        } else
+        {
+            inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Item Updated");
+            alert.setHeaderText("Item is Updated");
+            alert.show();
+        }
+
+
+
+
         this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
         this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
 
