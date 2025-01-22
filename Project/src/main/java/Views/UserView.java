@@ -155,14 +155,14 @@ public class UserView extends Pane {
         viewPerformanceImageView.setFitHeight(90);
         viewPerformanceImageView.setFitWidth(90);
         VBox viewPerformanceLabelPane = new VBox();
-        Label viewLabel = new Label("Manage");
-        Label performanceHomeLabel = new Label("Employees");
+        Label viewLabel = new Label("View");
+        Label performanceHomeLabel = new Label("Performance");
         viewLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
         performanceHomeLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
         viewPerformanceLabelPane.getChildren().addAll(viewLabel, performanceHomeLabel);
         viewPerformanceLabelPane.setAlignment(Pos.CENTER_RIGHT);
         viewPerformanceButtonPane.getChildren().addAll(viewPerformanceImageView, viewPerformanceLabelPane);
-        viewPerformanceButtonPane.setSpacing(50);
+        viewPerformanceButtonPane.setSpacing(30);
         viewPerformanceButtonPane.setPadding(new Insets(5));
         viewPerformanceButtonPane.setAlignment(Pos.CENTER);
         viewPerformanceButton.setGraphic(viewPerformanceButtonPane);
