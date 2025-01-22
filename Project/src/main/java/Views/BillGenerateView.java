@@ -27,30 +27,10 @@ public class BillGenerateView {
 
     BorderPane createBox = new BorderPane();
     VBox addItemstoBillPane = new VBox();
-    ObservableList<Item> itemList = FXCollections.observableArrayList(
-            new Item("Macbook", new Category("Laptop", new ArrayList<>()),
-                    new Supplier("Apple", new ArrayList<>()),
-                    LocalDate.now(), 1000, 1200, 5),
-            new Item("iPhone 12", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("Apple", new ArrayList<>()),
-                    LocalDate.now(), 500, 700, 5),
-            new Item("iPhone 13", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("Apple", new ArrayList<>()),
-                    LocalDate.now(), 600, 800, 5),
-            new Item("iPad 3", new Category("Tablet", new ArrayList<>()),
-                    new Supplier("Apple", new ArrayList<>()),
-                    LocalDate.now(), 800, 1000, 5),
-            new Item("iPhone 16", new Category("Smartphone", new ArrayList<>()),
-                    new Supplier("Apple", new ArrayList<>()),
-                    LocalDate.now(), 1300, 1500, 5)
-    );
-    FilteredList<Item> filteredItemList = new FilteredList<>(itemList, p -> true);
-
-    TextField searchBar = new TextField();
 
     TextField quantityTextField = new TextField();
 
-    ListView<Item> itemListView = new ListView<>(filteredItemList);
+    ListView<Item> itemListView = new ListView<>();
 
     ObservableList<Bill_Item> billList = FXCollections.observableArrayList();
     VBox billListBox = new VBox();
@@ -74,43 +54,6 @@ public class BillGenerateView {
         createBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
         createBox.setMinWidth(400);
 
-        searchBar.setPromptText("Search...");
-        searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredItemList.setPredicate(item -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true; // Show all items
-                }
-                return item.getName().toLowerCase().contains(newValue.toLowerCase()); // Filter items
-            });
-        });
-
-        //Setting values of columns to be automatically added on the columns based on the billlist
-
-//        itemListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-//        addToBillButton.setOnAction(e -> {
-//            System.out.println("Clicked");
-//            ObservableList<Item> selectedItems = itemListView.getSelectionModel().getSelectedItems();
-//            for (Item item : selectedItems) {
-//                Bill_Item existingBillItem = billList.stream()
-//                        .filter(billItem -> billItem.getItem().equals(item))
-//                        .findFirst()
-//                        .orElse(null);
-//
-//                if (existingBillItem != null) {
-//                    // Increment quantity if already in the bill
-//                    int newQuantity = existingBillItem.getQuantity() + 1;
-//                    billList.remove(existingBillItem);
-//                    billList.add(new Bill_Item(item));
-//                    System.out.println(billList.size());
-//
-//                } else {
-//                    // Add new BillItem
-//                    billList.add(new Bill_Item(item));
-//                    System.out.println(billList.size());
-//                }
-//            }
-//        });
         addToBillButton.setStyle("-fx-font: 11pt Helvetica;");
         GridPane.setHalignment(addToBillButton, HPos.RIGHT);
 
@@ -125,8 +68,8 @@ public class BillGenerateView {
         quantityGrid.setVgap(10);
 
 
-        //Create Item Pane
-        addItemstoBillPane.getChildren().addAll(searchBar, itemListView, quantityGrid);
+        //Add to Bill Pane
+        addItemstoBillPane.getChildren().addAll(itemListView, quantityGrid);
         addItemstoBillPane.setSpacing(10);
         createBox.setCenter(addItemstoBillPane);
 
@@ -173,20 +116,8 @@ public class BillGenerateView {
         return createBox;
     }
 
-    public ObservableList<Item> getItemList() {
-        return itemList;
-    }
-
     public VBox getAddItemstoBillPane() {
         return addItemstoBillPane;
-    }
-
-    public FilteredList<Item> getFilteredItemList() {
-        return filteredItemList;
-    }
-
-    public TextField getSearchBar() {
-        return searchBar;
     }
 
     public ListView<Item> getItemListView() {
