@@ -197,36 +197,73 @@ public class InventoryFileHandler {
         boolean updated = false;
         Inventory currentInventory = inventory.get();
 
-        // Update the specific item
-        // Traverse the inventory to find the item
+        Item itemToUpdate = null;
+        Supplier currentSupplier = null;
+
         for (Sector sector : currentInventory.getSectors()) {
             for (Category category : sector.getCategories()) {
                 for (Item i : category.getItems()) {
                     if (i.getItemID().equals(itemID)) {
-                        // Create the updated item
-                        Item updatedItem = new Item(itemID, itemCategory, itemSupplier, date, pPrice, sPrice, quantity);
-                        updatedItem.setName(itemName);
-
-                        // Replace the old item with the updated one
-                        category.getItems().set(category.getItems().indexOf(i), updatedItem);
-                        itemsList.set(itemsList.indexOf(i), updatedItem);  // Update the ObservableList (for UI purposes)
-
-                        System.out.println("Item updated successfully");
-                        updated = true;
+                        itemToUpdate = i;
+                        for (Supplier supplier : currentInventory.getSuppliers()) {
+                            if (supplier.getSuppliedItems().contains(i)) {
+                                currentSupplier = supplier;
+                                break;
+                            }
+                        }
                         break;
                     }
                 }
-                if (updated) break;
+                if (itemToUpdate != null) break;
             }
-            if (updated) break;
+            if (itemToUpdate != null) break;
         }
 
-        // Write the updated list back to the file
-        boolean saved = false;
-        if (updated) {
-            saved = updateInventory(currentInventory);
+        if (itemToUpdate == null) {
+            System.err.println("Item not found in the inventory.");
+            return false;
         }
-        return (updated && saved);
+
+
+        itemToUpdate.setName(itemName);
+        itemToUpdate.setCategory(itemCategory);
+        itemToUpdate.setSupplier(itemSupplier);
+        itemToUpdate.setPurchasePrice(pPrice);
+        itemToUpdate.setSellingPrice(sPrice);
+        itemToUpdate.setQuantity(quantity);
+        itemToUpdate.setPurchaseDate(date);
+
+
+        if (currentSupplier != null && !currentSupplier.getName().equals(itemSupplier)) {
+
+            currentSupplier.getSuppliedItems().remove(itemToUpdate);
+
+            // Add the item to the target supplier
+            boolean supplierFound = false;
+            for (Supplier supplier : currentInventory.getSuppliers()) {
+                if (supplier.getName().equals(itemSupplier)) {
+                    supplier.getSuppliedItems().add(itemToUpdate);
+                    supplierFound = true;
+                    break;
+                }
+            }
+
+            if (!supplierFound) {
+                System.err.println("New supplier not found in the inventory.");
+                return false;
+            }
+        }
+
+
+        itemsList.set(itemsList.indexOf(itemToUpdate), itemToUpdate);
+
+
+        boolean saved = updateInventory(currentInventory);
+        if (saved) {
+            System.out.println("Item updated successfully.");
+        }
+
+        return saved;
     }
 
 
@@ -261,7 +298,6 @@ public class InventoryFileHandler {
             if (updated) break;
         }
 
-        // Write the updated list back to the file
         boolean saved = false;
         if(updated) {
             saved = updateInventory(currentInventory);
@@ -274,28 +310,25 @@ public class InventoryFileHandler {
         Inventory currentInventory = inventory.get();
         ObservableList<User> usersToChange = new UserFileHandler().getAllUsers();
 
-        // Traverse the sectors and update the sector
         for (Sector s : currentInventory.getSectors()) {
             if (s == sector) {
-                // Remove the old sector from the list
+
                 currentInventory.getSectors().remove(s);
 
-                // Update users that are affected by this sector change
+
                 for (User u : usersToChange) {
                     for (String str : u.getSector()) {
                         if (str.equals(sector.getSectorName())) {
                             u.getSector().remove(str);
-                            u.getSector().add(sectorName);  // Update user sector info
+                            u.getSector().add(sectorName);
                         }
                     }
                 }
 
-                // Update categories within the sector
                 for (Category c : s.getCategories()) {
-                    c.setSector(sectorName);  // Update category's sector name
+                    c.setSector(sectorName);
                 }
 
-                // Update sector's name and add it back to the list
                 s.setSectorName(sectorName);
                 currentInventory.getSectors().add(s);
 
@@ -307,7 +340,6 @@ public class InventoryFileHandler {
             }
         }
 
-        // Write the updated list back to the file
         boolean saved = false;
         if(updated) {
             saved = updateInventory(currentInventory);
@@ -322,19 +354,18 @@ public class InventoryFileHandler {
 
         for (Supplier s : currentInventory.getSuppliers()) {
             if (s.getSupplierID().equals(supplierID)) {
-                // Remove the old supplier and update the supplier's name
+
                 currentInventory.getSuppliers().remove(s);
                 s.setName(supplierName);
 
-                // Update the supplied items to reflect the new supplier name
+
                 for (Item i : s.getSuppliedItems()) {
                     i.setSupplier(supplierName);
                 }
 
-                // Add the updated supplier back to the list
+
                 currentInventory.getSuppliers().add(s);
 
-                // Update the suppliersList for UI purposes
                 suppliersList.set(suppliersList.indexOf(s), s);
 
                 updated = true;
@@ -342,7 +373,7 @@ public class InventoryFileHandler {
             }
         }
 
-        // Write the updated list back to the file
+
         boolean saved = false;
         if(updated) {
             saved = updateInventory(currentInventory);
@@ -350,28 +381,48 @@ public class InventoryFileHandler {
         return(updated && saved);
     }
 
-    //Delete Methods
+
     public boolean deleteItem(Item item) {
         boolean deleted = false;
+
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+            if (inventory.get() == null) {
+                System.err.println("Inventory is null. Cannot delete the item.");
+                return false;
+            }
+        }
+
         Inventory currentInventory = inventory.get();
 
-        // Traverse the sectors and categories to find and delete the item
         for (Sector sector : currentInventory.getSectors()) {
             for (Category category : sector.getCategories()) {
                 if (category.getItems().contains(item)) {
-                    // Remove the item from the category
+
                     category.getItems().remove(item);
                     deleted = true;
-                    break;  // Once found, break out of the loop
+                    break;
                 }
             }
-            if (deleted) break;  // Stop once the item is deleted
+            if (deleted) break;
         }
-
-        // If the item was deleted, update the UI list and save the updated inventory
+        for (Supplier supplier : currentInventory.getSuppliers()) {
+            if (supplier.getSuppliedItems().contains(item)) {
+                supplier.getSuppliedItems().remove(item);
+                break;
+            }
+        }
         if (deleted) {
-            itemsList.remove(item);  // Remove from UI list
-            return updateInventory(currentInventory);  // Persist the updated inventory
+            itemsList.remove(item);
+            boolean saved = updateInventory(currentInventory);
+            if (saved) {
+                System.out.println("Item successfully deleted and inventory updated.");
+                return true;
+            } else {
+                System.err.println("Failed to save inventory after item deletion.");
+            }
+        } else {
+            System.err.println("Item not found in the inventory.");
         }
 
         return false;
