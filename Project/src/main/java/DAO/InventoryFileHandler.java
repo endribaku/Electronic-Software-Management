@@ -198,20 +198,27 @@ public class InventoryFileHandler {
         Inventory currentInventory = inventory.get();
 
         // Update the specific item
-        for (Item i : itemsList) {
-            if (i.getItemID().equals(itemID)) {
-                itemsList.remove(i);
-                i.setName(itemName);
-                i.setCategory(itemCategory);
-                i.setSupplier(itemSupplier);
-                i.setPurchaseDate(date);
-                i.setPurchasePrice(pPrice);
-                i.setSellingPrice(sPrice);
-                i.setQuantity(quantity);
-                updated = true;
-                itemsList.add(i);
-                break;
+        // Traverse the inventory to find the item
+        for (Sector sector : currentInventory.getSectors()) {
+            for (Category category : sector.getCategories()) {
+                for (Item i : category.getItems()) {
+                    if (i.getItemID().equals(itemID)) {
+                        // Create the updated item
+                        Item updatedItem = new Item(itemID, itemCategory, itemSupplier, date, pPrice, sPrice, quantity);
+                        updatedItem.setName(itemName);
+
+                        // Replace the old item with the updated one
+                        category.getItems().set(category.getItems().indexOf(i), updatedItem);
+                        itemsList.set(itemsList.indexOf(i), updatedItem);  // Update the ObservableList (for UI purposes)
+
+                        System.out.println("Item updated successfully");
+                        updated = true;
+                        break;
+                    }
+                }
+                if (updated) break;
             }
+            if (updated) break;
         }
 
         // Write the updated list back to the file
@@ -222,23 +229,36 @@ public class InventoryFileHandler {
         return (updated && saved);
     }
 
+
+
     public boolean updateCategory(Category category, String categoryName, String sectorName) {
         boolean updated = false;
         Inventory currentInventory = inventory.get();
 
-        // Update the specific category
-        for(Category c : categoriesList) {
-            if(c == category) {
-                categoriesList.remove(c);
-                c.setName(categoryName);
-                c.setSector(sectorName);
-                categoriesList.add(c);
-                for(Item i : c.getItems()){
-                    i.setCategory(categoryName);
+        for (Sector sector : currentInventory.getSectors()) {
+            for (Category c : sector.getCategories()) {
+                if (c == category) {
+
+                    sector.getCategories().remove(c);
+                    c.setName(categoryName);
+                    c.setSector(sectorName);
+
+
+                    sector.getCategories().add(c);
+
+
+                    for (Item i : c.getItems()) {
+                        i.setCategory(categoryName);
+                    }
+
+                    // Update UI list
+                    categoriesList.set(categoriesList.indexOf(c), c);
+
+                    updated = true;
+                    break;
                 }
-                updated = true;
-                break;
             }
+            if (updated) break;
         }
 
         // Write the updated list back to the file
@@ -254,28 +274,35 @@ public class InventoryFileHandler {
         Inventory currentInventory = inventory.get();
         ObservableList<User> usersToChange = new UserFileHandler().getAllUsers();
 
-        // Update the specific sector
-        for(Sector s : sectorsList) {
-            if(s == sector) {
-                sectorsList.remove(s);
+        // Traverse the sectors and update the sector
+        for (Sector s : currentInventory.getSectors()) {
+            if (s == sector) {
+                // Remove the old sector from the list
+                currentInventory.getSectors().remove(s);
 
-                for(User u : usersToChange){
-                    for(String str : u.getSector()){
-                        if(str.equals(sector.getSectorName())) {
+                // Update users that are affected by this sector change
+                for (User u : usersToChange) {
+                    for (String str : u.getSector()) {
+                        if (str.equals(sector.getSectorName())) {
                             u.getSector().remove(str);
-                            u.getSector().add(sectorName);
+                            u.getSector().add(sectorName);  // Update user sector info
                         }
                     }
                 }
-                System.out.println("Updated sectors in User");
-                for(Category c : s.getCategories()){
-                    c.setSector(sectorName);
+
+                // Update categories within the sector
+                for (Category c : s.getCategories()) {
+                    c.setSector(sectorName);  // Update category's sector name
                 }
-                System.out.println("Updated sectors in Category");
+
+                // Update sector's name and add it back to the list
                 s.setSectorName(sectorName);
-                sectorsList.add(s);
+                currentInventory.getSectors().add(s);
+
+                // Update UI list
+                sectorsList.set(sectorsList.indexOf(s), s);
+
                 updated = true;
-                System.out.println("Boolean set to true");
                 break;
             }
         }
@@ -293,15 +320,23 @@ public class InventoryFileHandler {
         boolean updated = false;
         Inventory currentInventory = inventory.get();
 
-        // Update the specific sector
-        for(Supplier s : suppliersList) {
-            if(s.getSupplierID().equals(supplierID)) {
-                suppliersList.remove(s);
+        for (Supplier s : currentInventory.getSuppliers()) {
+            if (s.getSupplierID().equals(supplierID)) {
+                // Remove the old supplier and update the supplier's name
+                currentInventory.getSuppliers().remove(s);
                 s.setName(supplierName);
-                suppliersList.add(s);
-                for(Item i : s.getSuppliedItems()){
+
+                // Update the supplied items to reflect the new supplier name
+                for (Item i : s.getSuppliedItems()) {
                     i.setSupplier(supplierName);
                 }
+
+                // Add the updated supplier back to the list
+                currentInventory.getSuppliers().add(s);
+
+                // Update the suppliersList for UI purposes
+                suppliersList.set(suppliersList.indexOf(s), s);
+
                 updated = true;
                 break;
             }
@@ -316,17 +351,30 @@ public class InventoryFileHandler {
     }
 
     //Delete Methods
-    public void deleteItem(Item item) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            itemsList.remove(item);
-            for(Item i : itemsList) {
-                outputStream.writeObject(i);
-            }
-        } catch(EOFException eofe) {
+    public boolean deleteItem(Item item) {
+        boolean deleted = false;
+        Inventory currentInventory = inventory.get();
 
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+        // Traverse the sectors and categories to find and delete the item
+        for (Sector sector : currentInventory.getSectors()) {
+            for (Category category : sector.getCategories()) {
+                if (category.getItems().contains(item)) {
+                    // Remove the item from the category
+                    category.getItems().remove(item);
+                    deleted = true;
+                    break;  // Once found, break out of the loop
+                }
+            }
+            if (deleted) break;  // Stop once the item is deleted
         }
+
+        // If the item was deleted, update the UI list and save the updated inventory
+        if (deleted) {
+            itemsList.remove(item);  // Remove from UI list
+            return updateInventory(currentInventory);  // Persist the updated inventory
+        }
+
+        return false;
     }
 
     public void deleteCategory(Category category) {

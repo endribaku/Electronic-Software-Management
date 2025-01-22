@@ -3,8 +3,10 @@ package Main;
 
 import Controllers.LoginController;
 import DAO.InventoryFileHandler;
+import DAO.UserFileHandler;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import Models.*;
 
@@ -113,6 +116,35 @@ public class Main extends Application {
             }
         }
 
+//        new InventoryFileHandler().setInventory(inventory);
+
+        ObservableList<String> permissions = FXCollections.observableArrayList();
+        permissions.add("INVENTORY_ACCESS");
+        permissions.add("EMPLOYEE_MANAGEMENT");
+
+
+
+        // Sample sectors
+        List<String> sectors = new ArrayList<>();
+        sectors.add("Sales");
+        sectors.add("HR");
+
+        // Sample Access Level (assuming you have an enum named Access with an ADMIN value)
+        Access accessLevel = Access.Administrator;
+
+        // Create the User object
+        User newUser = new User(
+                "john_doe",                        // Username
+                "password123",                     // Password
+                "John Doe",                        // Full name
+                LocalDate.of(1990, 5, 15),         // Date of birth
+                "555-1234",                        // Phone number
+                "john.doe@example.com",            // Email
+                75000.00,                          // Salary
+                accessLevel,                       // Access level (ADMIN)
+                permissions,                       // Permissions
+                FXCollections.observableArrayList(sectors) // Sectors
+        );
 
 
 

@@ -16,6 +16,11 @@ public class UserFileHandler {
 
     public static final String FILE_PATH = "Project/Data/employees.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
+
+    public ObservableList<User> getUsers() {
+        return users;
+    }
+
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
     public UserFileHandler() {
@@ -43,15 +48,17 @@ public class UserFileHandler {
         }
     }
 
-    public void deleteUser(User user) {
+    public boolean deleteUser(User user) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(User u : users) {
                 if(!u.equals(user))
                     outputStream.writeObject(u);
             }
             users.remove(user);
+            return true;
         } catch (IOException ex) {
             ex.getMessage();
+            return false;
         }
     }
 
@@ -74,14 +81,15 @@ public class UserFileHandler {
         // Update the specific sector
         for(User u : users) {
             if(u.getUsername().equals(username)) {
-                users.remove(u);
-                u.setPassword(password);
-                u.setFullName(fullName);
-                u.setDateOfBirth(dob);
-                u.setPhoneNumber(pNumber);
-                u.setEmail(email);
-                u.setSalary(salary);
-                u.setAccessLevel(accessLevel);
+
+//                u.setPassword(password);
+//                u.setFullName(fullName);
+//                u.setDateOfBirth(dob);
+//                u.setPhoneNumber(pNumber);
+//                u.setEmail(email);
+//                u.setSalary(salary);
+//                u.setAccessLevel(accessLevel);
+
                 EnumSet<Permission> permissionsSet = EnumSet.noneOf(Permission.class);
                 for (String permissionString : permissions) {
                     try {
@@ -92,9 +100,10 @@ public class UserFileHandler {
                         System.err.println("Invalid permission: " + permissionString);
                     }
                 }
-                u.setPermissions(permissionsSet);
-                u.setSector(sector);
-                users.add(u);
+//                u.setPermissions(permissions);
+//                u.setSector(sector);
+                User newUser = new User(username, password, fullName, dob, pNumber, email, salary, accessLevel, permissions, (ObservableList<String>) sector);
+                users.set(users.indexOf(u), newUser);
                 System.out.println("User updated successfully");
                 updated = true;
                 break;
@@ -106,6 +115,8 @@ public class UserFileHandler {
         if(updated) {
             saved = updateAll(users);
             System.out.println("Users saved in file");
+        } else {
+            System.out.println("Users not saved in file");
         }
         return(updated && saved);
     }
@@ -123,6 +134,7 @@ public class UserFileHandler {
                 u.setPhoneNumber(phoneNumber);
                 u.setEmail(email);
                 users.add(u);
+                updateAll(users);
                 System.out.println("User updated successfully");
                 updated = true;
                 break;
@@ -138,7 +150,7 @@ public class UserFileHandler {
         return(updated && saved);
     }
 
-    public static boolean updateAll(ObservableList<User> users) {
+    public boolean updateAll(ObservableList<User> users) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(User u : users) {
                 outputStream.writeObject(u);

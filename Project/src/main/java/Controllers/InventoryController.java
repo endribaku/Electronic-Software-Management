@@ -34,6 +34,8 @@ public class InventoryController {
         this.inventoryListView.getEditCategoryButton().setOnAction(e -> onCategoryEdit());
         this.inventoryListView.getEditSectorButton().setOnAction(e -> onSectorEdit());
 
+        this.inventoryListView.getDeleteItemButton().setOnAction(e -> onItemDelete());
+
         this.inventoryListView.getCancelUpdateItemButton().setOnAction(e -> {
             this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
             this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
@@ -331,5 +333,25 @@ public class InventoryController {
 
         this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
         this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
+    }
+
+    private void onItemDelete() {
+        Item selectedItem = this.inventoryListView.getInventoryTableView().getSelectionModel().getSelectedItem();
+
+        if(inventoryFileHandler.deleteItem(selectedItem))
+        {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Item");
+            alert.setHeaderText("Delete Item");
+            alert.setContentText("Item deleted successfully");
+            alert.show();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Delete Item");
+            alert.setHeaderText("Delete Item");
+
+            alert.setContentText("Error while deleting Item");
+            alert.show();
+        }
     }
 }

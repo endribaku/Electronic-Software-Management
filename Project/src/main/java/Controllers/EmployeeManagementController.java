@@ -24,6 +24,7 @@ public class EmployeeManagementController {
         //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
+
         setEditRows();
     }
 
@@ -35,6 +36,7 @@ public class EmployeeManagementController {
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
         this.employeesListView.getEditEmployeeButton().setOnAction(e -> onEditEmployee());
+        this.employeesListView.getDeleteEmployeeButton().setOnAction(e -> onDeleteEmployee());
         this.employeesListView.getCancelUpdateButton().setOnAction(e -> {
             this.employeesListView.getManageEmployeeBox().getChildren().remove(this.employeesListView.getEditEmployeeBox());
             this.employeesListView.getManageEmployeeBox().getChildren().add(this.employeesListView.getCreateEmployeeBox());
@@ -69,30 +71,81 @@ public class EmployeeManagementController {
     private void setEditRows() throws EmployeeCreationException {
         this.employeesListView.getEmployeeIDColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setUserID(e.getNewValue());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Can't edit ID");
         });
         this.employeesListView.getEmployeeFullNameColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setFullName(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setFullName(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeeUsernameColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setUsername(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setUsername(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeePasswordColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setPassword(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setPassword(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeeEmailColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setEmail(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setEmail(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeeDOBColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setDateOfBirth(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setDateOfBirth(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeePhoneNumberColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setPhoneNumber(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setPhoneNumber(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeeAccessLevelColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setAccessLevel(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setAccessLevel(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
         this.employeesListView.getEmployeeSalaryColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setSalary(e.getNewValue());
+            int row = e.getTablePosition().getRow();
+
+            User updatedUser = employeeFileHandler.getAllUsers().get(row);
+            updatedUser.setSalary(e.getNewValue());
+
+            employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
 
 
@@ -168,6 +221,7 @@ public class EmployeeManagementController {
 
         User selectedUser = this.employeesListView.getEmployeesTableView().getSelectionModel().getSelectedItem();
 
+
         this.employeesListView.getEmployeeEditFullNameField().setText(selectedUser.getFullName());
         this.employeesListView.getEmployeeEditUsernameField().setText(selectedUser.getUsername());
         this.employeesListView.getEmployeeEditEmailField().setText(selectedUser.getEmail());
@@ -210,6 +264,24 @@ public class EmployeeManagementController {
         else
             throw new InvalidCredentialsException("Invalid credentials. Please try again");
 
+    }
+
+    public void onDeleteEmployee() {
+        User selectedUser = this.employeesListView.getEmployeesTableView().getSelectionModel().getSelectedItem();
+
+        if(employeeFileHandler.deleteUser(selectedUser))
+        {
+            Alert success = new Alert(Alert.AlertType.INFORMATION);
+            success.setTitle("Success");
+            success.setHeaderText("Employee Deleted Successfully");
+            success.show();
+        } else {
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Error");
+
+            error.setHeaderText("Employee Not Found");
+            error.show();
+        }
     }
 
 }
