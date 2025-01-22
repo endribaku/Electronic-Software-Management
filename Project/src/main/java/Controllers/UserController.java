@@ -1,15 +1,19 @@
 package Controllers;
 
+import DAO.BillFileHandler;
 import DAO.InventoryFileHandler;
 import DAO.UserFileHandler;
 import Exceptions.ItemStockException;
-import Models.Access;
-import Models.Item;
-import Models.Permission;
-import Models.User;
+import Models.*;
 import Views.UserView;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UserController {
     private UserView view;
@@ -22,12 +26,8 @@ public class UserController {
         this.view = new UserView();
         this.handler = new UserFileHandler();
         this.currentUser = user;
-        onInitialize();
-    }
 
-    public UserController() {
-        this.view = new UserView();
-        this.handler = new UserFileHandler();
+        onInitialize();
     }
 
     public UserView getView() {
@@ -41,7 +41,32 @@ public class UserController {
     private void onInitialize() {
 
         //Welcome label
-        this.view.getHomeWelcomeLabel().setText("Weclome, " + currentUser.getUsername() + "!");
+        this.view.getHomeWelcomeLabel().setText("Welcome, " + currentUser.getUsername() + "!");
+
+        if(!currentUser.hasPermission(Permission.BILL_GENERATION)){
+            this.view.getButtonGrid().getChildren().remove(this.view.getGenerateBillButton());
+            this.view.getSidebar().getChildren().remove(this.view.getBillGenerateLabel());
+            this.view.getBillMenu().getItems().remove(this.view.getNewBillItem());
+        }
+        if(!currentUser.hasPermission(Permission.EMPLOYEE_MANAGEMENT)){
+            this.view.getButtonGrid().getChildren().remove(this.view.getManageEmployeeButton());
+            this.view.getSidebar().getChildren().remove(this.view.getEmployeeLabel());
+            this.view.getMenu().getItems().remove(this.view.getEmployeeItem());
+        }
+        if(!currentUser.hasPermission(Permission.INVENTORY_ACCESS)){
+            this.view.getButtonGrid().getChildren().remove(this.view.getManageInventoryButton());
+            this.view.getSidebar().getChildren().remove(this.view.getInventoryLabel());
+            this.view.getMenu().getItems().remove(this.view.getInventoryItem());
+        }
+        if(!currentUser.hasPermission(Permission.PERFORMANCE_VIEW)){
+            this.view.getButtonGrid().getChildren().remove(this.view.getViewPerformanceButton());
+            this.view.getSidebar().getChildren().remove(this.view.getPerformanceLabel());
+            this.view.getBillMenu().getItems().remove(this.view.getViewPerformanceItem());
+        }
+        if(!currentUser.hasPermission(Permission.SUPPLIER_MANAGEMENT)){
+            this.view.getButtonGrid().getChildren().remove(this.view.getManageSuppliersButton());
+            this.view.getSidebar().getChildren().remove(this.view.getSuppliersLabel());
+        }
 
         //initialize set actions for the user menu bar items
         this.view.getHomeItem().setOnAction(e -> this.view.getRoot().setCenter(new UserController(currentUser).getView().getHomePage()));
@@ -70,29 +95,31 @@ public class UserController {
         this.view.getManageInventoryButton().setOnAction(e -> this.view.getRoot().setCenter(new InventoryController(currentUser).getView().getInventoryPage()));
         this.view.getProfileButton().setOnAction(e -> this.view.getRoot().setCenter(new ProfileController(currentUser).getView().getProfilePage()));
 
-        if(!currentUser.hasPermission(Permission.BILL_GENERATION)){
-            this.view.getButtonGrid().getChildren().remove(this.view.getGenerateBillButton());
-            this.view.getSidebar().getChildren().remove(this.view.getBillGenerateLabel());
-            this.view.getBillMenu().getItems().remove(this.view.getNewBillItem());
+        //Pie Chart
+        calculatePieChart();
+    }
+
+    private void calculatePieChart() {
+        LocalDate today = LocalDate.now();
+
+        // Map to hold total earnings for each cashier
+        Map<String, Double> cashierEarnings = new HashMap<>();
+
+        List<Bill> allBills = BillFileHandler.getBills();
+
+        // Calculate total earnings for today
+        for (Bill bill : allBills) {
+            if (bill.getDateOfSale().isEqual(today)) {
+                String cashierName = bill.getUsername();
+                double amount = bill.getTotalAmount();
+
+                // Aggregate earnings by cashier
+                cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
+            }
         }
-        if(!currentUser.hasPermission(Permission.EMPLOYEE_MANAGEMENT)){
-            this.view.getButtonGrid().getChildren().remove(this.view.getManageEmployeeButton());
-            this.view.getSidebar().getChildren().remove(this.view.getEmployeeLabel());
-            this.view.getMenu().getItems().remove(this.view.getEmployeeItem());
-        }
-        if(!currentUser.hasPermission(Permission.INVENTORY_ACCESS)){
-            this.view.getButtonGrid().getChildren().remove(this.view.getManageInventoryButton());
-            this.view.getSidebar().getChildren().remove(this.view.getInventoryLabel());
-            this.view.getMenu().getItems().remove(this.view.getInventoryItem());
-        }
-        if(!currentUser.hasPermission(Permission.PERFORMANCE_VIEW)){
-            this.view.getButtonGrid().getChildren().remove(this.view.getViewPerformanceButton());
-            this.view.getSidebar().getChildren().remove(this.view.getPerformanceLabel());
-            this.view.getBillMenu().getItems().remove(this.view.getViewPerformanceItem());
-        }
-        if(!currentUser.hasPermission(Permission.SUPPLIER_MANAGEMENT)){
-            this.view.getButtonGrid().getChildren().remove(this.view.getManageSuppliersButton());
-            this.view.getSidebar().getChildren().remove(this.view.getSuppliersLabel());
+
+        for (Map.Entry<String, Double> entry : cashierEarnings.entrySet()) {
+            this.view.getPieChart().getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
         }
     }
 }

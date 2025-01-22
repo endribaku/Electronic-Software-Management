@@ -45,6 +45,8 @@ public class UserView extends Pane {
     Label homeWelcomeLabel = new Label("Welcome, " + "admin" + "!");
     FlowPane buttonGrid = new FlowPane(Orientation.HORIZONTAL, 20, 20);
 
+    PieChart pieChart = new PieChart();
+
     Button generateBillButton = new Button();
     Button manageEmployeeButton = new Button();
     Button viewPerformanceButton = new Button();
@@ -248,13 +250,7 @@ public class UserView extends Pane {
 
         graphBox.setPadding(new Insets(20, 20, 20, 20));
 
-        // Sales chart
-        LineChart<String, Number> lineChart = createLineChart();
-
-        // Pie chart
-        PieChart pieChart = createPieChart();
-        graphBox.getChildren().addAll(graphBoxLabel, lineChart, pieChart);
-
+        graphBox.getChildren().addAll(graphBoxLabel, pieChart);
 
         homeBox.getChildren().addAll(homeWelcomeLabel, buttonGrid);
         homeBox.setSpacing(20);
@@ -268,32 +264,6 @@ public class UserView extends Pane {
 
     public BorderPane getRoot() {
         return Root;
-    }
-
-    private LineChart<String, Number> createLineChart() {
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Sales Over Time");
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Sales");
-        series.getData().add(new XYChart.Data<>("Mon", 1000));
-        series.getData().add(new XYChart.Data<>("Tue", 2000));
-        series.getData().add(new XYChart.Data<>("Wed", 3000));
-        series.getData().add(new XYChart.Data<>("Thu", 4000));
-        series.getData().add(new XYChart.Data<>("Fri", 3500));
-        lineChart.getData().add(series);
-        return lineChart;
-    }
-
-    private PieChart createPieChart() {
-        PieChart pieChart = new PieChart();
-        pieChart.setTitle("Sales by City");
-        pieChart.getData().add(new PieChart.Data("City A", 40));
-        pieChart.getData().add(new PieChart.Data("City B", 30));
-        pieChart.getData().add(new PieChart.Data("City C", 20));
-        pieChart.getData().add(new PieChart.Data("City D", 10));
-        return pieChart;
     }
 
     public Label getHomeWelcomeLabel() {
@@ -410,6 +380,10 @@ public class UserView extends Pane {
 
     public FlowPane getButtonGrid() {
         return buttonGrid;
+    }
+
+    public PieChart getPieChart() {
+        return pieChart;
     }
 }
 
