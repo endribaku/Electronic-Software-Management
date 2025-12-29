@@ -1,14 +1,10 @@
 package Controllers;
 
 import DAO.BillFileHandler;
-import DAO.InventoryFileHandler;
 import DAO.UserFileHandler;
-import Exceptions.ItemStockException;
 import Models.*;
 import Views.UserView;
-import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -19,8 +15,6 @@ public class UserController {
     private UserView view;
     private UserFileHandler handler;
     private User currentUser;
-    private InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
-    private UserFileHandler userFileHandler = new UserFileHandler();
 
     public UserController(User user) {
         this.view = new UserView();
@@ -71,7 +65,7 @@ public class UserController {
         //initialize set actions for the user menu bar items
         this.view.getHomeItem().setOnAction(e -> this.view.getRoot().setCenter(new UserController(currentUser).getView().getHomePage()));
         this.view.getInventoryItem().setOnAction(e -> this.view.getRoot().setCenter(new InventoryController(currentUser).getView().getInventoryPage()));
-        this.view.getEmployeeItem().setOnAction(e -> this.view.getRoot().setCenter(new EmployeeManagementController(currentUser).getEmpListView().getEmployeesPage()));
+        this.view.getEmployeeItem().setOnAction(e -> this.view.getRoot().setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
         this.view.getExitItem().setOnAction(e -> System.exit(0));
         this.view.getNewBillItem().setOnAction(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getGenerateView().getBillGeneratePage()));
         this.view.getViewPerformanceItem().setOnAction(e -> this.view.getRoot().setCenter(new EmployeePerformanceController(currentUser).getView().getEmployeePerformancePage()));
@@ -81,7 +75,7 @@ public class UserController {
         //initialize set actions for the user sidebar labels
         this.view.getHomeLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new UserController(currentUser).getView().getHomePage()));
         this.view.getInventoryLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new InventoryController(currentUser).getView().getInventoryPage()));
-        this.view.getEmployeeLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new EmployeeManagementController(currentUser).getEmpListView().getEmployeesPage()));
+        this.view.getEmployeeLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
         this.view.getPerformanceLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new EmployeePerformanceController(currentUser).getView().getEmployeePerformancePage()));
         this.view.getBillGenerateLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getGenerateView().getBillGeneratePage()));
         this.view.getSuppliersLabel().onMouseClickedProperty().set(e -> this.view.getRoot().setCenter(new SuppliersController(currentUser).getView().getSuppliersPage()));
@@ -89,7 +83,7 @@ public class UserController {
 
         //Initialize for Home Screen buttons
         this.view.getGenerateBillButton().setOnAction(e -> this.view.getRoot().setCenter(new BillManagementController(currentUser).getGenerateView().getBillGeneratePage()));
-        this.view.getManageEmployeeButton().setOnAction(e -> this.view.getRoot().setCenter(new EmployeeManagementController(currentUser).getEmpListView().getEmployeesPage()));
+        this.view.getManageEmployeeButton().setOnAction(e -> this.view.getRoot().setCenter(new EmployeeManagementController().getEmpListView().getEmployeesPage()));
         this.view.getViewPerformanceButton().setOnAction(e -> this.view.getRoot().setCenter(new EmployeePerformanceController(currentUser).getView().getEmployeePerformancePage()));
         this.view.getManageSuppliersButton().setOnAction(e -> this.view.getRoot().setCenter(new SuppliersController(currentUser).getView().getSuppliersPage()));
         this.view.getManageInventoryButton().setOnAction(e -> this.view.getRoot().setCenter(new InventoryController(currentUser).getView().getInventoryPage()));

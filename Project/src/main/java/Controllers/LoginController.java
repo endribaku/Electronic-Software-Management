@@ -19,7 +19,7 @@ public class LoginController {
     private UserFileHandler handler = new UserFileHandler();
 
     public LoginController(Stage stage) {
-        view = new LoginView(stage);
+        view = new LoginView();
 
         this.view.getBtLogin().setOnAction(e -> {
             handleLogin();
