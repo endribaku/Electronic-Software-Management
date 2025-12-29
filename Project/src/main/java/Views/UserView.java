@@ -16,21 +16,30 @@ import javafx.scene.layout.*;
 
 public class UserView extends Pane {
 
-    BorderPane Root = new BorderPane();
+    private static final String EMPLOYEES = "Employees";
+    private static final String SUPPLIERS = "Suppliers";
+    private static final String INVENTORY = "Inventory";
+    private static final String MANAGE = "Manage";
+    private static final String PROFILE = "Profile";
+    private static final String LABEL_STYLE = "-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;";
+    private static final String BUTTON_STYLE = "-fx-background-color: #364958; -fx-font-weight: bold;";
+    private static final String SIDEBAR_LABEL_STYLE = "-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;";
+
+    BorderPane root = new BorderPane();
 
     VBox sidebar = new VBox(15);
     Label homeLabel = new Label("Home");
-    Label inventoryLabel = new Label("Inventory");
-    Label employeeLabel = new Label("Employees");
+    Label inventoryLabel = new Label(INVENTORY);
+    Label employeeLabel = new Label(EMPLOYEES);
     Label performanceLabel = new Label("Performance");
     Label billGenerateLabel = new Label("Generate Bill");
-    Label suppliersLabel = new Label("Suppliers");
-    Label profileLabel = new Label("Profile");
+    Label suppliersLabel = new Label(SUPPLIERS);
+    Label profileLabel = new Label(PROFILE);
 
     Menu menu = new Menu("Menu");
     MenuItem homeItem = new MenuItem("Home");
-    MenuItem inventoryItem = new MenuItem("Inventory");
-    MenuItem employeeItem = new MenuItem("Employees");
+    MenuItem inventoryItem = new MenuItem(INVENTORY);
+    MenuItem employeeItem = new MenuItem(EMPLOYEES);
     MenuItem exitItem = new MenuItem("Exit");
 
     Menu billMenu = new Menu("Bills");
@@ -38,7 +47,7 @@ public class UserView extends Pane {
     MenuItem viewPerformanceItem = new MenuItem("View Performance");
     MenuItem viewBillItem = new MenuItem("View Bills");
 
-    Menu profileMenu = new Menu("Profile");
+    Menu profileMenu = new Menu(PROFILE);
     MenuItem profileItem = new MenuItem("View Profile");
     MenuItem logoutItem = new MenuItem("Logout");
 
@@ -65,28 +74,28 @@ public class UserView extends Pane {
         profileMenu.getItems().addAll(profileItem, logoutItem);
         menuBar.getMenus().addAll(menu, billMenu, profileMenu);
 
-        Root.setTop(menuBar);
+        root.setTop(menuBar);
 
         // Sidebar
 
         sidebar.setStyle("-fx-background-color: #364958; -fx-padding: 20;");
 
-        homeLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        homeLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        inventoryLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        inventoryLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        this.employeeLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        this.employeeLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        performanceLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        performanceLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        billGenerateLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        billGenerateLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        suppliersLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        suppliersLabel.setStyle(SIDEBAR_LABEL_STYLE);
 
-        this.profileLabel.setStyle("-fx-text-fill: white; -fx-font: 14px Helvetica; -fx-font-weight: bold;");
+        this.profileLabel.setStyle(SIDEBAR_LABEL_STYLE);
         sidebar.getChildren().addAll(homeLabel, inventoryLabel, this.employeeLabel, performanceLabel, billGenerateLabel, suppliersLabel, this.profileLabel);
         sidebar.setPrefWidth(150);
-        Root.setLeft(sidebar);
+        root.setLeft(sidebar);
 
         // Home page
         homePage.setStyle("-fx-background-color: white;");
@@ -101,7 +110,7 @@ public class UserView extends Pane {
         colorAdjust.setSaturation(-1);
 
         //Generate Bill Button
-        generateBillButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        generateBillButton.setStyle(BUTTON_STYLE);
         HBox generateBillButtonPane = new HBox();
         Image generateBillImage = new Image("/invoice.png");
         ImageView generateBillImageView = new ImageView(generateBillImage);
@@ -111,8 +120,8 @@ public class UserView extends Pane {
         VBox generateBillLabelPane = new VBox();
         Label generateLabel = new Label("Generate");
         Label billLabel = new Label("Bill");
-        generateLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
-        billLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        generateLabel.setStyle(LABEL_STYLE);
+        billLabel.setStyle(LABEL_STYLE);
         generateBillLabelPane.getChildren().addAll(generateLabel, billLabel);
         generateBillLabelPane.setAlignment(Pos.CENTER_RIGHT);
         generateBillButtonPane.getChildren().addAll(generateBillImageView, generateBillLabelPane);
@@ -124,7 +133,7 @@ public class UserView extends Pane {
         generateBillButton.setMinHeight(150);
 
         //Manage Employee Button
-        manageEmployeeButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        manageEmployeeButton.setStyle(BUTTON_STYLE);
         HBox manageEmployeeButtonPane = new HBox();
         Image manageEmployeeImage = new Image("/teamwork.png");
         ImageView manageEmployeeImageView = new ImageView(manageEmployeeImage);
@@ -132,10 +141,10 @@ public class UserView extends Pane {
         manageEmployeeImageView.setFitHeight(90);
         manageEmployeeImageView.setFitWidth(90);
         VBox manageEmployeeLabelPane = new VBox();
-        Label manageLabel = new Label("Manage");
-        Label employeeButtonLabel = new Label("Employees");
-        manageLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
-        employeeButtonLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        Label manageLabel = new Label(MANAGE);
+        Label employeeButtonLabel = new Label(EMPLOYEES);
+        manageLabel.setStyle(LABEL_STYLE);
+        employeeButtonLabel.setStyle(LABEL_STYLE);
         manageEmployeeLabelPane.getChildren().addAll(manageLabel, employeeButtonLabel);
         manageEmployeeLabelPane.setAlignment(Pos.CENTER_RIGHT);
         manageEmployeeButtonPane.getChildren().addAll(manageEmployeeImageView, manageEmployeeLabelPane);
@@ -147,7 +156,7 @@ public class UserView extends Pane {
         manageEmployeeButton.setMinHeight(150);
 
         //View Performance Button
-        viewPerformanceButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        viewPerformanceButton.setStyle(BUTTON_STYLE);
         HBox viewPerformanceButtonPane = new HBox();
         Image viewPerformanceImage = new Image("/line-chart.png");
         ImageView viewPerformanceImageView = new ImageView(viewPerformanceImage);
@@ -157,8 +166,8 @@ public class UserView extends Pane {
         VBox viewPerformanceLabelPane = new VBox();
         Label viewLabel = new Label("View");
         Label performanceHomeLabel = new Label("Performance");
-        viewLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
-        performanceHomeLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        viewLabel.setStyle(LABEL_STYLE);
+        performanceHomeLabel.setStyle(LABEL_STYLE);
         viewPerformanceLabelPane.getChildren().addAll(viewLabel, performanceHomeLabel);
         viewPerformanceLabelPane.setAlignment(Pos.CENTER_RIGHT);
         viewPerformanceButtonPane.getChildren().addAll(viewPerformanceImageView, viewPerformanceLabelPane);
@@ -170,7 +179,7 @@ public class UserView extends Pane {
         viewPerformanceButton.setMinHeight(150);
 
         //Manage Inventory Button
-        manageInventoryButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        manageInventoryButton.setStyle(BUTTON_STYLE);
         HBox manageInventoryButtonPane = new HBox();
         Image manageInventoryImage = new Image("/shipping.png");
         ImageView manageInventoryImageView = new ImageView(manageInventoryImage);
@@ -178,10 +187,10 @@ public class UserView extends Pane {
         manageInventoryImageView.setFitHeight(90);
         manageInventoryImageView.setFitWidth(90);
         VBox manageInventoryLabelPane = new VBox();
-        Label manageInvLabel = new Label("Manage");
-        Label inventoryHomeLabel = new Label("Inventory");
-        manageInvLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
-        inventoryHomeLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        Label manageInvLabel = new Label(MANAGE);
+        Label inventoryHomeLabel = new Label(INVENTORY);
+        manageInvLabel.setStyle(LABEL_STYLE);
+        inventoryHomeLabel.setStyle(LABEL_STYLE);
         manageInventoryLabelPane.getChildren().addAll(manageInvLabel, inventoryHomeLabel);
         manageInventoryLabelPane.setAlignment(Pos.CENTER_RIGHT);
         manageInventoryButtonPane.getChildren().addAll(manageInventoryImageView, manageInventoryLabelPane);
@@ -193,7 +202,7 @@ public class UserView extends Pane {
         manageInventoryButton.setMinHeight(150);
 
         //Manage Inventory Button
-        profileButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        profileButton.setStyle(BUTTON_STYLE);
         HBox profileButtonPane = new HBox();
         Image profileImage = new Image("/profile-user.png");
         ImageView profileImageView = new ImageView(profileImage);
@@ -201,8 +210,7 @@ public class UserView extends Pane {
         profileImageView.setFitHeight(90);
         profileImageView.setFitWidth(90);
         VBox profileLabelPane = new VBox();
-        Label profileLabel = new Label("Profile");
-        profileLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        profileLabel.setStyle(LABEL_STYLE);
         profileLabelPane.getChildren().addAll(profileLabel);
         profileLabelPane.setAlignment(Pos.CENTER_RIGHT);
         profileButtonPane.getChildren().addAll(profileImageView, profileLabelPane);
@@ -214,7 +222,7 @@ public class UserView extends Pane {
         profileButton.setMinHeight(150);
 
         //Manage Inventory Button
-        manageSuppliersButton.setStyle("-fx-background-color: #364958; -fx-font-weight: bold;");
+        manageSuppliersButton.setStyle(BUTTON_STYLE);
         HBox manageSuppliersButtonPane = new HBox();
         Image manageSuppliersImage = new Image("/parcel.png");
         ImageView manageSuppliersImageView = new ImageView(manageSuppliersImage);
@@ -222,10 +230,10 @@ public class UserView extends Pane {
         manageSuppliersImageView.setFitHeight(90);
         manageSuppliersImageView.setFitWidth(90);
         VBox manageSuppliersLabelPane = new VBox();
-        Label manageSuppLabel = new Label("Manage");
-        Label suppliersHomeLabel = new Label("Suppliers");
-        manageSuppLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
-        suppliersHomeLabel.setStyle("-fx-text-fill: white; -fx-font: 25px Helvetica; -fx-font-weight: bold;");
+        Label manageSuppLabel = new Label(MANAGE);
+        Label suppliersHomeLabel = new Label(SUPPLIERS);
+        manageSuppLabel.setStyle(LABEL_STYLE);
+        suppliersHomeLabel.setStyle(LABEL_STYLE);
         manageSuppliersLabelPane.getChildren().addAll(manageSuppLabel, suppliersHomeLabel);
         manageSuppliersLabelPane.setAlignment(Pos.CENTER_RIGHT);
         manageSuppliersButtonPane.getChildren().addAll(manageSuppliersImageView, manageSuppliersLabelPane);
@@ -259,11 +267,11 @@ public class UserView extends Pane {
         homePage.setPadding(new Insets(20));
 
 
-        Root.setCenter(homePage);
+        root.setCenter(homePage);
     }
 
     public BorderPane getRoot() {
-        return Root;
+        return root;
     }
 
     public Label getHomeWelcomeLabel() {
