@@ -13,12 +13,12 @@ import javafx.scene.control.Alert;
 public class BillManagementController {
     private BillGenerateView generateView = new BillGenerateView();
     private BillFileHandler billFileHandler = new BillFileHandler();
-    private InventoryFileHandler InventoryFileHandler = new InventoryFileHandler();
+    private InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
     private User currentUser;
 
     public BillManagementController(User user) {
         this.currentUser = user;
-        this.generateView.getItemListView().setItems(InventoryFileHandler.getItemsOfUser(currentUser));
+        this.generateView.getItemListView().setItems(inventoryFileHandler.getItemsOfUser(currentUser));
         this.generateView.getAddToBillButton().setOnAction(e -> onAddToBill());
         this.generateView.getCreateBillButton().setOnAction(e -> onGenerateBill());
     }
@@ -27,9 +27,7 @@ public class BillManagementController {
         return generateView;
     }
 
-    public BillFileHandler getBillFileHandler() {
-        return billFileHandler;
-    }
+
 
     private void onAddToBill() throws BillCreationException, ItemStockException {
         int quantity = Integer.parseInt(this.generateView.getQuantityTextField().getText());
@@ -74,7 +72,6 @@ public class BillManagementController {
            billFileHandler.saveBillToFile(newBill);
 
            onBillGenerateQuantities(billItemsList);
-           //InventoryFileHandler.updateInventoryFile();
 
            this.generateView.getBillList().clear();
 
@@ -87,35 +84,6 @@ public class BillManagementController {
        else throw new BillCreationException("No items added to bill, Add items to generate bill.");
     }
 
-    //to fix bill tomorrow
-//    private void onBillGenerateQuantities(ObservableList<Bill_Item> billItemsList) {
-//        System.out.println("Size of billItemsList: " + billItemsList.size());
-//        ObservableList<Item> itemsInBill = FXCollections.observableArrayList();
-//        for(Bill_Item item: billItemsList) {
-//            itemsInBill.add(item.getItem());
-//        }
-//
-//        if (billItemsList.size() != itemsInBill.size()) {
-//            System.err.println("Mismatch between billItemsList and itemsInBill sizes.");
-//            return;
-//        }
-//
-//        int[] quantitySold = new int[billItemsList.size()];
-//        for(int i = 0; i < billItemsList.size(); i++) {
-//            quantitySold[i] = billItemsList.get(i).getQuantity();
-//        }
-//        for(int i = 0; i < itemsInBill.size(); i++) {
-//            itemsInBill.get(i).setQuantity(itemsInBill.get(i).getQuantity() - quantitySold[i]);
-//        }
-//
-//        //Update item with new quantity in inventory
-//        for(int i = 0; i < itemsInBill.size(); i++) {
-//            Item item = itemsInBill.get(i);
-//            new InventoryFileHandler().updateItem(item.getItemID(), item.getName(),
-//                    item.getCategory(), item.getSupplier(), item.getPurchaseDate(),
-//                    item.getPurchasePrice(), item.getSellingPrice(), item.getQuantity());
-//        }
-//    }
 
     private void onBillGenerateQuantities(ObservableList<Bill_Item> billItemsList) {
         for (Bill_Item billItem : billItemsList) {
@@ -128,7 +96,7 @@ public class BillManagementController {
             }
             item.setQuantity(newQuantity);
 
-            InventoryFileHandler.updateItem(item.getItemID(), item.getName(),
+            inventoryFileHandler.updateItem(item.getItemID(), item.getName(),
                     item.getCategory(), item.getSupplier(), item.getPurchaseDate(),
                     item.getPurchasePrice(), item.getSellingPrice(), newQuantity);
         }

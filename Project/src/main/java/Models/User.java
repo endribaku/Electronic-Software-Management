@@ -1,16 +1,10 @@
 package Models;
 
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.CssMetaData;
-import javafx.css.Styleable;
-import javafx.css.StyleableObjectProperty;
-
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.EnumSet;
@@ -47,7 +41,7 @@ public class User implements Serializable {
             try {
                 Permission permission = Permission.valueOf(permissionString); // Case-sensitive match
                 this.permissions.add(permission);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException _) {
 
                 System.err.println("Invalid permission: " + permissionString);
             }

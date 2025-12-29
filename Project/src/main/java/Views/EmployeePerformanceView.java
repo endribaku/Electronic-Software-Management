@@ -83,14 +83,12 @@ public class EmployeePerformanceView {
         billDateFilter.setMinWidth(770);
 
         searchBar.setPromptText("Search...");
-        searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredBills.setPredicate(bill -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true; // Show all items
-                }
-                return bill.getUsername().toLowerCase().contains(newValue.toLowerCase()); // Filter items
-            });
-        });
+        searchBar.textProperty().addListener((observable, oldValue, newValue) -> filteredBills.setPredicate(bill -> {
+            if (newValue == null || newValue.isEmpty()) {
+                return true; // Show all items
+            }
+            return bill.getUsername().toLowerCase().contains(newValue.toLowerCase()); // Filter items
+        }));
 
         billTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         billTableView.setEditable(false);
