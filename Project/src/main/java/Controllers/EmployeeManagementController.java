@@ -10,29 +10,17 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.SelectionMode;
 
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.List;
 
 public class EmployeeManagementController {
     private final EmployeesListView employeesListView = new EmployeesListView();
     private final UserFileHandler employeeFileHandler = new UserFileHandler();
-    private User currentUser;
-
-    public EmployeeManagementController() {
-
-        employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
-        //this.employeesListView.getEmployeesTableView().
-        this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
-        this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
-
-        setEditRows();
-    }
+    private static final String SUCCESS = "Success";
+    private static final String ERROR = "Error";
 
     // Controller setting the currentUser as the one who controls
-    public EmployeeManagementController(User currentUser) {
-        this.currentUser = currentUser;
+    public EmployeeManagementController() {
         employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
-        //this.employeesListView.getEmployeesTableView().
         this.employeesListView.getAddEmployeeButton().setOnAction(e -> onEmployeeAdd());
         this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers()));
         this.employeesListView.getEditEmployeeButton().setOnAction(e -> onEditEmployee());
@@ -72,7 +60,7 @@ public class EmployeeManagementController {
         this.employeesListView.getEmployeeIDColumn().setOnEditCommit(e -> {
             employeeFileHandler.getAllUsers().get(e.getTablePosition().getRow()).setUserID(e.getNewValue());
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
+            alert.setTitle(ERROR);
             alert.setHeaderText("Can't edit ID");
         });
         this.employeesListView.getEmployeeFullNameColumn().setOnEditCommit(e -> {
@@ -147,18 +135,6 @@ public class EmployeeManagementController {
 
             employeeFileHandler.updateAll(employeeFileHandler.getUsers());
         });
-
-
-//        this.employeesListView.getUpdateEmployeeListButton().setOnAction(e -> {
-//            if(this.employeeFileHandler.updateAll(users)) {
-//                Alert success = new Alert(Alert.AlertType.INFORMATION);
-//                success.setTitle("Success");
-//                success.setHeaderText("Employee Table Updated Successfully");
-//                success.show();
-//            }
-//            else
-//                throw new EmployeeCreationException("Invalid input on table. Please try again.");
-//        });
     }
 
     private void onEmployeeAdd() {
@@ -177,26 +153,25 @@ public class EmployeeManagementController {
         double employeeSalary;
         try {
             employeeSalary = Double.parseDouble(employeesListView.getEmployeeSalaryField().getText());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             employeeSalary = 0;
         }
 
         if (employeeFullName.isEmpty() || employeeUsername.isEmpty() || employeePassword.isEmpty()
                 || employeeEmail.isEmpty() || employeePhoneNumber.isEmpty() || employeeSalary == 0 || employeePermissionsSelected.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
+                alert.setTitle(ERROR);
                 alert.setHeaderText("Invalid Input");
                 alert.show();
         } else if(employeeAccessLevel == Access.Administrator
                 && (employeePermissionsSelected.size() != this.employeesListView.getPermissionListView().getItems().size()
                 || employeeSectorsSelected.size() != this.employeesListView.getSectorListView().getItems().size() )) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
+            alert.setTitle(ERROR);
             alert.setHeaderText("Admin must have all permissions and sectors selected!");
             alert.show();
         } else {
             employeeFileHandler.insertUser(new User(employeeUsername, employeePassword, employeeFullName, employeeDOB, employeePhoneNumber, employeeEmail, employeeSalary, employeeAccessLevel, employeePermissionsSelected, employeeSectorsSelected));
-            System.out.println(employeeAccessLevel);
             employeesListView.getEmployeesTableView().setItems(employeeFileHandler.getAllUsers());
 
             employeesListView.getEmployeeFullNameField().clear();
@@ -209,7 +184,7 @@ public class EmployeeManagementController {
             employeesListView.getAccessLevelList().setValue(Access.Cashier);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
+            alert.setTitle(SUCCESS);
             alert.setHeaderText("Employee Registered Successfully");
             alert.show();
         }
@@ -220,8 +195,6 @@ public class EmployeeManagementController {
         this.employeesListView.getManageEmployeeBox().getChildren().add(this.employeesListView.getEditEmployeeBox());
 
         User selectedUser = this.employeesListView.getEmployeesTableView().getSelectionModel().getSelectedItem();
-
-
         this.employeesListView.getEmployeeEditFullNameField().setText(selectedUser.getFullName());
         this.employeesListView.getEmployeeEditUsernameField().setText(selectedUser.getUsername());
         this.employeesListView.getEmployeeEditEmailField().setText(selectedUser.getEmail());
@@ -236,7 +209,6 @@ public class EmployeeManagementController {
         this.employeesListView.getPermissionEditListView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         this.employeesListView.getPermissionEditListView().getSelectionModel().select(selectedUser.getPermissions().toString());
         this.employeesListView.getAccessLevelEditList().getSelectionModel().select(selectedUser.getAccessLevel());
-
         this.employeesListView.getUpdateEmployeeButton().setOnAction(e -> onUpdateEmployee());
     }
 
@@ -254,7 +226,7 @@ public class EmployeeManagementController {
 
         if(this.employeeFileHandler.updateUser(username, password, fnameEdit, dobEdit, phoneEdit, emailEdit, salary, accessLevel, permissions, sector)) {
             Alert success = new Alert(Alert.AlertType.INFORMATION);
-            success.setTitle("Success");
+            success.setTitle(SUCCESS);
             success.setHeaderText("Profile Updated Successfully");
             success.show();
 
@@ -272,12 +244,12 @@ public class EmployeeManagementController {
         if(employeeFileHandler.deleteUser(selectedUser))
         {
             Alert success = new Alert(Alert.AlertType.INFORMATION);
-            success.setTitle("Success");
+            success.setTitle(SUCCESS);
             success.setHeaderText("Employee Deleted Successfully");
             success.show();
         } else {
             Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Error");
+            error.setTitle(ERROR);
 
             error.setHeaderText("Employee Not Found");
             error.show();
