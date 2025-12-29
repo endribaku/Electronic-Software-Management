@@ -27,11 +27,9 @@ public class EmployeePerformanceController {
     private UserFileHandler userFileHandler = new UserFileHandler();
     private ItemFileHandler itemFileHandler = new ItemFileHandler();
     private BillFileHandler billFileHandler = new BillFileHandler();
-    private User currentUser;
 
     // Controller setting the currentUser as the one who controls
     public EmployeePerformanceController(User user) {
-        this.currentUser = user;
         this.view.getBills().addAll(BillFileHandler.getBills());
 
         this.view.getLineChartWeekly().getData().add(calculateSeriesWeekly());
@@ -128,24 +126,21 @@ public class EmployeePerformanceController {
     private void setupSearchBar() {
         TextField searchBar = view.getSearchBar();
         TableView<Bill> billTableView = view.getBillTableView();
-        ObservableList<Bill> bills = view.getBills();
         FilteredList<Bill> filteredBills = view.getFilteredBills();
 
         // Bind the filtered list to the table view
         billTableView.setItems(filteredBills);
 
         // Add listener to the search bar
-        searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredBills.setPredicate(bill -> {
-                // If no search text, display all bills
-                if (newValue == null || newValue.isEmpty()) {
-                    return true; // Show all items
-                }
+        searchBar.textProperty().addListener((observable, oldValue, newValue) -> filteredBills.setPredicate(bill -> {
+            // If no search text, display all bills
+            if (newValue == null || newValue.isEmpty()) {
+                return true; // Show all items
+            }
 
-                // Compare cashier names ignoring case
-                return bill.getUsername().toLowerCase().contains(newValue.toLowerCase());
-            });
-        });
+            // Compare cashier names ignoring case
+            return bill.getUsername().toLowerCase().contains(newValue.toLowerCase());
+        }));
     }
 
     private XYChart.Series<String, Number> calculateSeriesWeekly() {

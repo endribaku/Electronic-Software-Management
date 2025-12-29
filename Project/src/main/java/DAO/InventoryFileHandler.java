@@ -8,9 +8,7 @@ import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class InventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
