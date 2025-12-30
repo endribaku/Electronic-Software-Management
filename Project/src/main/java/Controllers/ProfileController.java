@@ -4,7 +4,6 @@ import DAO.UserFileHandler;
 import Exceptions.InvalidCredentialsException;
 import Models.User;
 import Views.ProfileView;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
@@ -41,9 +40,7 @@ public class ProfileController {
         this.view.getUsernameTextField().setText(currentUser.getUsername());
         this.view.getDateOfBirthTextField().setText(currentUser.getDateOfBirth().toString());
 
-        this.view.getUpdateProfileButton().setOnAction(e -> {
-            onEditProfile();
-        });
+        this.view.getUpdateProfileButton().setOnAction(e -> onEditProfile());
     }
 
     private void onEditProfile() throws InvalidCredentialsException {

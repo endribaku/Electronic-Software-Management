@@ -5,7 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Category implements Comparable<Category> , Serializable {
     private static final long serialVersionUID = 1L;
@@ -13,7 +13,7 @@ public class Category implements Comparable<Category> , Serializable {
     private transient ListProperty<Item> items;
     private transient StringProperty sector;
 
-    public Category(String name, ArrayList<Item> items, String sector)  {
+    public Category(String name, List<Item> items, String sector)  {
         this.name = new SimpleStringProperty(name);
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList(items));
         this.sector = new SimpleStringProperty(sector);
@@ -25,7 +25,7 @@ public class Category implements Comparable<Category> , Serializable {
         this.sector = new SimpleStringProperty(sector);
     }
 
-    public Category(String name, ArrayList<Item> items)  {
+    public Category(String name, List<Item> items)  {
         this.name = new SimpleStringProperty(name);
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList(items));
         this.sector = new SimpleStringProperty();

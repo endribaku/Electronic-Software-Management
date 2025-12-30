@@ -11,6 +11,11 @@ import javafx.scene.layout.*;
 
 public class ProfileView {
 
+    // CSS constants
+    private static final String LABEL_STYLE = "-fx-font-size: 16; -fx-font-weight: bold;";
+    private static final String BUTTON_STYLE = "-fx-font: 11pt Helvetica;";
+    private static final String BOX_STYLE = "-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;";
+
     private final VBox profilePage;
 
     private final Label employeeIDLabel;
@@ -49,30 +54,33 @@ public class ProfileView {
 
     public ProfileView() {
 
+        // Profile image
         Image profilePicture = new Image("/profile.png");
         profileImageView = new ImageView(profilePicture);
         profileImageView.setFitWidth(150);
         profileImageView.setFitHeight(150);
         profileImageView.setPreserveRatio(true);
 
-        //Profile Details
+        // Profile labels
         employeeIDLabel = new Label("ID:");
-        employeeIDLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         fullNameLabel = new Label("Name:");
-        fullNameLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         usernameLabel = new Label("Username:");
-        usernameLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         emailLabel = new Label("Email:");
-        emailLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         dateOfBirthLabel = new Label("Date of Birth:");
-        dateOfBirthLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         phoneLabel = new Label("Phone:");
-        phoneLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         accessLevelLabel = new Label("Access Level:");
-        accessLevelLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         sectorLabel = new Label("Sector:");
-        sectorLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
 
+        employeeIDLabel.setStyle(LABEL_STYLE);
+        fullNameLabel.setStyle(LABEL_STYLE);
+        usernameLabel.setStyle(LABEL_STYLE);
+        emailLabel.setStyle(LABEL_STYLE);
+        dateOfBirthLabel.setStyle(LABEL_STYLE);
+        phoneLabel.setStyle(LABEL_STYLE);
+        accessLevelLabel.setStyle(LABEL_STYLE);
+        sectorLabel.setStyle(LABEL_STYLE);
+
+        // Profile text fields
         employeeIDTextField = new TextField();
         fullNameTextField = new TextField();
         usernameTextField = new TextField();
@@ -91,11 +99,14 @@ public class ProfileView {
         accessLevelTextField.setEditable(false);
         sectorTextField.setEditable(false);
 
-        profileBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
+        profileBox.setStyle(BOX_STYLE);
 
+        // GridPane for profile details
         GridPane detailsBox = new GridPane();
         detailsBox.setHgap(10);
         detailsBox.setVgap(10);
+        detailsBox.setPadding(new Insets(0, 20, 0, 40));
+
         detailsBox.add(employeeIDLabel, 0, 0);
         detailsBox.add(fullNameLabel, 0, 1);
         detailsBox.add(emailLabel, 0, 2);
@@ -104,6 +115,7 @@ public class ProfileView {
         detailsBox.add(dateOfBirthLabel, 0, 5);
         detailsBox.add(accessLevelLabel, 0, 6);
         detailsBox.add(sectorLabel, 0, 7);
+
         detailsBox.add(employeeIDTextField, 1, 0);
         detailsBox.add(fullNameTextField, 1, 1);
         detailsBox.add(emailTextField, 1, 2);
@@ -112,51 +124,50 @@ public class ProfileView {
         detailsBox.add(dateOfBirthTextField, 1, 5);
         detailsBox.add(accessLevelTextField, 1, 6);
         detailsBox.add(sectorTextField, 1, 7);
-        detailsBox.setPadding(new Insets(0, 20, 0, 40));
+
         // Buttons
-        VBox buttons = new VBox();
         editButton = new Button("Edit Profile");
         logout = new Button("Logout");
-        buttons.getChildren().addAll(editButton, logout);
+        editButton.setStyle(BUTTON_STYLE);
+        logout.setStyle(BUTTON_STYLE);
+
+        VBox buttons = new VBox(editButton, logout);
         buttons.setSpacing(210);
 
         profileBox.setLeft(profileImageView);
         profileBox.setRight(buttons);
         profileBox.setCenter(detailsBox);
         profileBox.setPadding(new Insets(20));
-        //profileBox.getChildren().addAll(profileImageView, detailsBox, buttons);
-        //profileBox.setSpacing(75);
-        editButton.setStyle("-fx-font: 11pt Helvetica;");
-        logout.setStyle("-fx-font: 11pt Helvetica;");
 
-        //Edit Profile
+        // Edit profile layout
         editProfileBox = new HBox();
+        editProfileBox.setStyle(BOX_STYLE);
+        editProfileBox.setSpacing(75);
 
-        Image profilePictureUpdate = new Image("/profile.png");
-        ImageView profileImageViewUpdate = new ImageView(profilePictureUpdate);
+        ImageView profileImageViewUpdate = new ImageView(new Image("/profile.png"));
         profileImageViewUpdate.setFitWidth(150);
         profileImageViewUpdate.setFitHeight(150);
         profileImageViewUpdate.setPreserveRatio(true);
 
-        //Profile Details
+        // Edit labels
         Label editFullNameLabel = new Label("Name:");
-        editFullNameLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         Label editUsernameLabel = new Label("Username:");
-        editUsernameLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         Label editEmailLabel = new Label("Email:");
-        editEmailLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         Label editPasswordLabel = new Label("Confirm Password:");
-        editPasswordLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         Label editDateOfBirthLabel = new Label("Date of Birth:");
-        editDateOfBirthLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
         Label editPhoneLabel = new Label("Phone:");
-        editPhoneLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
 
-        editProfileBox.setStyle("-fx-border-color: #E0E0CE; -fx-border-width: 5px; -fx-border-radius: 15px; -fx-padding: 10px; -fx-background-color: #E0E0CE; -fx-background-radius: 15px;");
+        editFullNameLabel.setStyle(LABEL_STYLE);
+        editUsernameLabel.setStyle(LABEL_STYLE);
+        editEmailLabel.setStyle(LABEL_STYLE);
+        editPasswordLabel.setStyle(LABEL_STYLE);
+        editDateOfBirthLabel.setStyle(LABEL_STYLE);
+        editPhoneLabel.setStyle(LABEL_STYLE);
+
         GridPane editDetailsBox = new GridPane();
-
         editDetailsBox.setHgap(10);
         editDetailsBox.setVgap(10);
+
         editDetailsBox.add(editFullNameLabel, 0, 0);
         editDetailsBox.add(editFullNameTextField, 1, 0);
         editDetailsBox.add(editUsernameLabel, 0, 1);
@@ -171,131 +182,56 @@ public class ProfileView {
         editDetailsBox.add(editPasswordTextField, 1, 6);
 
         VBox updateButtons = new VBox();
-        updateButtons.setSpacing(20);
         updateProfileButton = new Button("Update Profile");
-        updateProfileButton.setStyle("-fx-font: 11pt Helvetica;");
-        cancelButton.setStyle("-fx-font: 11pt Helvetica;");
+        updateProfileButton.setStyle(BUTTON_STYLE);
+        cancelButton.setStyle(BUTTON_STYLE);
         updateButtons.getChildren().addAll(updateProfileButton, cancelButton);
+        updateButtons.setSpacing(20);
 
         editProfileBox.getChildren().addAll(profileImageViewUpdate, editDetailsBox, updateButtons);
-        editProfileBox.setSpacing(75);
 
         // Main layout
         profilePage = new VBox(profileBox);
         profilePage.setSpacing(10);
         profilePage.setPadding(new Insets(20));
+
+        // Button actions
         editButton.setOnAction(e -> {
             profilePage.getChildren().remove(profileBox);
             profilePage.getChildren().add(editProfileBox);
         });
+
         cancelButton.setOnAction(e -> {
             profilePage.getChildren().remove(editProfileBox);
             profilePage.getChildren().add(profileBox);
         });
-
     }
 
-    public VBox getProfilePage() {
-        return profilePage;
-    }
-
-    public void setProfileImage(Image image) {
-        profileImageView.setImage(image);
-    }
-
-    public void setName(String name) {
-        fullNameLabel.setText("Name: " + name);
-    }
-
-    public void setEmail(String email) {
-        emailLabel.setText("Email: " + email);
-    }
-
-    public void setPhone(String phone) {
-        phoneLabel.setText("Phone: " + phone);
-    }
-
-    public Button getEditButton() {
-        return editButton;
-    }
-
-    public ImageView getProfileImageView() {
-        return profileImageView;
-    }
-
-    public Button getLogout() {
-        return logout;
-    }
-
-    public TextField getEmployeeIDTextField() {
-        return employeeIDTextField;
-    }
-
-    public TextField getFullNameTextField() {
-        return fullNameTextField;
-    }
-
-    public TextField getUsernameTextField() {
-        return usernameTextField;
-    }
-
-    public TextField getEmailTextField() {
-        return emailTextField;
-    }
-
-    public TextField getPhoneTextField() {
-        return phoneTextField;
-    }
-
-    public TextField getDateOfBirthTextField() {
-        return dateOfBirthTextField;
-    }
-
-    public TextField getAccessLevelTextField() {
-        return accessLevelTextField;
-    }
-
-    public TextField getSectorTextField() {
-        return sectorTextField;
-    }
-
-    public Button getUpdateProfileButton() {
-        return updateProfileButton;
-    }
-
-    public TextField getEditFullNameTextField() {
-        return editFullNameTextField;
-    }
-
-    public TextField getEditUsernameTextField() {
-        return editUsernameTextField;
-    }
-
-    public TextField getEditPasswordTextField() {
-        return editPasswordTextField;
-    }
-
-    public TextField getEditEmailTextField() {
-        return editEmailTextField;
-    }
-
-    public TextField getEditPhoneTextField() {
-        return editPhoneTextField;
-    }
-
-    public DatePicker getEditDateOfBirthTextField() {
-        return editDateOfBirthTextField;
-    }
-
-    public HBox getEditProfileBox() {
-        return editProfileBox;
-    }
-
-    public BorderPane getProfileBox() {
-        return profileBox;
-    }
-
-    public Button getCancelButton() {
-        return cancelButton;
-    }
+    // Getters and setters
+    public VBox getProfilePage() { return profilePage; }
+    public void setProfileImage(Image image) { profileImageView.setImage(image); }
+    public void setName(String name) { fullNameLabel.setText("Name: " + name); }
+    public void setEmail(String email) { emailLabel.setText("Email: " + email); }
+    public void setPhone(String phone) { phoneLabel.setText("Phone: " + phone); }
+    public Button getEditButton() { return editButton; }
+    public ImageView getProfileImageView() { return profileImageView; }
+    public Button getLogout() { return logout; }
+    public TextField getEmployeeIDTextField() { return employeeIDTextField; }
+    public TextField getFullNameTextField() { return fullNameTextField; }
+    public TextField getUsernameTextField() { return usernameTextField; }
+    public TextField getEmailTextField() { return emailTextField; }
+    public TextField getPhoneTextField() { return phoneTextField; }
+    public TextField getDateOfBirthTextField() { return dateOfBirthTextField; }
+    public TextField getAccessLevelTextField() { return accessLevelTextField; }
+    public TextField getSectorTextField() { return sectorTextField; }
+    public Button getUpdateProfileButton() { return updateProfileButton; }
+    public TextField getEditFullNameTextField() { return editFullNameTextField; }
+    public TextField getEditUsernameTextField() { return editUsernameTextField; }
+    public TextField getEditPasswordTextField() { return editPasswordTextField; }
+    public TextField getEditEmailTextField() { return editEmailTextField; }
+    public TextField getEditPhoneTextField() { return editPhoneTextField; }
+    public DatePicker getEditDateOfBirthTextField() { return editDateOfBirthTextField; }
+    public HBox getEditProfileBox() { return editProfileBox; }
+    public BorderPane getProfileBox() { return profileBox; }
+    public Button getCancelButton() { return cancelButton; }
 }

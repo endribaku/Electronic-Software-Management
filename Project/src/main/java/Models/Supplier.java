@@ -7,9 +7,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javax.imageio.IIOException;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Supplier implements Serializable {
@@ -18,7 +17,7 @@ public class Supplier implements Serializable {
     private transient StringProperty name;
     private transient ListProperty<Item> suppliedItems;
 
-    public Supplier(String name, ArrayList<Item> suppliedItems) {
+    public Supplier(String name, List<Item> suppliedItems) {
         this.supplierID = new SimpleStringProperty(UUID.randomUUID().toString());
         this.name = new SimpleStringProperty(name);
         this.suppliedItems = new SimpleListProperty<>(FXCollections.observableArrayList(suppliedItems));
@@ -41,7 +40,7 @@ public class Supplier implements Serializable {
 
     public void setSupplierID(String supplierID) {this.supplierID.set(supplierID);}
     public void setName(String name) {this.name.set(name);}
-    public void setSuppliedItems(ObservableList<Item> suppliedItems) {this.suppliedItems.set(suppliedItems);};
+    public void setSuppliedItems(ObservableList<Item> suppliedItems) {this.suppliedItems.set(suppliedItems);}
 
     public void addSuppliedItem(Item item)
     {

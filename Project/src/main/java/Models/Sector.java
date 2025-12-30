@@ -5,7 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Sector implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -13,7 +13,7 @@ public class Sector implements Serializable {
     private transient ListProperty<Category> categories = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 
-    public Sector(String sectorName, ArrayList<Category> categories) {
+    public Sector(String sectorName, List<Category> categories) {
         this.sectorName = new SimpleStringProperty(sectorName);
         this.categories.set(FXCollections.observableArrayList(categories));
     }

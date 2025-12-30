@@ -13,7 +13,7 @@ public class Bill_Item implements Serializable {
     private transient DoubleProperty totalPrice;
 
     public Bill_Item(Item item, int quantity) {
-        this.item = new SimpleObjectProperty<Item>(item);
+        this.item = new SimpleObjectProperty<>(item);
         this.quantity = new SimpleIntegerProperty(quantity);
         this.unitPrice = new SimpleDoubleProperty(item.getSellingPrice());
         this.totalPrice = new SimpleDoubleProperty(getQuantity() * getUnitPrice());
@@ -22,7 +22,7 @@ public class Bill_Item implements Serializable {
     }
 
     public Bill_Item(Item item) {
-        this.item = new SimpleObjectProperty<Item>(item);
+        this.item = new SimpleObjectProperty<>(item);
         this.quantity = new SimpleIntegerProperty();
         this.unitPrice = new SimpleDoubleProperty();
         this.totalPrice = new SimpleDoubleProperty();
@@ -102,18 +102,18 @@ public class Bill_Item implements Serializable {
 
     @Serial
     private void readObject(ObjectInputStream reader) throws IOException, ClassNotFoundException {
-        String itemID = (String) reader.readObject();
-        String name = (String) reader.readObject();
-        Item item = (Item) reader.readObject();
-        int quantity = reader.readInt();
-        double unitPrice = reader.readDouble();
+        String readItemID = (String) reader.readObject();
+        String readName = (String) reader.readObject();
+        Item readItem = (Item) reader.readObject();
+        int readQuantity = reader.readInt();
+        double readUnitPrice = reader.readDouble();
 
-        this.itemID = new SimpleStringProperty(itemID);
-        this.name = new SimpleStringProperty(name);
-        this.item = new SimpleObjectProperty<>(item);
-        this.quantity = new SimpleIntegerProperty(quantity);
-        this.unitPrice = new SimpleDoubleProperty(unitPrice);
-        this.totalPrice = new SimpleDoubleProperty(quantity * unitPrice);
+        this.itemID = new SimpleStringProperty(readItemID);
+        this.name = new SimpleStringProperty(readName);
+        this.item = new SimpleObjectProperty<>(readItem);
+        this.quantity = new SimpleIntegerProperty(readQuantity);
+        this.unitPrice = new SimpleDoubleProperty(readUnitPrice);
+        this.totalPrice = new SimpleDoubleProperty(readQuantity * readUnitPrice);
     }
 
     @Serial
