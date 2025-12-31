@@ -2,13 +2,11 @@ package Models;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+
 
 public class Cashier extends User implements Serializable {
 
@@ -31,7 +29,7 @@ public class Cashier extends User implements Serializable {
 
     @Serial
     private void readObject(ObjectInputStream inputStream) throws IOException,ClassNotFoundException{
-        this.sector = new SimpleObjectProperty<Sector>((Sector) inputStream.readObject());
+        this.sector = new SimpleObjectProperty<>((Sector) inputStream.readObject());
     }
 
     @Override

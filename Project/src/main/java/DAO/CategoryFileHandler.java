@@ -5,7 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryFileHandler {
     public static final String FILE_PATH = "Project/Data/categories.dat";
@@ -39,14 +39,15 @@ public class CategoryFileHandler {
             for(Category c : categories) {
                 outputStream.writeObject(c);
             }
-        } catch(EOFException eofe) {
+        } catch(EOFException _) {
+            // End of file reached: normal termination of object stream
 
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-    public void deleteAll(ArrayList<Category> categoriesToRemove) {
+    public void deleteAll(List<Category> categoriesToRemove) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
             for(Category c : categories) {
                 if(!categoriesToRemove.contains(c)) {
@@ -80,7 +81,8 @@ public class CategoryFileHandler {
                     return category;
             }
         }
-        catch (EOFException ignored) {
+        catch (EOFException _) {
+            // End of file reached: normal termination of object stream
         }
         catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
@@ -95,7 +97,8 @@ public class CategoryFileHandler {
                 categories.add(category);
             }
         }
-        catch (EOFException ignored) {
+        catch (EOFException _) {
+            // End of file reached: normal termination of object stream
         }
         catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());

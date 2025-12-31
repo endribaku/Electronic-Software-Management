@@ -1,12 +1,8 @@
 package Controllers;
 
-import DAO.CategoryFileHandler;
 import DAO.InventoryFileHandler;
-import DAO.ItemFileHandler;
-import DAO.SuppliersFileHandler;
 import Exceptions.CategoryCreationException;
 import Exceptions.ItemCreationException;
-import Exceptions.ItemStockException;
 import Exceptions.SectorCreationException;
 import Models.*;
 import Views.InventoryView;
@@ -14,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 public class InventoryController {
     // Endri = from now on use only inventoryfilehandler for any operation (categories, sectors, items)
@@ -23,9 +18,20 @@ public class InventoryController {
     private User currentUser;
 
 
+    //Strings for easier maintainability
+    private static final String ADD_ITEM = "Add Item";
+    private static final String ADD_CATEGORY = "Add Category";
+    private static final String ADD_SECTOR = "Add Sector";
+
+    private static final String SUCCESS = "Success";
+    private static final String ERROR = "Error";
+    private static final String DELETE_ITEM = "Delete Item";
+
+
+
     // Controller setting the currentUser as the one who controls
-    public InventoryController(User currentUser) {
-        this.currentUser = currentUser;
+    public InventoryController(User user) {
+        this.currentUser = user;
 
         this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
@@ -65,11 +71,11 @@ public class InventoryController {
         this.inventoryListView.getEditSectorListBox().setItems(inventoryFileHandler.getSectorsOfUser(currentUser));
 
         this.inventoryListView.getOptionsComboBox().setOnAction(e -> {
-            if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Item")){
+            if(this.inventoryListView.getOptionsComboBox().getValue().equals(ADD_ITEM)){
                 this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
-            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Category")){
+            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals(ADD_CATEGORY)){
                 this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
-            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals("Add Sector")){
+            } else if(this.inventoryListView.getOptionsComboBox().getValue().equals(ADD_SECTOR)){
                 this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddSectorPane());
             }
         });
@@ -88,7 +94,7 @@ public class InventoryController {
 
     public void setEditRows() throws ItemCreationException {
         this.inventoryListView.getItemIDColumn().setOnEditCommit(e -> {
-            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setItemID(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setItemID(e.getNewValue());
             inventoryFileHandler.updateInventoryFile();
         });
 
@@ -98,12 +104,12 @@ public class InventoryController {
         });
 
         this.inventoryListView.getItemCategoryColumn().setOnEditCommit(e -> {
-            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setCategory(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setCategory(e.getNewValue());
             inventoryFileHandler.updateInventoryFile();
         });
 
         this.inventoryListView.getItemSupplierColumn().setOnEditCommit(e -> {
-            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setSupplier(e.getNewValue().toString());
+            inventoryFileHandler.getItemsList().get(e.getTablePosition().getRow()).setSupplier(e.getNewValue());
             inventoryFileHandler.updateInventoryFile();
         });
 
@@ -123,15 +129,15 @@ public class InventoryController {
         });
 
         this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
-            boolean updated = this.inventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get());
+            boolean updated = InventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get());
             if (updated) {
                 Alert success = new Alert(Alert.AlertType.INFORMATION);
-                success.setTitle("Success");
+                success.setTitle(SUCCESS);
                 success.setHeaderText("Inventory Table Updated Successfully");
                 success.show();
             } else {
                 Alert fail = new Alert(Alert.AlertType.ERROR);
-                fail.setTitle("Success");
+                fail.setTitle(SUCCESS);
                 fail.setHeaderText("Inventory Table Update Error");
                 fail.show();
             }
@@ -152,7 +158,7 @@ public class InventoryController {
         try{
             if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity <= 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
+                alert.setTitle(ERROR);
                 alert.setHeaderText("Invalid Input");
                 alert.show();
             } else {
@@ -166,10 +172,10 @@ public class InventoryController {
                 inventoryListView.getItemPPriceField().clear();
                 inventoryListView.getItemSPriceField().clear();
                 inventoryListView.getItemSupplierListView().setValue(null);
-                inventoryListView.getOptionsComboBox().setValue("Add Item");
+                inventoryListView.getOptionsComboBox().setValue(ADD_ITEM);
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
+                alert.setTitle(SUCCESS);
                 alert.setHeaderText("Item Added Successfully");
                 alert.show();
             }
@@ -180,27 +186,26 @@ public class InventoryController {
 
     private void onCategoryAdd() throws CategoryCreationException {
         String categoryName = inventoryListView.getCategoryNameField().getText();
-        String sectorName = inventoryListView.getSectorComboBox().getValue().toString();
+        String sectorName = inventoryListView.getSectorComboBox().getValue();
 
         try{
             if(categoryName.isEmpty() || sectorName.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
+                alert.setTitle(ERROR);
                 alert.setHeaderText("Invalid Input");
                 alert.show();
             } else {
                 inventoryFileHandler.addCategory(sectorName, new Category(categoryName, sectorName));
-                //inventoryListView.getItemCategoryListView().setItems(categoryFileHandler.getAllCategories());
                 inventoryListView.getItemNameField().clear();
                 inventoryListView.getCategoryNameField().clear();
                 inventoryListView.getItemQuantityField().clear();
                 inventoryListView.getItemPPriceField().clear();
                 inventoryListView.getItemSPriceField().clear();
                 inventoryListView.getItemSupplierListView().setValue(null);
-                inventoryListView.getOptionsComboBox().setValue("Add Category");
+                inventoryListView.getOptionsComboBox().setValue(ADD_CATEGORY);
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
+                alert.setTitle(SUCCESS);
                 alert.setHeaderText("Category Added Successfully");
                 alert.show();
             }
@@ -215,10 +220,10 @@ public class InventoryController {
         if (!(sectorName.isEmpty())) {
             inventoryFileHandler.addSector(new Sector(sectorName));
             inventoryListView.getSectorNameField().clear();
-            inventoryListView.getOptionsComboBox().setValue("Add Sector");
+            inventoryListView.getOptionsComboBox().setValue(ADD_SECTOR);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
+            alert.setTitle(SUCCESS);
             alert.setHeaderText("Sector Added Successfully");
             alert.show();
         }
@@ -242,8 +247,7 @@ public class InventoryController {
     private void sendAlertforLowStock() {
         if(currentUser.getAccessLevel() == Access.Manager || currentUser.getAccessLevel() == Access.Administrator) {
             ObservableList<Item> lowStockItems = InventoryFileHandler.checkForLowStock();
-            if(lowStockItems.isEmpty()) return;
-            else {
+            if(!lowStockItems.isEmpty()){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Item Stock is Low!");
                 alert.setHeaderText("Item Stock is low! Please restock these items:" + lowStockItems.toString());
@@ -263,9 +267,7 @@ public class InventoryController {
         this.inventoryListView.getItemEditPPriceField().setText(selectedItem.getPurchasePrice() + "");
         this.inventoryListView.getItemEditSPriceField().setText(selectedItem.getSellingPrice() + "");
 
-        this.inventoryListView.getUpdateItemButton().setOnAction(e -> {
-            onItemUpdate(selectedItem);
-        });
+        this.inventoryListView.getUpdateItemButton().setOnAction(e -> onItemUpdate(selectedItem));
     }
 
     private void onItemUpdate(Item item) {
@@ -312,9 +314,7 @@ public class InventoryController {
         this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditCategoryPane());
         this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getEditCategoryListBox());
 
-        this.inventoryListView.getEditCategoryListBox().setOnAction(e -> {
-            onCategoryEditSelect();
-        });
+        this.inventoryListView.getEditCategoryListBox().setOnAction(e -> onCategoryEditSelect());
     }
 
     private void onCategoryEditSelect() {
@@ -340,9 +340,7 @@ public class InventoryController {
         this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditSectorPane());
         this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getEditSectorListBox());
 
-        this.inventoryListView.getEditSectorListBox().setOnAction(e -> {
-            onSectorEditSelect();
-        });
+        this.inventoryListView.getEditSectorListBox().setOnAction(e -> onSectorEditSelect());
     }
 
     private void onSectorEditSelect() {
@@ -367,14 +365,14 @@ public class InventoryController {
         if(inventoryFileHandler.deleteItem(selectedItem))
         {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete Item");
-            alert.setHeaderText("Delete Item");
+            alert.setTitle(DELETE_ITEM);
+            alert.setHeaderText(DELETE_ITEM);
             alert.setContentText("Item deleted successfully");
             alert.show();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Delete Item");
-            alert.setHeaderText("Delete Item");
+            alert.setTitle(DELETE_ITEM);
+            alert.setHeaderText(DELETE_ITEM);
 
             alert.setContentText("Error while deleting Item");
             alert.show();

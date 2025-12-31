@@ -2,17 +2,13 @@ package Controllers;
 
 import DAO.UserFileHandler;
 import Exceptions.InvalidCredentialsException;
-import Models.*;
 import Models.User;
 import Views.LoginView;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-import java.time.LocalDate;
-import java.util.EnumSet;
+
 
 public class LoginController {
     private LoginView view;
@@ -21,9 +17,7 @@ public class LoginController {
     public LoginController(Stage stage) {
         view = new LoginView();
 
-        this.view.getBtLogin().setOnAction(e -> {
-            handleLogin();
-        });
+        this.view.getBtLogin().setOnAction(e -> handleLogin());
     }
 
     private void handleLogin() throws InvalidCredentialsException {
@@ -35,15 +29,8 @@ public class LoginController {
 
         if (username.isEmpty() || password.isEmpty())
             throw new InvalidCredentialsException("Please enter a username and password");
-//
-//      ObservableList<String> permissions = FXCollections.observableArrayList();
-//      permissions.addAll("INVENTORY_ACCESS", "EMPLOYEE_MANAGEMENT", "PERFORMANCE_VIEW", "BILL_GENERATION", "SUPPLIER_MANAGEMENT");
-//      ObservableList<String> sectors = FXCollections.observableArrayList();
-//      sectors.add("Electronics");
+
       User currentUser = handler.authenticateUser(username, password);
-//      User currentUser = new User("endri", "123456",
-//                    "Endri Baku", LocalDate.of(1999, 12,
-//                    12), "050505", "endri.bakuak", 5000, Access.Administrator, permissions, sectors );
 
         if ((currentUser != null)) {
             showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, " + username + "!");
