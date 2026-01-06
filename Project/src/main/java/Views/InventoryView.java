@@ -626,4 +626,6 @@ public class InventoryView {
     public Button getCancelUpdateSectorButton() {
         return cancelUpdateSectorButton;
     }
+
+
 }

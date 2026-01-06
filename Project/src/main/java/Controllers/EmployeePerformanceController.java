@@ -132,15 +132,8 @@ public class EmployeePerformanceController {
         billTableView.setItems(filteredBills);
 
         // Add listener to the search bar
-        searchBar.textProperty().addListener((observable, oldValue, newValue) -> filteredBills.setPredicate(bill -> {
-            // If no search text, display all bills
-            if (newValue == null || newValue.isEmpty()) {
-                return true; // Show all items
-            }
-
-            // Compare cashier names ignoring case
-            return bill.getUsername().toLowerCase().contains(newValue.toLowerCase());
-        }));
+        searchBar.textProperty().addListener((observable, oldValue, newValue) -> filteredBills.setPredicate(bill -> matchesSearch(bill, newValue)
+        ));
     }
 
     private XYChart.Series<String, Number> calculateSeriesWeekly() {
@@ -355,5 +348,16 @@ public class EmployeePerformanceController {
         return bills.stream()
                 .filter(bill -> bill.getDateOfSale().isEqual(date))
                 .collect(Collectors.toList());
+    }
+
+    public boolean matchesSearch(Bill bill, String query) {
+
+        if (query == null || query.isEmpty()) {
+            return true;
+        }
+
+        return bill.getUsername()
+                .toLowerCase()
+                .contains(query.toLowerCase());
     }
 }

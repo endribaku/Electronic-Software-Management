@@ -191,38 +191,40 @@ public class InventoryFileHandler {
     }
 
     //Update methods for specific instances
-    public boolean updateItem(String itemID, String itemName, String itemCategory, String itemSupplier, LocalDate date, double pPrice, double sPrice, int quantity) {
-        boolean updated = false;
+    public boolean updateItem(
+            String itemID,
+            String itemName,
+            String itemCategory,
+            String itemSupplier,
+            LocalDate date,
+            double pPrice,
+            double sPrice,
+            int quantity) {
+
         Inventory currentInventory = inventory.get();
 
-        Item itemToUpdate = null;
-        Supplier currentSupplier = null;
-
-        for (Sector sector : currentInventory.getSectors()) {
-            for (Category category : sector.getCategories()) {
-                for (Item i : category.getItems()) {
-                    if (i.getItemID().equals(itemID)) {
-                        itemToUpdate = i;
-                        for (Supplier supplier : currentInventory.getSuppliers()) {
-                            if (supplier.getSuppliedItems().contains(i)) {
-                                currentSupplier = supplier;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (itemToUpdate != null) break;
-            }
-            if (itemToUpdate != null) break;
-        }
-
+        Item itemToUpdate = findItemById(itemID, currentInventory);
         if (itemToUpdate == null) {
             System.err.println("Item not found in the inventory.");
             return false;
         }
 
+        Supplier currentSupplier =
+                findSupplierForItem(itemToUpdate, currentInventory);
 
+        boolean supplierUpdated = changeItemSupplier(
+                itemToUpdate,
+                currentSupplier,
+                itemSupplier,
+                currentInventory
+        );
+
+        if (!supplierUpdated) {
+            System.err.println("New supplier not found in the inventory.");
+            return false;
+        }
+
+        // Update item fields
         itemToUpdate.setName(itemName);
         itemToUpdate.setCategory(itemCategory);
         itemToUpdate.setSupplier(itemSupplier);
@@ -231,38 +233,11 @@ public class InventoryFileHandler {
         itemToUpdate.setQuantity(quantity);
         itemToUpdate.setPurchaseDate(date);
 
-
-        if (currentSupplier != null && !currentSupplier.getName().equals(itemSupplier)) {
-
-            currentSupplier.getSuppliedItems().remove(itemToUpdate);
-
-            // Add the item to the target supplier
-            boolean supplierFound = false;
-            for (Supplier supplier : currentInventory.getSuppliers()) {
-                if (supplier.getName().equals(itemSupplier)) {
-                    supplier.getSuppliedItems().add(itemToUpdate);
-                    supplierFound = true;
-                    break;
-                }
-            }
-
-            if (!supplierFound) {
-                System.err.println("New supplier not found in the inventory.");
-                return false;
-            }
-        }
-
-
         itemsList.set(itemsList.indexOf(itemToUpdate), itemToUpdate);
 
-
-        boolean saved = updateInventory(currentInventory);
-        if (saved) {
-            System.out.println("Item updated successfully.");
-        }
-
-        return saved;
+        return updateInventory(currentInventory);
     }
+
 
 
 
@@ -381,50 +356,34 @@ public class InventoryFileHandler {
 
 
     public boolean deleteItem(Item item) {
-        boolean deleted = false;
 
-        if (inventory == null || inventory.get() == null) {
-            inventory = this.getInventory();
-            if (inventory.get() == null) {
-                System.err.println("Inventory is null. Cannot delete the item.");
-                return false;
-            }
+        if (!isInventoryLoaded()) {
+            System.err.println("Inventory is null. Cannot delete the item.");
+            return false;
         }
 
         Inventory currentInventory = inventory.get();
 
-        for (Sector sector : currentInventory.getSectors()) {
-            for (Category category : sector.getCategories()) {
-                if (category.getItems().contains(item)) {
+        boolean removedFromCategory = removeItemFromCategories(currentInventory, item);
+        removeItemFromSuppliers(currentInventory, item);
 
-                    category.getItems().remove(item);
-                    deleted = true;
-                    break;
-                }
-            }
-            if (deleted) break;
-        }
-        for (Supplier supplier : currentInventory.getSuppliers()) {
-            if (supplier.getSuppliedItems().contains(item)) {
-                supplier.getSuppliedItems().remove(item);
-                break;
-            }
-        }
-        if (deleted) {
-            itemsList.remove(item);
-            boolean saved = updateInventory(currentInventory);
-            if (saved) {
-                System.out.println("Item successfully deleted and inventory updated.");
-                return true;
-            } else {
-                System.err.println("Failed to save inventory after item deletion.");
-            }
-        } else {
+        if (!removedFromCategory) {
             System.err.println("Item not found in the inventory.");
+            return false;
         }
 
-        return false;
+        itemsList.remove(item);
+
+        boolean saved = updateInventory(currentInventory);
+        if (!saved) {
+            System.err.println("Failed to save inventory after item deletion.");
+            return false;
+        }
+
+        System.out.println("Item successfully deleted and inventory updated.");
+        return true;
     }
+
 
     public void deleteCategory(Category category) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
@@ -510,23 +469,19 @@ public class InventoryFileHandler {
     }
 
     public ObservableList<Item> getItemsList() {
-        // Ensure inventory is initialized
-        if (inventory == null || inventory.get() == null) {
-            inventory = this.getInventory();
-            if (inventory.get() == null) {
-                System.err.println("Inventory is null. Returning an empty items list.");
-                return itemsList;
-            }
+
+        if (!isInventoryLoaded()) {
+            System.err.println("Inventory is null. Returning an empty items list.");
+            return FXCollections.observableArrayList();
         }
 
-        // Clear and populate the items list
-        itemsList.clear();
+        ObservableList<Item> result = FXCollections.observableArrayList();
+
         for (Sector sector : inventory.get().getSectors()) {
-            for (Category category : sector.getCategories()) {
-                itemsList.addAll(category.getItems());
-            }
+            collectItemsFromSector(sector, result);
         }
-        return itemsList;
+
+        return result;
     }
 
 
@@ -636,7 +591,82 @@ public class InventoryFileHandler {
     }
 
 
+    private Item findItemById(String itemID, Inventory inventory) {
+        for (Sector sector : inventory.getSectors()) {
+            for (Category category : sector.getCategories()) {
+                for (Item item : category.getItems()) {
+                    if (item.getItemID().equals(itemID)) {
+                        return item;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
+    private Supplier findSupplierForItem(Item item, Inventory inventory) {
+        for (Supplier supplier : inventory.getSuppliers()) {
+            if (supplier.getSuppliedItems().contains(item)) {
+                return supplier;
+            }
+        }
+        return null;
+    }
+
+    private boolean changeItemSupplier(
+            Item item,
+            Supplier currentSupplier,
+            String newSupplierName,
+            Inventory inventory) {
+
+        if (currentSupplier != null && currentSupplier.getName().equals(newSupplierName)) {
+            return true; // no change needed
+        }
+
+        if (currentSupplier != null) {
+            currentSupplier.getSuppliedItems().remove(item);
+        }
+
+        for (Supplier supplier : inventory.getSuppliers()) {
+            if (supplier.getName().equals(newSupplierName)) {
+                supplier.getSuppliedItems().add(item);
+                return true;
+            }
+        }
+
+        return false; // new supplier not found
+    }
+
+    private boolean isInventoryLoaded() {
+        if (inventory == null || inventory.get() == null) {
+            inventory = this.getInventory();
+        }
+        return inventory != null && inventory.get() != null;
+    }
+
+    private boolean removeItemFromCategories(Inventory inventory, Item item) {
+        for (Sector sector : inventory.getSectors()) {
+            for (Category category : sector.getCategories()) {
+                if (category.getItems().remove(item)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void removeItemFromSuppliers(Inventory inventory, Item item) {
+        for (Supplier supplier : inventory.getSuppliers()) {
+            supplier.getSuppliedItems().remove(item);
+        }
+    }
+
+
+    private void collectItemsFromSector(Sector sector, ObservableList<Item> target) {
+        for (Category category : sector.getCategories()) {
+            target.addAll(category.getItems());
+        }
+    }
 
 
 

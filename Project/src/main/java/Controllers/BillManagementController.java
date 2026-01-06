@@ -30,58 +30,80 @@ public class BillManagementController {
 
 
     private void onAddToBill() throws BillCreationException, ItemStockException {
-        int quantity = Integer.parseInt(this.generateView.getQuantityTextField().getText());
-        Item item = this.generateView.getItemListView().getSelectionModel().getSelectedItem();
 
+        int quantity =
+                Integer.parseInt(
+                        generateView.getQuantityTextField().getText()
+                );
 
-        if (item != null && quantity > 0) {
-            if (item.getQuantity() > quantity) {
-                Bill_Item billItem = new Bill_Item(item, quantity);
-                ObservableList<Bill_Item> billItems = FXCollections.observableArrayList();
+        Item item =
+                generateView.getItemListView()
+                        .getSelectionModel()
+                        .getSelectedItem();
 
-                for (Bill_Item i : billItems) {
-                    if (billItem.equals(i)) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error");
-                        alert.setHeaderText("Item already added to bill");
-                        alert.show();
-                    }
-                }
+        if (!canAddToBill(item, quantity)) {
 
-                this.generateView.getBillList().add(billItem);
-                this.generateView.getItemListView().getSelectionModel().clearSelection();
-                this.generateView.getQuantityTextField().clear();
+            if (item == null || quantity <= 0) {
+                throw new BillCreationException(
+                        "Please select an item and add its quantity!"
+                );
             }
-            else throw new ItemStockException("Item quantity must be less than or equal to " + item.getQuantity());
+
+            throw new ItemStockException(
+                    "Item quantity must be less than or equal to " + item.getQuantity()
+            );
         }
-        else throw new BillCreationException("Please select an item and add its quantity!");
+
+        Bill_Item billItem = new Bill_Item(item, quantity);
+
+        ObservableList<Bill_Item> billItems = FXCollections.observableArrayList();
+
+        for (Bill_Item i : billItems) {
+            if (billItem.equals(i)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Item already added to bill");
+                alert.show();
+            }
+        }
+
+        generateView.getBillList().add(billItem);
+        generateView.getItemListView().getSelectionModel().clearSelection();
+        generateView.getQuantityTextField().clear();
     }
 
+
     private void onGenerateBill() throws BillCreationException {
-       ObservableList<Bill_Item> billItems = this.generateView.getBillList();
-       if (!(billItems.isEmpty())) {
 
-           //Generate bill with its info
-           ObservableList<Bill_Item> billItemsList = FXCollections.observableArrayList(billItems);
-           Bill newBill = new Bill();
-           newBill.setUser(currentUser);
-           newBill.setItemsSold(billItemsList);
-           newBill.setTotalAmountfromItemsSold();
+        ObservableList<Bill_Item> billItems =
+                this.generateView.getBillList();
 
-           BillFileHandler.insertBill(newBill);
-           billFileHandler.saveBillToFile(newBill);
+        if (!canGenerateBill(billItems)) {
+            throw new BillCreationException(
+                    "No items added to bill, Add items to generate bill."
+            );
+        }
 
-           onBillGenerateQuantities(billItemsList);
+        // Generate bill with its info
+        ObservableList<Bill_Item> billItemsList =
+                FXCollections.observableArrayList(billItems);
 
-           this.generateView.getBillList().clear();
+        Bill newBill = new Bill();
+        newBill.setUser(currentUser);
+        newBill.setItemsSold(billItemsList);
+        newBill.setTotalAmountfromItemsSold();
 
-           Alert alert = new Alert(Alert.AlertType.INFORMATION);
-           alert.setTitle("Success");
-           alert.setHeaderText("Bill Generated Successfully");
-           alert.show();
+        BillFileHandler.insertBill(newBill);
+        billFileHandler.saveBillToFile(newBill);
 
-       }
-       else throw new BillCreationException("No items added to bill, Add items to generate bill.");
+        onBillGenerateQuantities(billItemsList);
+
+        this.generateView.getBillList().clear();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText("Bill Generated Successfully");
+        alert.show();
     }
 
 
@@ -100,5 +122,13 @@ public class BillManagementController {
                     item.getCategory(), item.getSupplier(), item.getPurchaseDate(),
                     item.getPurchasePrice(), item.getSellingPrice(), newQuantity);
         }
+    }
+
+    public boolean canAddToBill(Item item, int quantity) {
+        return item != null && quantity > 0 && item.getQuantity() > quantity;
+    }
+
+    public boolean canGenerateBill(ObservableList<Bill_Item> billItems) {
+        return billItems != null && !billItems.isEmpty();
     }
 }

@@ -75,50 +75,39 @@ public class UserFileHandler {
         }
     }
 
-    public boolean updateUser(String username, String password, String fullName, LocalDate dob, String pNumber, String email, double salary, Access accessLevel, ObservableList<String> permissions, List<String> sector) {
-        boolean updated = false;
+    public boolean updateUser(
+            String username,
+            String password,
+            String fullName,
+            LocalDate dob,
+            String pNumber,
+            String email,
+            double salary,
+            Access accessLevel,
+            ObservableList<String> permissions,
+            List<String> sector) {
 
-        // Update the specific sector
-        for(User u : users) {
-            if(u.getUsername().equals(username)) {
-
-//                u.setPassword(password);
-//                u.setFullName(fullName);
-//                u.setDateOfBirth(dob);
-//                u.setPhoneNumber(pNumber);
-//                u.setEmail(email);
-//                u.setSalary(salary);
-//                u.setAccessLevel(accessLevel);
-
-                EnumSet<Permission> permissionsSet = EnumSet.noneOf(Permission.class);
-                for (String permissionString : permissions) {
-                    try {
-                        Permission permission = Permission.valueOf(permissionString);
-                        permissionsSet.add(permission);
-                    } catch (IllegalArgumentException e) {
-
-                        System.err.println("Invalid permission: " + permissionString);
-                    }
-                }
-//                u.setPermissions(permissions);
-//                u.setSector(sector);
-                User newUser = new User(username, password, fullName, dob, pNumber, email, salary, accessLevel, permissions, (ObservableList<String>) sector);
-                users.set(users.indexOf(u), newUser);
-                System.out.println("User updated successfully");
-                updated = true;
-                break;
-            }
+        User existingUser = findUserByUsername(username);
+        if (existingUser == null) {
+            return false;
         }
 
-        // Write the updated list back to the file
-        boolean saved = false;
-        if(updated) {
-            saved = updateAll(users);
-            System.out.println("Users saved in file");
-        } else {
-            System.out.println("Users not saved in file");
-        }
-        return(updated && saved);
+        User updatedUser = new User(
+                username,
+                password,
+                fullName,
+                dob,
+                pNumber,
+                email,
+                salary,
+                accessLevel,
+                permissions,
+                (ObservableList<String>) sector
+        );
+
+        users.set(users.indexOf(existingUser), updatedUser);
+
+        return updateAll(users);
     }
 
     public boolean updateProfile(String username, String fullName, String email, String password, String phoneNumber, LocalDate dateOfBirth) {
@@ -215,30 +204,44 @@ public class UserFileHandler {
     }
 
     public User authenticateUser(String username, String password) {
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
+        try (ObjectInputStream inputStream =
+                     new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+
             while (true) {
                 Object obj = inputStream.readObject();
 
-                // Check if the object is a User instance
-                if (obj instanceof User) {
-                    User user = (User) obj;
-
-                    System.out.println("Username: " + user.getUsername());
-                    System.out.println("Password: " + user.getPassword());
-
-                    // Check username and password
-                    if (user.getUsername().equals(username.trim()) &&
-                            user.getPassword().equals(password.trim())) {
-                        return user; // Return the matched User
+                if (obj instanceof User user) {
+                    if (credentialsMatch(user, username, password)) {
+                        return user;
                     }
                 }
             }
-        }catch (EOFException e){
 
-        }catch(IOException | ClassNotFoundException ex) {
-            ex.getMessage();
+        } catch (EOFException e) {
+            // End of file reached
+        } catch (IOException | ClassNotFoundException e) {
+            e.getMessage();
         }
         return null;
     }
+
+    boolean credentialsMatch(User user, String username, String password) {
+        return user.getUsername().equals(username.trim())
+                && user.getPassword().equals(password.trim());
+    }
+
+    User findUserByUsername(String username) {
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+
+
+
+
+
 }

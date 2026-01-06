@@ -4,6 +4,7 @@ import DAO.InventoryFileHandler;
 import Exceptions.CategoryCreationException;
 import Exceptions.ItemCreationException;
 import Exceptions.SectorCreationException;
+import Misc.StockUpdateResult;
 import Models.*;
 import Views.InventoryView;
 import javafx.collections.ObservableList;
@@ -16,7 +17,7 @@ public class InventoryController {
     private final InventoryView inventoryListView = new InventoryView();
     private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
     private User currentUser;
-
+    private Item editingItem;
 
     //Strings for easier maintainability
     private static final String ADD_ITEM = "Add Item";
@@ -33,20 +34,66 @@ public class InventoryController {
     public InventoryController(User user) {
         this.currentUser = user;
 
-        this.inventoryListView.getAddItemButton().setOnAction(e -> onItemAdd());
+        this.inventoryListView.getAddItemButton().setOnAction(e -> {
+
+            String itemName =
+                    inventoryListView.getItemNameField().getText();
+
+            Category selectedCategory =
+                    inventoryListView.getItemCategoryListView()
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+            Supplier selectedSupplier =
+                    inventoryListView.getItemSupplierListView()
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+            int itemQuantity =
+                    Integer.parseInt(
+                            inventoryListView.getItemQuantityField().getText()
+                    );
+
+            double itemPPrice =
+                    Double.parseDouble(
+                            inventoryListView.getItemPPriceField().getText()
+                    );
+
+            double itemSPrice =
+                    Double.parseDouble(
+                            inventoryListView.getItemSPriceField().getText()
+                    );
+
+            boolean success = onItemAdd(
+                    itemName,
+                    selectedCategory,
+                    selectedSupplier,
+                    itemQuantity,
+                    itemPPrice,
+                    itemSPrice
+            );
+
+            if (success) {
+                clearItemInputs();
+                showSuccess("Item Added Successfully");
+            } else {
+                showError("Invalid Input");
+            }
+        });
+
         this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
         this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
 
         this.inventoryListView.getEditItemButton().setOnAction(e -> onItemEdit());
+        this.inventoryListView.getUpdateItemButton().setOnAction(e -> handleUpdateItem());
+
         this.inventoryListView.getEditCategoryButton().setOnAction(e -> onCategoryEdit());
         this.inventoryListView.getEditSectorButton().setOnAction(e -> onSectorEdit());
 
         this.inventoryListView.getDeleteItemButton().setOnAction(e -> onItemDelete());
 
-        this.inventoryListView.getCancelUpdateItemButton().setOnAction(e -> {
-            this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
-            this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
-        });
+        inventoryListView.getCancelUpdateItemButton()
+                .setOnAction(e -> cancelEdit());
         this.inventoryListView.getCancelUpdateCategoryButton().setOnAction(e -> {
             this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
             this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddCategoryPane());
@@ -144,44 +191,37 @@ public class InventoryController {
         });
     }
 
-    private void onItemAdd(){
-        String itemName = inventoryListView.getItemNameField().getText();
-        String itemCategory = inventoryListView.getItemCategoryListView().getValue().toString();
-        int itemQuantity = Integer.parseInt(inventoryListView.getItemQuantityField().getText());
-        double itemPPrice = Double.parseDouble(inventoryListView.getItemPPriceField().getText());
-        double itemSPrice = Double.parseDouble(inventoryListView.getItemSPriceField().getText());
-        String itemSupplier =  inventoryListView.getItemSupplierListView().getSelectionModel().getSelectedItem().toString();
+    public boolean onItemAdd(
+            String itemName,
+            Category category,
+            Supplier supplier,
+            int quantity,
+            double purchasePrice,
+            double sellingPrice
+    ) {
+        if (itemName == null || itemName.isEmpty()
+                || category == null
+                || supplier == null
+                || !validateItemNumericFields(quantity, purchasePrice, sellingPrice)) {
 
-        Category selectedCategory = inventoryListView.getItemCategoryListView().getSelectionModel().getSelectedItem();
-        Supplier selectedSupplier = inventoryListView.getItemSupplierListView().getSelectionModel().getSelectedItem();
-
-        try{
-            if(itemName.isEmpty() || itemCategory.isEmpty() || itemQuantity <= 0 || itemPPrice == 0 || itemSPrice == 0 || itemSupplier.isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(ERROR);
-                alert.setHeaderText("Invalid Input");
-                alert.show();
-            } else {
-
-                inventoryFileHandler.addItem(selectedCategory, selectedSupplier, new Item(itemName, itemCategory, itemSupplier, LocalDate.now(), itemPPrice, itemSPrice, itemQuantity));
-                inventoryListView.getInventoryTableView().setItems(inventoryFileHandler.getItemsList());
-
-                inventoryListView.getItemNameField().clear();
-                inventoryListView.getCategoryNameField().clear();
-                inventoryListView.getItemQuantityField().clear();
-                inventoryListView.getItemPPriceField().clear();
-                inventoryListView.getItemSPriceField().clear();
-                inventoryListView.getItemSupplierListView().setValue(null);
-                inventoryListView.getOptionsComboBox().setValue(ADD_ITEM);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(SUCCESS);
-                alert.setHeaderText("Item Added Successfully");
-                alert.show();
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            return false;
         }
+
+        inventoryFileHandler.addItem(
+                category,
+                supplier,
+                new Item(
+                        itemName,
+                        category.getName(),
+                        supplier.getName(),
+                        LocalDate.now(),
+                        purchasePrice,
+                        sellingPrice,
+                        quantity
+                )
+        );
+
+        return true;
     }
 
     private void onCategoryAdd() throws CategoryCreationException {
@@ -244,71 +284,185 @@ public class InventoryController {
         return sectorNames;
     }
 
-    private void sendAlertforLowStock() {
-        if(currentUser.getAccessLevel() == Access.Manager || currentUser.getAccessLevel() == Access.Administrator) {
-            ObservableList<Item> lowStockItems = InventoryFileHandler.checkForLowStock();
-            if(!lowStockItems.isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Item Stock is Low!");
-                alert.setHeaderText("Item Stock is low! Please restock these items:" + lowStockItems.toString());
-                alert.show();
-            }
+    private boolean sendAlertforLowStock() {
+
+        boolean hasAccess =
+                currentUser.getAccessLevel() == Access.Manager
+                        || currentUser.getAccessLevel() == Access.Administrator;
+
+        if (!hasAccess) {
+            return false;
         }
+
+        ObservableList<Item> lowStockItems =
+                InventoryFileHandler.checkForLowStock();
+
+        if (lowStockItems.isEmpty()) {
+            return false;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Item Stock is Low!");
+        alert.setHeaderText(
+                "Item Stock is low! Please restock these items:"
+                        + lowStockItems.toString()
+        );
+        alert.show();
+
+        return true;
     }
+
 
     private void onItemEdit() {
-        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditItemPane());
-        this.inventoryListView.getCreateBox().getChildren().remove(this.inventoryListView.getOptionsComboBox());
 
-        Item selectedItem = this.inventoryListView.getInventoryTableView().getSelectionModel().getSelectedItem();
+        inventoryListView.getCreateBox()
+                .setCenter(inventoryListView.getEditItemPane());
+        inventoryListView.getCreateBox()
+                .getChildren()
+                .remove(inventoryListView.getOptionsComboBox());
 
-        this.inventoryListView.getItemEditNameField().setText(selectedItem.getName());
-        this.inventoryListView.getItemEditQuantityField().setText(selectedItem.getQuantity() + "");
-        this.inventoryListView.getItemEditPPriceField().setText(selectedItem.getPurchasePrice() + "");
-        this.inventoryListView.getItemEditSPriceField().setText(selectedItem.getSellingPrice() + "");
+        Item selectedItem =
+                inventoryListView.getInventoryTableView()
+                        .getSelectionModel()
+                        .getSelectedItem();
 
-        this.inventoryListView.getUpdateItemButton().setOnAction(e -> onItemUpdate(selectedItem));
-    }
-
-    private void onItemUpdate(Item item) {
-
-        String itemName = this.inventoryListView.getItemEditNameField().getText();
-        String category = this.inventoryListView.getEditItemCategoriesBox().getValue().toString();
-        String supplier = this.inventoryListView.getEditSupplierBox().getValue().toString();
-        double purchasePrice = Double.parseDouble(this.inventoryListView.getItemEditPPriceField().getText());
-        double sellingPrice = Double.parseDouble(this.inventoryListView.getItemEditSPriceField().getText());
-        int quantity = Integer.parseInt(this.inventoryListView.getItemEditQuantityField().getText());
-
-        if(quantity < 0)
-        {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid stock update");
-            alert.setHeaderText("Negative quantity not allowed");
-            alert.show();
-        } else if(quantity == 0)
-        {
-            inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Item is now out of stock");
-            alert.setHeaderText("Item is now out of stock");
-            alert.show();
-
-        } else
-        {
-            inventoryFileHandler.updateItem(item.getItemID(), itemName, category, supplier, item.getPurchaseDate(), purchasePrice, sellingPrice, quantity);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Item Updated");
-            alert.setHeaderText("Item is Updated");
-            alert.show();
+        if (selectedItem == null) {
+            showError("No item selected");
+            return;
         }
 
+        inventoryListView.getItemEditNameField()
+                .setText(selectedItem.getName());
 
+        inventoryListView.getItemEditQuantityField()
+                .setText(String.valueOf(selectedItem.getQuantity()));
 
+        inventoryListView.getItemEditPPriceField()
+                .setText(String.valueOf(selectedItem.getPurchasePrice()));
 
-        this.inventoryListView.getCreateBox().setTop(this.inventoryListView.getOptionsComboBox());
-        this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getAddItemPane());
-
+        inventoryListView.getItemEditSPriceField()
+                .setText(String.valueOf(selectedItem.getSellingPrice()));
     }
+
+    private void handleUpdateItem() {
+
+        Item selectedItem =
+                inventoryListView.getInventoryTableView()
+                        .getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedItem == null) {
+            showError("No item selected");
+            return;
+        }
+
+        try {
+            String itemName =
+                    inventoryListView.getItemEditNameField().getText();
+
+            Category selectedCategory =
+                    inventoryListView.getEditItemCategoriesBox()
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+            Supplier selectedSupplier =
+                    inventoryListView.getEditSupplierBox()
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+            double purchasePrice =
+                    Double.parseDouble(
+                            inventoryListView.getItemEditPPriceField().getText()
+                    );
+
+            double sellingPrice =
+                    Double.parseDouble(
+                            inventoryListView.getItemEditSPriceField().getText()
+                    );
+
+            int quantity =
+                    Integer.parseInt(
+                            inventoryListView.getItemEditQuantityField().getText()
+                    );
+
+            onItemUpdate(
+                    selectedItem,
+                    itemName,
+                    selectedCategory,
+                    selectedSupplier,
+                    purchasePrice,
+                    sellingPrice,
+                    quantity
+            );
+
+        } catch (NumberFormatException e) {
+            showError("Invalid numeric input");
+        }
+    }
+
+    private void cancelEdit() {
+        editingItem = null;
+
+        inventoryListView.getCreateBox()
+                .setTop(inventoryListView.getOptionsComboBox());
+        inventoryListView.getCreateBox()
+                .setCenter(inventoryListView.getAddItemPane());
+    }
+
+
+    private void onItemUpdate(
+            Item item,
+            String itemName,
+            Category selectedCategory,
+            Supplier selectedSupplier,
+            double purchasePrice,
+            double sellingPrice,
+            int quantity
+    ) {
+
+        StockUpdateResult result = evaluateStockUpdate(quantity);
+
+        switch (result) {
+
+            case INVALID -> {
+                showError("Negative quantity not allowed");
+            }
+
+            case OUT_OF_STOCK -> {
+                inventoryFileHandler.updateItem(
+                        item.getItemID(),
+                        itemName,
+                        selectedCategory.getName(),
+                        selectedSupplier.getName(),
+                        item.getPurchaseDate(),
+                        purchasePrice,
+                        sellingPrice,
+                        quantity
+                );
+                showError("Item is now out of stock");
+            }
+
+            case VALID -> {
+                inventoryFileHandler.updateItem(
+                        item.getItemID(),
+                        itemName,
+                        selectedCategory.getName(),
+                        selectedSupplier.getName(),
+                        item.getPurchaseDate(),
+                        purchasePrice,
+                        sellingPrice,
+                        quantity
+                );
+                showSuccess("Item Updated");
+            }
+        }
+
+        inventoryListView.getCreateBox()
+                .setTop(inventoryListView.getOptionsComboBox());
+        inventoryListView.getCreateBox()
+                .setCenter(inventoryListView.getAddItemPane());
+    }
+
 
     private void onCategoryEdit() {
         this.inventoryListView.getCreateBox().setCenter(this.inventoryListView.getEditCategoryPane());
@@ -376,6 +530,46 @@ public class InventoryController {
 
             alert.setContentText("Error while deleting Item");
             alert.show();
+        }
+    }
+
+
+    //helper method
+    public boolean validateItemNumericFields(int quantity, double purchasePrice, double sellingPrice) {
+        return quantity > 0 && purchasePrice > 0 && sellingPrice > 0;
+    }
+
+    private void clearItemInputs() {
+        inventoryListView.getItemNameField().clear();
+        inventoryListView.getCategoryNameField().clear();
+        inventoryListView.getItemQuantityField().clear();
+        inventoryListView.getItemPPriceField().clear();
+        inventoryListView.getItemSPriceField().clear();
+        inventoryListView.getItemSupplierListView().setValue(null);
+        inventoryListView.getOptionsComboBox().setValue(ADD_ITEM);
+    }
+
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(SUCCESS);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(ERROR);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    public StockUpdateResult evaluateStockUpdate(int quantity) {
+        if (quantity < 0) {
+            return StockUpdateResult.INVALID;
+        } else if (quantity == 0) {
+            return StockUpdateResult.OUT_OF_STOCK;
+        } else {
+            return StockUpdateResult.VALID;
         }
     }
 }
