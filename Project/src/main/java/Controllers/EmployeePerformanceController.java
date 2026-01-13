@@ -150,6 +150,12 @@ public class EmployeePerformanceController {
             LocalDate billDate = bill.getDateOfSale();
             if (billDate.isAfter(startOfWeek.minusDays(1)) && billDate.isBefore(startOfWeek.plusDays(7))) {
                 double amount = bill.getTotalAmount();
+
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
                 dailyEarnings.put(billDate, dailyEarnings.getOrDefault(billDate, 0.0) + amount);
             }
         }
@@ -180,6 +186,12 @@ public class EmployeePerformanceController {
                 int day = bill.getDateOfSale().getDayOfMonth();
                 double amount = bill.getTotalAmount();
 
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
+
                 dailyEarnings.put(day, dailyEarnings.getOrDefault(day, 0.0) + amount);
             }
         }
@@ -207,6 +219,12 @@ public class EmployeePerformanceController {
                 Month month = bill.getDateOfSale().getMonth();
                 double amount = bill.getTotalAmount();
 
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
+
                 monthlyEarnings.put(month, monthlyEarnings.getOrDefault(month, 0.0) + amount);
             }
         }
@@ -230,6 +248,12 @@ public class EmployeePerformanceController {
         for (Bill bill : allBills) {
             int year = bill.getDateOfSale().getYear();
             double amount = bill.getTotalAmount();
+
+            try {
+                classifyBillAmount(amount); // validation only
+            } catch (IllegalArgumentException ex) {
+                continue; // reject invalid bill
+            }
 
             yearlyEarnings.put(year, yearlyEarnings.getOrDefault(year, 0.0) + amount);
         }
@@ -257,6 +281,12 @@ public class EmployeePerformanceController {
             for (Bill bill : billsForDay) {
                 String cashierName = bill.getUsername();
                 double amount = bill.getTotalAmount();
+
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
 
                 // Aggregate earnings by user
                 cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
@@ -286,6 +316,12 @@ public class EmployeePerformanceController {
                 String cashierName = bill.getUsername();
                 double amount = bill.getTotalAmount();
 
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
+
                 // Aggregate earnings by user
                 cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
             }
@@ -311,6 +347,12 @@ public class EmployeePerformanceController {
                 String cashierName = bill.getUsername();
                 double amount = bill.getTotalAmount();
 
+                try {
+                    classifyBillAmount(amount); // validation only
+                } catch (IllegalArgumentException ex) {
+                    continue; // reject invalid bill
+                }
+
                 // Aggregate earnings by cashier
                 cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
             }
@@ -332,6 +374,12 @@ public class EmployeePerformanceController {
         for (Bill bill : allBills) {
             String cashierName = bill.getUsername();
             double amount = bill.getTotalAmount();
+
+            try {
+                classifyBillAmount(amount); // validation only
+            } catch (IllegalArgumentException ex) {
+                continue; // reject invalid bill
+            }
 
             // Aggregate earnings by user
             cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
@@ -360,4 +408,15 @@ public class EmployeePerformanceController {
                 .toLowerCase()
                 .contains(query.toLowerCase());
     }
+
+    public static int classifyBillAmount(double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Bill amount cannot be negative");
+        }
+        if (amount == 0) {
+            return 0;   // zero bill
+        }
+        return 1;       // positive bill
+    }
+
 }
