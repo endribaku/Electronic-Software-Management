@@ -14,7 +14,6 @@ public class InventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
 
-
     private static ObjectProperty<Inventory> inventory;
     private static ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
     private static ObservableList<Category> categoriesList = FXCollections.observableArrayList();
@@ -25,7 +24,6 @@ public class InventoryFileHandler {
     public InventoryFileHandler() {
         inventory = getInventory();
     }
-
 
     public ObjectProperty<Inventory> getInventory() {
         ObjectProperty<Inventory> inventoryProperty = new SimpleObjectProperty<>();
@@ -53,10 +51,12 @@ public class InventoryFileHandler {
         }
     }
 
-    public static ObservableList<Item> checkForLowStock() {
+    public static ObservableList<Item> checkForLowStock(ObservableList<Item> items) {
         ObservableList<Item> lowStockItems = FXCollections.observableArrayList();
-        for(Item i : itemsList) {
-            if(i.getQuantity() < 5) {
+        if (items == null) return lowStockItems;
+
+        for (Item i : items) {
+            if (i != null && i.getQuantity() < 5) {
                 lowStockItems.add(i);
             }
         }
@@ -86,10 +86,8 @@ public class InventoryFileHandler {
         }
     }
 
-
-    //Adders for subsections
+    // Adders for subsections
     public void addSector(Sector newSector) {
-
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
             if (inventory.get() == null) {
@@ -105,7 +103,6 @@ public class InventoryFileHandler {
     }
 
     public void addCategory(String sectorName, Category newCategory) {
-
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
             if (inventory.get() == null) {
@@ -121,7 +118,6 @@ public class InventoryFileHandler {
                 s.addCategory(newCategory);
             }
         }
-
 
         categoriesList.add(newCategory);
         updateInventory(currentInventory);
@@ -171,8 +167,7 @@ public class InventoryFileHandler {
         System.out.println("Item added and saved successfully.");
     }
 
-    public void addSupplier(Supplier supplier)
-    {
+    public void addSupplier(Supplier supplier) {
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
             if (inventory.get() == null) {
@@ -190,7 +185,7 @@ public class InventoryFileHandler {
         System.out.println("Supplier was added successfully.");
     }
 
-    //Update methods for specific instances
+    // Update methods for specific instances
     public boolean updateItem(
             String itemID,
             String itemName,
@@ -238,9 +233,6 @@ public class InventoryFileHandler {
         return updateInventory(currentInventory);
     }
 
-
-
-
     public boolean updateCategory(Category category, String categoryName, String sectorName) {
         boolean updated = false;
         Inventory currentInventory = inventory.get();
@@ -253,15 +245,12 @@ public class InventoryFileHandler {
                     c.setName(categoryName);
                     c.setSector(sectorName);
 
-
                     sector.getCategories().add(c);
-
 
                     for (Item i : c.getItems()) {
                         i.setCategory(categoryName);
                     }
 
-                    // Update UI list
                     categoriesList.set(categoriesList.indexOf(c), c);
 
                     updated = true;
@@ -272,10 +261,10 @@ public class InventoryFileHandler {
         }
 
         boolean saved = false;
-        if(updated) {
+        if (updated) {
             saved = updateInventory(currentInventory);
         }
-        return(updated && saved);
+        return (updated && saved);
     }
 
     public boolean updateSector(Sector sector, String sectorName) {
@@ -287,7 +276,6 @@ public class InventoryFileHandler {
             if (s == sector) {
 
                 currentInventory.getSectors().remove(s);
-
 
                 for (User u : usersToChange) {
                     for (String str : u.getSector()) {
@@ -305,7 +293,6 @@ public class InventoryFileHandler {
                 s.setSectorName(sectorName);
                 currentInventory.getSectors().add(s);
 
-                // Update UI list
                 sectorsList.set(sectorsList.indexOf(s), s);
 
                 updated = true;
@@ -314,11 +301,11 @@ public class InventoryFileHandler {
         }
 
         boolean saved = false;
-        if(updated) {
+        if (updated) {
             saved = updateInventory(currentInventory);
             System.out.println("Sector saved to file");
         }
-        return(updated && saved);
+        return (updated && saved);
     }
 
     public boolean updateSupplier(String supplierID, String supplierName) {
@@ -331,11 +318,9 @@ public class InventoryFileHandler {
                 currentInventory.getSuppliers().remove(s);
                 s.setName(supplierName);
 
-
                 for (Item i : s.getSuppliedItems()) {
                     i.setSupplier(supplierName);
                 }
-
 
                 currentInventory.getSuppliers().add(s);
 
@@ -346,14 +331,12 @@ public class InventoryFileHandler {
             }
         }
 
-
         boolean saved = false;
-        if(updated) {
+        if (updated) {
             saved = updateInventory(currentInventory);
         }
-        return(updated && saved);
+        return (updated && saved);
     }
-
 
     public boolean deleteItem(Item item) {
 
@@ -384,51 +367,48 @@ public class InventoryFileHandler {
         return true;
     }
 
-
     public void deleteCategory(Category category) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             categoriesList.remove(category);
-            for(Category c : categoriesList) {
+            for (Category c : categoriesList) {
                 outputStream.writeObject(c);
             }
-        } catch(EOFException eofe) {
-
+        } catch (EOFException eofe) {
+            // ignore
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     public void deleteSector(Sector sector) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             sectorsList.remove(sector);
-            for(Sector s : sectorsList) {
+            for (Sector s : sectorsList) {
                 outputStream.writeObject(s);
             }
-        } catch(EOFException eofe) {
-
+        } catch (EOFException eofe) {
+            // ignore
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
     public void deleteSupplier(Supplier supplier) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             suppliersList.remove(supplier);
-            for(Supplier s : suppliersList) {
+            for (Supplier s : suppliersList) {
                 outputStream.writeObject(s);
                 System.out.println("Supplier deleted");
             }
-        } catch(EOFException eofe) {
-
+        } catch (EOFException eofe) {
+            // ignore
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-
-    //Getters for subsections
+    // Getters for subsections
     public ObservableList<Sector> getSectorsList() {
-        // Ensure inventory is initialized
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
             if (inventory.get() == null) {
@@ -437,7 +417,6 @@ public class InventoryFileHandler {
             }
         }
 
-        // Clear and populate the sectors list
         sectorsList.clear();
         sectorsList.addAll(inventory.get().getSectors());
         return sectorsList;
@@ -451,9 +430,7 @@ public class InventoryFileHandler {
         return sectorNames;
     }
 
-
     public ObservableList<Category> getCategoriesList() {
-
         if (inventory == null || inventory.get() == null) {
             inventory = getInventory();
             if (inventory.get() == null) {
@@ -469,7 +446,6 @@ public class InventoryFileHandler {
     }
 
     public ObservableList<Item> getItemsList() {
-
         if (!isInventoryLoaded()) {
             System.err.println("Inventory is null. Returning an empty items list.");
             return FXCollections.observableArrayList();
@@ -484,10 +460,7 @@ public class InventoryFileHandler {
         return result;
     }
 
-
-    //To get all the subsections that the user operates
     public ObservableList<Category> getCategoriesOfUser(User user) {
-
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
             if (inventory.get() == null) {
@@ -502,10 +475,7 @@ public class InventoryFileHandler {
         return categoriesList;
     }
 
-
-
     public ObservableList<Item> getItemsOfUser(User user) {
-
         if (inventory == null || inventory.get() == null) {
             inventory = getInventory();
             if (inventory.get() == null) {
@@ -513,7 +483,6 @@ public class InventoryFileHandler {
                 return itemsList;
             }
         }
-
 
         itemsList.clear();
         for (Sector sector : getSectorsOfUser(user)) {
@@ -548,7 +517,6 @@ public class InventoryFileHandler {
         return sectorsList;
     }
 
-
     public ObservableList<Supplier> getSuppliersList() {
         if (inventory == null || inventory.get() == null) {
             inventory = this.getInventory();
@@ -565,18 +533,15 @@ public class InventoryFileHandler {
         return suppliersList;
     }
 
-    public ObservableList<Item> getSuppliedItems()
-    {
+    // (left mostly as-is; minimal correction so it actually fills list)
+    public ObservableList<Item> getSuppliedItems() {
         ObservableList<Supplier> supplierList = getSuppliersList();
         itemsSuppliedList.clear();
-        if(getSuppliersList() == null)
-        {
-            for(Supplier s: supplierList)
-            {
+
+        if (supplierList != null) {
+            for (Supplier s : supplierList) {
                 itemsSuppliedList.addAll(s.getSuppliedItems());
             }
-        } else {
-            return itemsSuppliedList;
         }
         return itemsSuppliedList;
     }
@@ -584,12 +549,11 @@ public class InventoryFileHandler {
     public void updateInventoryFile() {
         Inventory currentInventory = this.getInventory().get();
         if (currentInventory != null) {
-            this.updateInventory(currentInventory);
+            updateInventory(currentInventory);
         } else {
             System.err.println("Failed to update inventory file: Inventory is null.");
         }
     }
-
 
     private Item findItemById(String itemID, Inventory inventory) {
         for (Sector sector : inventory.getSectors()) {
@@ -661,17 +625,9 @@ public class InventoryFileHandler {
         }
     }
 
-
     private void collectItemsFromSector(Sector sector, ObservableList<Item> target) {
         for (Category category : sector.getCategories()) {
             target.addAll(category.getItems());
         }
     }
-
-
-
-
 }
-
-
-
