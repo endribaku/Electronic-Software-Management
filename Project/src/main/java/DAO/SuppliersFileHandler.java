@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.ISuppliersFileHandler;
 import Models.*;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -9,7 +10,7 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.util.ArrayList;
 
-public class SuppliersFileHandler {
+public class SuppliersFileHandler implements ISuppliersFileHandler  {
     public static final String FILE_PATH = "Project/Data/suppliers.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
 
@@ -121,7 +122,7 @@ public class SuppliersFileHandler {
         return null;
     }
 
-    public static ObservableList<Supplier> getSuppliers() {
+    public ObservableList<Supplier> getSuppliers() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             while(true) {
                 Supplier supplier = (Supplier) reader.readObject();

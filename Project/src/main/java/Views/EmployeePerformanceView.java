@@ -1,5 +1,6 @@
 package Views;
 
+import Interfaces.Views.IEmployeePerformanceView;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +17,7 @@ import javafx.util.converter.LocalDateStringConverter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class EmployeePerformanceView {
+public class EmployeePerformanceView implements IEmployeePerformanceView {
     private HBox employeePerformancePage = new HBox();
     private VBox billListBox = new VBox();
     private VBox chartsBox = new VBox();

@@ -8,7 +8,6 @@ import Misc.StockUpdateResult;
 import Models.*;
 import Views.InventoryView;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
 import java.time.LocalDate;
 
@@ -49,20 +48,29 @@ public class InventoryController {
                             .getSelectionModel()
                             .getSelectedItem();
 
-            int itemQuantity =
-                    Integer.parseInt(
-                            inventoryListView.getItemQuantityField().getText()
-                    );
+            int itemQuantity;
+            double itemPPrice;
+            double itemSPrice;
 
-            double itemPPrice =
-                    Double.parseDouble(
-                            inventoryListView.getItemPPriceField().getText()
-                    );
+            try {
+                itemQuantity =
+                        Integer.parseInt(
+                                inventoryListView.getItemQuantityField().getText()
+                        );
 
-            double itemSPrice =
-                    Double.parseDouble(
-                            inventoryListView.getItemSPriceField().getText()
-                    );
+                itemPPrice =
+                        Double.parseDouble(
+                                inventoryListView.getItemPPriceField().getText()
+                        );
+
+                itemSPrice =
+                        Double.parseDouble(
+                                inventoryListView.getItemSPriceField().getText()
+                        );
+            } catch (NumberFormatException ex) {
+                inventoryListView.showError(ERROR, "Invalid numeric input");
+                return;
+            }
 
             boolean success = onItemAdd(
                     itemName,
@@ -75,14 +83,27 @@ public class InventoryController {
 
             if (success) {
                 clearItemInputs();
-                showSuccess("Item Added Successfully");
+                inventoryListView.showInfo(SUCCESS, "Item Added Successfully");
             } else {
-                showError("Invalid Input");
+                inventoryListView.showError(ERROR, "Invalid Input");
             }
         });
 
-        this.inventoryListView.getAddCategoryButton().setOnAction(e -> onCategoryAdd());
-        this.inventoryListView.getAddSectorButton().setOnAction(e -> onSectorAdd());
+        this.inventoryListView.getAddCategoryButton().setOnAction(e -> {
+            try {
+                onCategoryAdd();
+            } catch (CategoryCreationException ex) {
+                inventoryListView.showError(ERROR, ex.getMessage());
+            }
+        });
+
+        this.inventoryListView.getAddSectorButton().setOnAction(e -> {
+            try {
+                onSectorAdd();
+            } catch (SectorCreationException ex) {
+                inventoryListView.showError(ERROR, ex.getMessage());
+            }
+        });
 
         this.inventoryListView.getEditItemButton().setOnAction(e -> onItemEdit());
         this.inventoryListView.getUpdateItemButton().setOnAction(e -> handleUpdateItem());
@@ -176,17 +197,11 @@ public class InventoryController {
         });
 
         this.inventoryListView.getUpdateInventoryButton().setOnAction(e -> {
-            boolean updated = InventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get());
+            boolean updated = inventoryFileHandler.updateInventory(inventoryFileHandler.getInventory().get());
             if (updated) {
-                Alert success = new Alert(Alert.AlertType.INFORMATION);
-                success.setTitle(SUCCESS);
-                success.setHeaderText("Inventory Table Updated Successfully");
-                success.show();
+                inventoryListView.showInfo(SUCCESS, "Inventory Table Updated Successfully");
             } else {
-                Alert fail = new Alert(Alert.AlertType.ERROR);
-                fail.setTitle(SUCCESS);
-                fail.setHeaderText("Inventory Table Update Error");
-                fail.show();
+                inventoryListView.showError(ERROR, "Inventory Table Update Error");
             }
         });
     }
@@ -230,10 +245,7 @@ public class InventoryController {
 
         try{
             if(categoryName.isEmpty() || sectorName.isEmpty()){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(ERROR);
-                alert.setHeaderText("Invalid Input");
-                alert.show();
+                inventoryListView.showError(ERROR, "Invalid Input");
             } else {
                 inventoryFileHandler.addCategory(sectorName, new Category(categoryName, sectorName));
                 inventoryListView.getItemNameField().clear();
@@ -244,10 +256,7 @@ public class InventoryController {
                 inventoryListView.getItemSupplierListView().setValue(null);
                 inventoryListView.getOptionsComboBox().setValue(ADD_CATEGORY);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(SUCCESS);
-                alert.setHeaderText("Category Added Successfully");
-                alert.show();
+                inventoryListView.showInfo(SUCCESS, "Category Added Successfully");
             }
         } catch(Exception e) {
             System.out.println(e.getMessage());
@@ -262,10 +271,7 @@ public class InventoryController {
             inventoryListView.getSectorNameField().clear();
             inventoryListView.getOptionsComboBox().setValue(ADD_SECTOR);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(SUCCESS);
-            alert.setHeaderText("Sector Added Successfully");
-            alert.show();
+            inventoryListView.showInfo(SUCCESS, "Sector Added Successfully");
         }
         else
             throw new SectorCreationException("Please write Sector name!");
@@ -286,28 +292,14 @@ public class InventoryController {
 
     private boolean sendAlertforLowStock() {
 
-        boolean hasAccess =
-                currentUser.getAccessLevel() == Access.Manager
-                        || currentUser.getAccessLevel() == Access.Administrator;
-
-        if (!hasAccess) {
-            return false;
-        }
-
         ObservableList<Item> lowStockItems =
-                InventoryFileHandler.checkForLowStock();
+                inventoryFileHandler.checkForLowStock();
 
-        if (lowStockItems.isEmpty()) {
+        if (!canSendLowStockAlert(currentUser, lowStockItems)) {
             return false;
         }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Item Stock is Low!");
-        alert.setHeaderText(
-                "Item Stock is low! Please restock these items:"
-                        + lowStockItems.toString()
-        );
-        alert.show();
+        inventoryListView.showLowStockAlert(lowStockItems);
 
         return true;
     }
@@ -327,7 +319,7 @@ public class InventoryController {
                         .getSelectedItem();
 
         if (selectedItem == null) {
-            showError("No item selected");
+            inventoryListView.showError(ERROR, "No item selected");
             return;
         }
 
@@ -352,7 +344,7 @@ public class InventoryController {
                         .getSelectedItem();
 
         if (selectedItem == null) {
-            showError("No item selected");
+            inventoryListView.showError(ERROR, "No item selected");
             return;
         }
 
@@ -396,7 +388,7 @@ public class InventoryController {
             );
 
         } catch (NumberFormatException e) {
-            showError("Invalid numeric input");
+            inventoryListView.showError(ERROR, "Invalid numeric input");
         }
     }
 
@@ -425,7 +417,7 @@ public class InventoryController {
         switch (result) {
 
             case INVALID -> {
-                showError("Negative quantity not allowed");
+                inventoryListView.showError(ERROR, "Negative quantity not allowed");
             }
 
             case OUT_OF_STOCK -> {
@@ -439,7 +431,7 @@ public class InventoryController {
                         sellingPrice,
                         quantity
                 );
-                showError("Item is now out of stock");
+                inventoryListView.showError(ERROR, "Item is now out of stock");
             }
 
             case VALID -> {
@@ -453,7 +445,7 @@ public class InventoryController {
                         sellingPrice,
                         quantity
                 );
-                showSuccess("Item Updated");
+                inventoryListView.showInfo(SUCCESS, "Item Updated");
             }
         }
 
@@ -518,18 +510,9 @@ public class InventoryController {
 
         if(inventoryFileHandler.deleteItem(selectedItem))
         {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(DELETE_ITEM);
-            alert.setHeaderText(DELETE_ITEM);
-            alert.setContentText("Item deleted successfully");
-            alert.show();
+            inventoryListView.showConfirmation(DELETE_ITEM, "Item deleted successfully");
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(DELETE_ITEM);
-            alert.setHeaderText(DELETE_ITEM);
-
-            alert.setContentText("Error while deleting Item");
-            alert.show();
+            inventoryListView.showError(DELETE_ITEM, "Error while deleting Item");
         }
     }
 
@@ -549,21 +532,7 @@ public class InventoryController {
         inventoryListView.getOptionsComboBox().setValue(ADD_ITEM);
     }
 
-    private void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(SUCCESS);
-        alert.setHeaderText(message);
-        alert.show();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(ERROR);
-        alert.setHeaderText(message);
-        alert.show();
-    }
-
-    public StockUpdateResult evaluateStockUpdate(int quantity) {
+    public static StockUpdateResult evaluateStockUpdate(int quantity) {
         if (quantity < 0) {
             return StockUpdateResult.INVALID;
         } else if (quantity == 0) {
@@ -571,5 +540,21 @@ public class InventoryController {
         } else {
             return StockUpdateResult.VALID;
         }
+    }
+
+    public boolean canSendLowStockAlert(
+            User user,
+            ObservableList<Item> lowStockItems
+    ) {
+
+        boolean hasAccess =
+                user.getAccessLevel() == Access.Manager
+                        || user.getAccessLevel() == Access.Administrator;
+
+        if (!hasAccess) {
+            return false;
+        }
+
+        return !lowStockItems.isEmpty();
     }
 }

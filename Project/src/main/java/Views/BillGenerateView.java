@@ -1,5 +1,6 @@
 package Views;
 
+import Interfaces.Views.IBillGenerateView;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,7 +16,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-public class BillGenerateView {
+public class BillGenerateView implements IBillGenerateView {
     HBox billGeneratePage = new HBox();
 
     ObservableList<Item> items;
@@ -159,4 +160,71 @@ public class BillGenerateView {
     public TableColumn<Bill_Item, Double> getItemPriceColumn() {
         return itemPriceColumn;
     }
+
+    @Override
+    public String getQuantityText() {
+        return quantityTextField.getText();
+    }
+
+    @Override
+    public Item getSelectedItem() {
+        return itemListView.getSelectionModel().getSelectedItem();
+    }
+
+    @Override
+    public void setAvailableItems(ObservableList<Item> items) {
+        itemListView.setItems(items);
+    }
+
+    @Override
+    public ObservableList<Bill_Item> getBillItems() {
+        return billList;
+    }
+
+    @Override
+    public void addBillItem(Bill_Item item) {
+        billList.add(item);
+    }
+
+    @Override
+    public void clearBillItems() {
+        billList.clear();
+    }
+
+    @Override
+    public void clearSelectedItem() {
+        itemListView.getSelectionModel().clearSelection();
+    }
+
+    @Override
+    public void clearQuantityInput() {
+        quantityTextField.clear();
+    }
+
+    @Override
+    public void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void onAddToBill(Runnable action) {
+        addToBillButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onCreateBill(Runnable action) {
+        createBillButton.setOnAction(e -> action.run());
+    }
+
 }

@@ -1,5 +1,6 @@
 package Views;
 
+import Interfaces.Views.IUserView;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -14,7 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-public class UserView extends Pane {
+public class UserView extends Pane implements IUserView {
 
     private static final String EMPLOYEES = "Employees";
     private static final String SUPPLIERS = "Suppliers";

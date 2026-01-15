@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.IUserFileHandler;
 import Models.Access;
 import Models.Permission;
 import Models.User;
@@ -12,10 +13,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class UserFileHandler {
+public class UserFileHandler implements IUserFileHandler {
 
     public static final String FILE_PATH = "Project/Data/employees.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
+
 
     public ObservableList<User> getUsers() {
         return users;
@@ -27,6 +29,7 @@ public class UserFileHandler {
         selectAllUser();
     }
 
+    @Override
     public ObservableList<User> getAllUsers() {
         if(users.isEmpty()) {
             selectAllUser();
@@ -34,6 +37,7 @@ public class UserFileHandler {
         return users;
     }
 
+    @Override
     public void insertUser(User user) {
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
             ObjectOutputStream writer;
@@ -48,6 +52,7 @@ public class UserFileHandler {
         }
     }
 
+    @Override
     public boolean deleteUser(User user) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(User u : users) {
@@ -75,6 +80,7 @@ public class UserFileHandler {
         }
     }
 
+    @Override
     public boolean updateUser(
             String username,
             String password,
@@ -139,6 +145,7 @@ public class UserFileHandler {
         return(updated && saved);
     }
 
+    @Override
     public boolean updateAll(ObservableList<User> users) {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             for(User u : users) {

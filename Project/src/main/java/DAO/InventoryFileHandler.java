@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.IInventoryFileHandler;
 import Models.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,7 +11,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class InventoryFileHandler {
+public class InventoryFileHandler implements IInventoryFileHandler {
     public static final String FILE_PATH = "Project/Data/inventory.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
 
@@ -53,7 +54,7 @@ public class InventoryFileHandler {
         }
     }
 
-    public static ObservableList<Item> checkForLowStock() {
+    public ObservableList<Item> checkForLowStock() {
         ObservableList<Item> lowStockItems = FXCollections.observableArrayList();
         for(Item i : itemsList) {
             if(i.getQuantity() < 5) {
@@ -63,7 +64,7 @@ public class InventoryFileHandler {
         return lowStockItems;
     }
 
-    public static boolean updateInventory(Inventory inventory) {
+    public boolean updateInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully updated in file.");

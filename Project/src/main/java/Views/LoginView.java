@@ -1,15 +1,19 @@
 package Views;
 
+import Interfaces.Views.ILoginView;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
-public class LoginView {
+public class LoginView implements ILoginView {
 
     private StackPane bgRoot;
     Scene scene;
@@ -76,4 +80,39 @@ public class LoginView {
     public Button getBtLogin() {
         return btLogin;
     }
+
+    @Override
+    public String getUsernameText() {
+        return usernameTextField.getText();
+    }
+
+    @Override
+    public String getPasswordText() {
+        return passwordTextField.getText();
+    }
+
+    @Override
+    public void onLogin(Runnable action) {
+        btLogin.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @Override
+    public void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
 }

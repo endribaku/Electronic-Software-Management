@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.ICategoryFileHandler;
 import Models.Category;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.util.List;
 
-public class CategoryFileHandler {
+public class CategoryFileHandler implements ICategoryFileHandler {
     public static final String FILE_PATH = "Project/Data/categories.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
     private final ObservableList<Category> categories = FXCollections.observableArrayList();

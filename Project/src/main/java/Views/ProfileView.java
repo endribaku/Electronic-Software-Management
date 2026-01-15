@@ -1,15 +1,13 @@
 package Views;
 
+import Interfaces.Views.IProfileView;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-public class ProfileView {
+public class ProfileView implements IProfileView {
 
     // CSS constants
     private static final String LABEL_STYLE = "-fx-font-size: 16; -fx-font-weight: bold;";
@@ -234,4 +232,56 @@ public class ProfileView {
     public HBox getEditProfileBox() { return editProfileBox; }
     public BorderPane getProfileBox() { return profileBox; }
     public Button getCancelButton() { return cancelButton; }
+
+    @Override
+    public void onEdit(Runnable action) {
+        editButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onCancel(Runnable action) {
+        cancelButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onUpdateProfile(Runnable action) {
+        updateProfileButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void showProfileBox() {
+        if (profilePage.getChildren().contains(editProfileBox)) {
+            profilePage.getChildren().remove(editProfileBox);
+        }
+        if (!profilePage.getChildren().contains(profileBox)) {
+            profilePage.getChildren().add(profileBox);
+        }
+    }
+
+    @Override
+    public void showEditProfileBox() {
+        if (profilePage.getChildren().contains(profileBox)) {
+            profilePage.getChildren().remove(profileBox);
+        }
+        if (!profilePage.getChildren().contains(editProfileBox)) {
+            profilePage.getChildren().add(editProfileBox);
+        }
+    }
+
+    @Override
+    public void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
 }

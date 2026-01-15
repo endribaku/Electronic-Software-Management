@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.IItemFileHandler;
 import Models.Item;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,7 +8,7 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.util.List;
 
-public class ItemFileHandler {
+public class ItemFileHandler implements IItemFileHandler {
 
     public static final String FILE_PATH = "Project/Data/items.dat";
     private static final File DATA_FILE = new File(FILE_PATH);

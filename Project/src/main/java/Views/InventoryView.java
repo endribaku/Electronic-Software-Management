@@ -1,5 +1,6 @@
 package Views;
 
+import Interfaces.Views.IInventoryView;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +13,7 @@ import javafx.scene.layout.*;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-public class InventoryView {
+public class InventoryView implements IInventoryView {
     private static final String CANCEL = "Cancel";
     private static final String LABEL_STYLE = "-fx-font: 11pt Helvetica;";
     private static final String BUTTON_STYLE = "-fx-text-fill: #364958; -fx-font: 15pt Helvetica; -fx-font-weight: bold;";
@@ -625,6 +626,38 @@ public class InventoryView {
 
     public Button getCancelUpdateSectorButton() {
         return cancelUpdateSectorButton;
+    }
+
+    public void showInfo(String title, String header) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.show();
+    }
+
+    public void showError(String title, String header) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.show();
+    }
+
+    public void showConfirmation(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.show();
+    }
+
+    public void showLowStockAlert(ObservableList<Item> lowStockItems) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Item Stock is Low!");
+        alert.setHeaderText(
+                "Item Stock is low! Please restock these items:"
+                        + lowStockItems.toString()
+        );
+        alert.show();
     }
 
 
