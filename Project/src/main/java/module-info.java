@@ -11,4 +11,7 @@ module com.example.store {
     opens Models to javafx.base;
     exports Main;
     opens Main to javafx.fxml;
+    
+    exports Controllers;
+    opens Controllers;
 }
