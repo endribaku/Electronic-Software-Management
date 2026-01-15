@@ -93,16 +93,43 @@ public class Bill implements Serializable {
         return itemsSold.get();
     }
 
-    public double getTotalAmountfromItemsSold() {
-        for (Bill_Item item : itemsSold) {
-            this.totalAmount.set(this.totalAmount.get() + item.getTotalPrice());
+    public double getTotalAmountfromItemsSold(ListProperty<Bill_Item> soldItems) throws IllegalArgumentException, IOException {
+        if (soldItems == null || soldItems.isEmpty()) {
+            return 0.0;
         }
-        return this.totalAmount.get();
+        double calculatedTotal = 0.0;
+
+        for (Bill_Item item : soldItems) {
+            if (item == null) {
+                throw new IllegalArgumentException("Bill items list contains null item");
+            }
+            double itemTotal = item.getTotalPrice();
+
+            if (itemTotal < 0) {
+                throw new IllegalArgumentException(
+                        "Item total price cannot be negative. Item: " + item.getItem().getName());
+            }
+            calculatedTotal += itemTotal;
+
+            if (calculatedTotal > 1000000.0) {
+                throw new IllegalArgumentException(
+                        "Total amount exceeds maximum allowed limit of $1,000,000");
+            }
+        }
+        this.totalAmount.set(calculatedTotal);
+        return calculatedTotal;
     }
 
-    public String getUsername() {
-        return username.get();
-    }
+//    public double getTotalAmountfromItemsSold() {
+//        for (Bill_Item item : itemsSold) {
+//            this.totalAmount.set(this.totalAmount.get() + item.getTotalPrice());
+//        }
+//        return this.totalAmount.get();
+//    }
+//
+//    public String getUsername() {
+//        return username.get();
+//    }
 
     public StringProperty usernameProperty() {
         return username;
@@ -169,4 +196,7 @@ public class Bill implements Serializable {
         return "Bill Nr." + billNumber.get();
     }
 
+    public String getUsername() {
+        return username.get();
+    }
 }

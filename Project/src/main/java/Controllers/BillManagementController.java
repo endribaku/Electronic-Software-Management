@@ -23,13 +23,15 @@ public class BillManagementController {
         this.generateView.getCreateBillButton().setOnAction(e -> onGenerateBill());
     }
 
+    public BillManagementController() {}
+
     public BillGenerateView getGenerateView() {
         return generateView;
     }
 
 
 
-    private void onAddToBill() throws BillCreationException, ItemStockException {
+    private void onAddToBill() {
 
         int quantity =
                 Integer.parseInt(
@@ -41,20 +43,7 @@ public class BillManagementController {
                         .getSelectionModel()
                         .getSelectedItem();
 
-        if (!canAddToBill(item, quantity)) {
-
-            if (item == null || quantity <= 0) {
-                throw new BillCreationException(
-                        "Please select an item and add its quantity!"
-                );
-            }
-
-            throw new ItemStockException(
-                    "Item quantity must be less than or equal to " + item.getQuantity()
-            );
-        }
-
-        Bill_Item billItem = new Bill_Item(item, quantity);
+        Bill_Item billItem = validateAndCreateBillItem(item, quantity);
 
         ObservableList<Bill_Item> billItems = FXCollections.observableArrayList();
 
@@ -72,40 +61,66 @@ public class BillManagementController {
         generateView.getQuantityTextField().clear();
     }
 
+    public static Bill_Item validateAndCreateBillItem(Item item, int quantity)
+            throws BillCreationException, ItemStockException {
 
-    private void onGenerateBill() throws BillCreationException {
+        if (item == null || quantity <= 0) {
+            throw new BillCreationException(
+                    "Please select an item and add its quantity!"
+            );
+        }
 
-        ObservableList<Bill_Item> billItems =
-                this.generateView.getBillList();
+        if (item.getQuantity() <= quantity) {
+            throw new ItemStockException(
+                    "Item quantity must be less than or equal to " + item.getQuantity()
+            );
+        }
 
-        if (!canGenerateBill(billItems)) {
+        return new Bill_Item(item, quantity);
+    }
+
+
+    public void onGenerateBill() throws BillCreationException {
+        ObservableList<Bill_Item> billItems = this.generateView.getBillList();
+
+        Bill newBill = generateBill(billItems, currentUser);
+
+        BillFileHandler.insertBill(newBill);
+        billFileHandler.saveBillToFile(newBill);
+        onBillGenerateQuantities(billItems);
+
+        this.generateView.getBillList().clear();
+        showSuccessAlert();
+    }
+
+    public static Bill generateBill(ObservableList<Bill_Item> billItemsList, User currentUser)
+            throws BillCreationException {
+
+        if (billItemsList == null || billItemsList.isEmpty()) {
             throw new BillCreationException(
                     "No items added to bill, Add items to generate bill."
             );
         }
-
-        // Generate bill with its info
-        ObservableList<Bill_Item> billItemsList =
-                FXCollections.observableArrayList(billItems);
+        if (currentUser == null) {
+            throw new BillCreationException(
+                    "User must be logged in to generate bill."
+            );
+        }
 
         Bill newBill = new Bill();
         newBill.setUser(currentUser);
-        newBill.setItemsSold(billItemsList);
+        newBill.setItemsSold(FXCollections.observableArrayList(billItemsList));
         newBill.setTotalAmountfromItemsSold();
 
-        BillFileHandler.insertBill(newBill);
-        billFileHandler.saveBillToFile(newBill);
+        return newBill;
+    }
 
-        onBillGenerateQuantities(billItemsList);
-
-        this.generateView.getBillList().clear();
-
+    private void showSuccessAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Success");
         alert.setHeaderText("Bill Generated Successfully");
         alert.show();
     }
-
 
     private void onBillGenerateQuantities(ObservableList<Bill_Item> billItemsList) {
         for (Bill_Item billItem : billItemsList) {
@@ -128,7 +143,7 @@ public class BillManagementController {
         return item != null && quantity > 0 && item.getQuantity() > quantity;
     }
 
-    public boolean canGenerateBill(ObservableList<Bill_Item> billItems) {
+    public static boolean canGenerateBill(ObservableList<Bill_Item> billItems) {
         return billItems != null && !billItems.isEmpty();
     }
 }
