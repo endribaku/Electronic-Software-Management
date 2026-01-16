@@ -49,6 +49,12 @@ public class User implements Serializable {
         this.sector = new ArrayList<>(sectorList);
     }
 
+
+    public User(String username, Access accessLevel) {
+        this.username = new SimpleStringProperty(username);
+        this.accessLevel = accessLevel;
+    }
+
     public boolean hasPermission(Permission permission) {
         return permissions.contains(permission);
     }

@@ -1,5 +1,6 @@
 package Views;
 
+import Interfaces.Views.ISupplierManagementView;
 import Models.Item;
 import Models.Supplier;
 import javafx.collections.FXCollections;
@@ -13,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class SupplierManagementView {
+public class SupplierManagementView implements ISupplierManagementView {
 
     // CSS constants
     private static final String BUTTON_STYLE = "-fx-font: 11pt Helvetica;";
@@ -173,4 +174,103 @@ public class SupplierManagementView {
     public VBox getManageSupplierBox() { return manageSupplierBox; }
     public VBox getAddSupplierBox() { return addSupplierBox; }
     public Button getCancelUpdateButton() { return cancelUpdateButton; }
+
+    @Override
+    public void setSuppliersTableItems(ObservableList<Supplier> suppliers) {
+        suppliersTableView.setItems(suppliers);
+    }
+
+    @Override
+    public void setAvailableItems(ObservableList<Item> items) {
+        itemBoxList.setItems(items);
+    }
+
+    @Override
+    public String getSupplierNameInput() {
+        return suppliersNameField.getText();
+    }
+
+    @Override
+    public java.util.List<Item> getSelectedItemsForSupplier() {
+        return itemBoxList.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public Supplier getSelectedSupplier() {
+        return suppliersTableView.getSelectionModel().getSelectedItem();
+    }
+
+    @Override
+    public void setEditSupplierName(String value) {
+        suppliersEditNameField.setText(value);
+    }
+
+    @Override
+    public String getEditSupplierName() {
+        return suppliersEditNameField.getText();
+    }
+
+    @Override
+    public void showAddSupplierBox() {
+        manageSupplierBox.getChildren().remove(editSupplierBox);
+        if (!manageSupplierBox.getChildren().contains(addSupplierBox)) {
+            manageSupplierBox.getChildren().add(addSupplierBox);
+        }
+    }
+
+    @Override
+    public void showEditSupplierBox() {
+        manageSupplierBox.getChildren().remove(addSupplierBox);
+        if (!manageSupplierBox.getChildren().contains(editSupplierBox)) {
+            manageSupplierBox.getChildren().add(editSupplierBox);
+        }
+    }
+
+    @Override
+    public void onAddSupplier(Runnable action) {
+        addSupplierButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onDeleteSupplier(Runnable action) {
+        deleteSupplierListButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onEditSupplier(Runnable action) {
+        editSupplierListButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onCancelUpdate(Runnable action) {
+        cancelUpdateButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void onUpdateTable(Runnable action) {
+        updateSupplierListButton.setOnAction(e -> action.run());
+    }
+
+    @Override
+    public void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void clearAddSupplierInputs() {
+        suppliersNameField.clear();
+        itemBoxList.getSelectionModel().clearSelection();
+    }
+
 }

@@ -26,21 +26,25 @@ public class ProfileController {
             this.view.getProfilePage().getChildren().remove(this.view.getProfileBox());
             this.view.getProfilePage().getChildren().add(this.view.getEditProfileBox());
         });
+
         this.view.getCancelButton().setOnAction(e -> {
             this.view.getProfilePage().getChildren().remove(this.view.getEditProfileBox());
             this.view.getProfilePage().getChildren().add(this.view.getProfileBox());
         });
 
-        this.view.getFullNameTextField().setText(currentUser.getFullName());
-        this.view.getEmailTextField().setText(currentUser.getEmail());
-        this.view.getPhoneTextField().setText(currentUser.getPhoneNumber());
-        this.view.getSectorTextField().setText(currentUser.getSector().toString());
-        this.view.getAccessLevelTextField().setText(currentUser.getAccessLevel().toString());
-        this.view.getEmployeeIDTextField().setText(currentUser.getUserID());
-        this.view.getUsernameTextField().setText(currentUser.getUsername());
-        this.view.getDateOfBirthTextField().setText(currentUser.getDateOfBirth().toString());
+        // Fill initial view fields from current user
+        refreshProfileFieldsFromCurrentUser();
 
-        this.view.getUpdateProfileButton().setOnAction(e -> onEditProfile());
+        this.view.getUpdateProfileButton().setOnAction(e -> {
+            try {
+                onEditProfile();
+            } catch (InvalidCredentialsException err) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(err.getMessage());
+                alert.show();
+            }
+        });
     }
 
     private void onEditProfile() throws InvalidCredentialsException {
@@ -50,10 +54,28 @@ public class ProfileController {
         String phoneEdit = this.view.getEditPhoneTextField().getText();
         String username = this.view.getEditUsernameTextField().getText();
         String passConfirm = this.view.getEditPasswordTextField().getText();
-        if(!passConfirm.equals(currentUser.getPassword()))
-            throw new InvalidCredentialsException("Passwords do not match.");
 
-        if(this.handler.updateProfile(username, fnameEdit, emailEdit, passConfirm, phoneEdit, dobEdit)) {
+        if (!passConfirm.equals(currentUser.getPassword())) {
+            throw new InvalidCredentialsException("Passwords do not match.");
+        }
+
+        boolean updated = this.handler.updateProfile(
+                username,
+                fnameEdit,
+                emailEdit,
+                passConfirm,
+                phoneEdit,
+                dobEdit
+        );
+
+        if (updated) {
+
+            // ✅ reload latest user from file (ID is safest, username may change)
+            User refreshed = this.handler.selectUserFromId(currentUser.getUserID());
+            if (refreshed != null) {
+                this.currentUser = refreshed;
+            }
+
             Alert success = new Alert(Alert.AlertType.INFORMATION);
             success.setTitle("Success");
             success.setHeaderText("Profile Updated Successfully");
@@ -62,18 +84,23 @@ public class ProfileController {
             this.view.getProfilePage().getChildren().remove(this.view.getEditProfileBox());
             this.view.getProfilePage().getChildren().add(this.view.getProfileBox());
 
-            this.view.getFullNameTextField().setText(currentUser.getFullName());
-            this.view.getEmailTextField().setText(currentUser.getEmail());
-            this.view.getPhoneTextField().setText(currentUser.getPhoneNumber());
-            this.view.getSectorTextField().setText(currentUser.getSector().toString());
-            this.view.getAccessLevelTextField().setText(currentUser.getAccessLevel().toString());
-            this.view.getEmployeeIDTextField().setText(currentUser.getUserID());
-            this.view.getUsernameTextField().setText(currentUser.getUsername());
-            this.view.getDateOfBirthTextField().setText(currentUser.getDateOfBirth().toString());
-        }
-        else
-            throw new InvalidCredentialsException("Invalid credentials. Please try again");
+            // ✅ refresh UI fields from reloaded currentUser
+            refreshProfileFieldsFromCurrentUser();
 
+        } else {
+            throw new InvalidCredentialsException("Invalid credentials. Please try again");
+        }
+    }
+
+    private void refreshProfileFieldsFromCurrentUser() {
+        this.view.getFullNameTextField().setText(currentUser.getFullName());
+        this.view.getEmailTextField().setText(currentUser.getEmail());
+        this.view.getPhoneTextField().setText(currentUser.getPhoneNumber());
+        this.view.getSectorTextField().setText(currentUser.getSector().toString());
+        this.view.getAccessLevelTextField().setText(currentUser.getAccessLevel().toString());
+        this.view.getEmployeeIDTextField().setText(currentUser.getUserID());
+        this.view.getUsernameTextField().setText(currentUser.getUsername());
+        this.view.getDateOfBirthTextField().setText(currentUser.getDateOfBirth().toString());
     }
 
     public ProfileView getView() {

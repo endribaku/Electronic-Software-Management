@@ -1,5 +1,6 @@
 package DAO;
 
+import Interfaces.DAO.IBillFileHandler;
 import Models.Bill;
 import Models.Bill_Item;
 
@@ -10,7 +11,7 @@ import java.io.*;
 import java.time.format.DateTimeFormatter;
 
 
-public class BillFileHandler {
+public class BillFileHandler implements IBillFileHandler {
     private static final String BILLS_DIRECTORY = "Project/Data/BillsRepository";
     private static final String FILE_PATH = "Project/Data/bills.dat";
     private static final File DATA_FILE = new File(FILE_PATH);
@@ -18,7 +19,8 @@ public class BillFileHandler {
     public static final String SEPARATOR =
             "-----------------------------------------\n";
 
-    public static ObservableList<Bill> getBills() {
+    @Override
+    public ObservableList<Bill> getBills() {
         try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
             bills.clear();
             while(true) {
@@ -36,7 +38,8 @@ public class BillFileHandler {
         return bills;
     }
 
-    public static void insertBill(Bill bill) {
+    @Override
+    public void insertBill(Bill bill) {
         try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
             ObjectOutputStream writer;
             if (DATA_FILE.length() > 0)

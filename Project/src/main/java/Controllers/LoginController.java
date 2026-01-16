@@ -2,58 +2,62 @@ package Controllers;
 
 import DAO.UserFileHandler;
 import Exceptions.InvalidCredentialsException;
+import Interfaces.DAO.IUserFileHandler;
+import Interfaces.Views.ILoginView;
 import Models.User;
 import Views.LoginView;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-
-
 public class LoginController {
-    private LoginView view;
-    private UserFileHandler handler = new UserFileHandler();
+
+    private ILoginView view;                 // interface
+    private IUserFileHandler handler;         // interface
+    private Stage stage;                      // keep for navigation
 
     public LoginController(Stage stage) {
-        view = new LoginView();
+        this(stage, new LoginView(), new UserFileHandler());
+    }
 
-        this.view.getBtLogin().setOnAction(e -> handleLogin());
+    // for tests: inject mock view + fake handler
+    public LoginController(Stage stage, ILoginView view, IUserFileHandler handler) {
+        this.stage = stage;
+        this.view = view;
+        this.handler = handler;
+
+        this.view.onLogin(() -> {
+            try {
+                handleLogin();
+            } catch (InvalidCredentialsException credentialsError) {
+                this.view.showError("Login Failed", credentialsError.getMessage());
+            }
+        });
     }
 
     private void handleLogin() throws InvalidCredentialsException {
 
-        String username = view.getUsernameTextField().getText().trim();
-        String password = view.getPasswordTextField().getText().trim();
-
-        System.out.println(username + " " + password);
+        String username = view.getUsernameText().trim();
+        String password = view.getPasswordText().trim();
 
         if (username.isEmpty() || password.isEmpty())
             throw new InvalidCredentialsException("Please enter a username and password");
 
-      User currentUser = handler.authenticateUser(username, password);
+        User currentUser = handler.authenticateUser(username, password);
 
-        if ((currentUser != null)) {
-            showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, " + username + "!");
+        if (currentUser != null) {
+            view.showInfo("Login Successful", "Welcome, " + username + "!");
             Scene homeScene = new Scene(new UserController(currentUser).getView().getRoot(), 1500, 700);
-            Stage primaryStage = (Stage) view.getApplication().getWindow();
-            primaryStage.setScene(homeScene);
-        } else
+            stage.setScene(homeScene);
+        } else {
             throw new InvalidCredentialsException("Invalid username or password.");
+        }
     }
 
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public LoginView getView() {
+    public ILoginView getView() {
         return view;
     }
 
-    public UserFileHandler getHandler() {
+    public IUserFileHandler getHandler() {
         return handler;
     }
 }
