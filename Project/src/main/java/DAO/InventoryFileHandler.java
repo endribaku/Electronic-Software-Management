@@ -54,9 +54,9 @@ public class InventoryFileHandler implements IInventoryFileHandler {
 
     public ObservableList<Item> checkForLowStock() {
         ObservableList<Item> lowStockItems = FXCollections.observableArrayList();
-        if (items == null) return lowStockItems;
+        if (itemsList == null) return lowStockItems;
 
-        for (Item i : items) {
+        for (Item i : itemsList) {
             if (i != null && i.getQuantity() < 5) {
                 lowStockItems.add(i);
             }

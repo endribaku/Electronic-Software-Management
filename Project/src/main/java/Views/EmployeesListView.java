@@ -1,6 +1,7 @@
 package Views;
 
 import DAO.InventoryFileHandler;
+import Interfaces.Views.IEmployeesListView;
 import Models.Access;
 import Models.Permission;
 import Models.User;
@@ -18,8 +19,9 @@ import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public class EmployeesListView {
+public class EmployeesListView implements IEmployeesListView {
 
     HBox employeesPage = new HBox();
 
@@ -506,5 +508,294 @@ public class EmployeesListView {
     public Button getCancelUpdateButton() {
         return cancelUpdateButton;
     }
+
+    // =======================
+// IEmployeesListView impl
+// =======================
+
+    @Override
+    public void setEmployeesTableItems(ObservableList<User> users) {
+        employeesTableView.setItems(users);
+    }
+
+    @Override
+    public User getSelectedEmployee() {
+        return employeesTableView.getSelectionModel().getSelectedItem();
+    }
+
+// ---- Register inputs ----
+
+    @Override
+    public String getEmployeeFullName() {
+        return employeeFullNameField.getText();
+    }
+
+    @Override
+    public String getEmployeeUsername() {
+        return employeeUsernameField.getText();
+    }
+
+    @Override
+    public String getEmployeePassword() {
+        return employeePasswordField.getText();
+    }
+
+    @Override
+    public String getEmployeeEmail() {
+        return employeeEmailField.getText();
+    }
+
+    @Override
+    public String getEmployeePhoneNumber() {
+        return employeePhoneNumberField.getText();
+    }
+
+    @Override
+    public String getEmployeeSalaryText() {
+        return employeeSalaryField.getText();
+    }
+
+    @Override
+    public LocalDate getEmployeeDOB() {
+        return employeeDOBField.getValue();
+    }
+
+    @Override
+    public Access getEmployeeAccessLevel() {
+        return accessLevelList.getValue();
+    }
+
+    @Override
+    public ObservableList<String> getSelectedPermissions() {
+        return permissionListView.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public ObservableList<String> getSelectedSectors() {
+        return sectorListView.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public ObservableList<String> getAllPermissions() {
+        return permissionListView.getItems();
+    }
+
+    @Override
+    public ObservableList<String> getAllSectors() {
+        return sectorListView.getItems();
+    }
+
+// ---- Edit inputs ----
+
+    @Override
+    public void showEditEmployeeBox() {
+        manageEmployeeBox.getChildren().remove(createEmployeeBox);
+        if (!manageEmployeeBox.getChildren().contains(editEmployeeBox)) {
+            manageEmployeeBox.getChildren().add(editEmployeeBox);
+        }
+    }
+
+    @Override
+    public void showCreateEmployeeBox() {
+        manageEmployeeBox.getChildren().remove(editEmployeeBox);
+        if (!manageEmployeeBox.getChildren().contains(createEmployeeBox)) {
+            manageEmployeeBox.getChildren().add(createEmployeeBox);
+        }
+    }
+
+    @Override
+    public void setEditFullName(String value) {
+        employeeEditFullNameField.setText(value);
+    }
+
+    @Override
+    public void setEditUsername(String value) {
+        employeeEditUsernameField.setText(value);
+    }
+
+    @Override
+    public void setEditEmail(String value) {
+        employeeEditEmailField.setText(value);
+    }
+
+    @Override
+    public void setEditPassword(String value) {
+        employeeEditPasswordField.setText(value);
+    }
+
+    @Override
+    public void setEditPhoneNumber(String value) {
+        employeeEditPhoneNumberField.setText(value);
+    }
+
+    @Override
+    public void setEditDOB(LocalDate value) {
+        employeeEditDOBField.setValue(value);
+    }
+
+    @Override
+    public void setEditSalaryText(String value) {
+        employeeEditSalaryField.setText(value);
+    }
+
+    @Override
+    public void setEditAccessLevel(Access value) {
+        accessLevelEditList.getSelectionModel().select(value);
+    }
+
+    @Override
+    public LocalDate getEditDOB() {
+        return employeeEditDOBField.getValue();
+    }
+
+    @Override
+    public String getEditFullName() {
+        return employeeEditFullNameField.getText();
+    }
+
+    @Override
+    public String getEditEmail() {
+        return employeeEditEmailField.getText();
+    }
+
+    @Override
+    public String getEditPhoneNumber() {
+        return employeeEditPhoneNumberField.getText();
+    }
+
+    @Override
+    public String getEditUsername() {
+        return employeeEditUsernameField.getText();
+    }
+
+    @Override
+    public String getEditPassword() {
+        return employeeEditPasswordField.getText();
+    }
+
+    @Override
+    public String getEditSalaryText() {
+        return employeeEditSalaryField.getText();
+    }
+
+    @Override
+    public Access getEditAccessLevel() {
+        return accessLevelEditList.getSelectionModel().getSelectedItem();
+    }
+
+    @Override
+    public ObservableList<String> getEditSelectedPermissions() {
+        return permissionEditListView.getSelectionModel().getSelectedItems();
+    }
+
+    @Override
+    public List<String> getEditSelectedSectors() {
+        return sectorEditListView.getSelectionModel().getSelectedItems();
+    }
+
+// ---- Wiring (controller gives Runnable; view attaches to buttons) ----
+
+    @Override
+    public void onAddEmployee(Runnable action) {
+        addEmployeeButton.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void onUpdateEmployeeList(Runnable action) {
+        updateEmployeeListButton.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void onEditEmployee(Runnable action) {
+        editEmployeeButton.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void onDeleteEmployee(Runnable action) {
+        deleteEmployeeButton.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void onCancelUpdate(Runnable action) {
+        cancelUpdateButton.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void onUpdateEmployee(Runnable action) {
+        updateEmployeeButton.setOnAction(event -> action.run());
+    }
+
+// ---- Access-level change behavior ----
+
+    @Override
+    public Access getAccessLevelSelection() {
+        return accessLevelList.getValue();
+    }
+
+    @Override
+    public void onAccessLevelChanged(Runnable action) {
+        accessLevelList.setOnAction(event -> action.run());
+    }
+
+    @Override
+    public void setSelectionModeCashier() {
+        permissionListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        sectorListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    }
+
+    @Override
+    public void setSelectionModeManager() {
+        permissionListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        sectorListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    @Override
+    public void setSelectionModeAdministrator() {
+        permissionListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        sectorListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    }
+
+    @Override
+    public void selectAllPermissions() {
+        permissionListView.getSelectionModel().selectAll();
+    }
+
+    @Override
+    public void selectAllSectors() {
+        sectorListView.getSelectionModel().selectAll();
+    }
+
+// ---- Messages ----
+
+    @Override
+    public void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+    @Override
+    public void showInfo(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.show();
+    }
+
+// ---- Helpers ----
+
+    @Override
+    public void clearEmployeeInputs() {
+        employeeFullNameField.clear();
+        employeeUsernameField.clear();
+        employeePasswordField.clear();
+        employeeDOBField.setValue(null);
+        employeeEmailField.clear();
+        employeePhoneNumberField.clear();
+        employeeSalaryField.clear();
+        accessLevelList.setValue(Access.Cashier);
+    }
+
 }
 
