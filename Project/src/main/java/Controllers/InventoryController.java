@@ -293,7 +293,7 @@ public class InventoryController {
     private boolean sendAlertforLowStock() {
 
         ObservableList<Item> lowStockItems =
-                inventoryFileHandler.checkForLowStock();
+                inventoryFileHandler.checkForLowStock(inventoryFileHandler.getItemsList());
 
         if (!canSendLowStockAlert(currentUser, lowStockItems)) {
             return false;
@@ -556,5 +556,19 @@ public class InventoryController {
         }
 
         return !lowStockItems.isEmpty();
+    }
+
+    public boolean isItemAddInputValid(
+            String itemName,
+            Category category,
+            Supplier supplier,
+            int quantity,
+            double purchasePrice,
+            double sellingPrice
+    ) {
+        return !(itemName == null || itemName.isEmpty()
+                || category == null
+                || supplier == null
+                || !validateItemNumericFields(quantity, purchasePrice, sellingPrice));
     }
 }

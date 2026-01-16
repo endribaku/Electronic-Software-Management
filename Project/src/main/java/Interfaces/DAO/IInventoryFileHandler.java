@@ -51,5 +51,5 @@ public interface IInventoryFileHandler {
     boolean deleteItem(Item item);
 
     // Low stock
-    ObservableList<Item> checkForLowStock();
+    ObservableList<Item> checkForLowStock(ObservableList<Item> items);
 }

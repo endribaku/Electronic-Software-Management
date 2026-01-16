@@ -43,6 +43,8 @@ public class BillManagementController {
         initialize();
     }
 
+    public BillManagementController(){}
+
     public IBillGenerateView getGenerateView() {
         return generateView;
     }

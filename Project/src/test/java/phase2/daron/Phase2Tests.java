@@ -2,6 +2,7 @@ package phase2.daron;
 
 import DAO.InventoryFileHandler;
 import Controllers.InventoryController;
+import Interfaces.DAO.IInventoryFileHandler;
 import Models.Item;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,8 +58,9 @@ class Phase2Tests {
     })
     void bvt_checkForLowStock_boundaryAround5(int quantity, boolean shouldBeIncluded) {
         ObservableList<Item> items = FXCollections.observableArrayList(itemWithQuantity(quantity));
+        InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
 
-        ObservableList<Item> lowStock = InventoryFileHandler.checkForLowStock(items);
+        ObservableList<Item> lowStock = inventoryFileHandler.checkForLowStock(items);
 
         if (shouldBeIncluded) {
             assertEquals(1, lowStock.size(), "Expected the item to be included as low stock");
@@ -75,8 +77,9 @@ class Phase2Tests {
         Item sufficient2 = itemWithQuantity(10);
 
         ObservableList<Item> items = FXCollections.observableArrayList(low, sufficient1, sufficient2);
+        InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
 
-        ObservableList<Item> lowStock = InventoryFileHandler.checkForLowStock(items);
+        ObservableList<Item> lowStock = inventoryFileHandler.checkForLowStock(items);
 
         assertEquals(1, lowStock.size(), "Only the low-stock representative should be returned");
         assertSame(low, lowStock.get(0), "Returned list should contain only the low-stock item");
