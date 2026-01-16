@@ -1,9 +1,7 @@
 package DAO;
 
 import Interfaces.DAO.ISuppliersFileHandler;
-import Models.*;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
+import Models.Supplier;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -11,59 +9,62 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class SuppliersFileHandler implements ISuppliersFileHandler  {
+
     public static final String FILE_PATH = "Project/Data/suppliers.dat";
-    private static final File DATA_FILE = new File(FILE_PATH);
 
-    private static final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
+    private final File dataFile;
 
-//    public static ObservableList<Supplier> getAllSuppliers() {
-//        if(suppliers.isEmpty()) {
-//            getSuppliers();
-//        }
-//        return suppliers;
-//    }
+    private final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
+
+    public SuppliersFileHandler() {
+        this(new File(FILE_PATH));
+    }
+
+    public SuppliersFileHandler(File dataFile) {
+        this.dataFile = dataFile;
+    }
 
     public void insertSupplier(Supplier supplier) {
-        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
+        try (FileOutputStream outputStream = new FileOutputStream(dataFile, true)) {
             ObjectOutputStream writer;
-            if (DATA_FILE.length() > 0)
+            if (dataFile.length() > 0)
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(supplier);
             suppliers.add(supplier);
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.getMessage();
         }
     }
 
     public void deleteSupplier(Supplier supplier){
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             suppliers.remove(supplier);
-            for(Supplier s : suppliers) {
+            for (Supplier s : suppliers) {
                 outputStream.writeObject(s);
             }
-        } catch(EOFException eofe) {
+        } catch (EOFException eofe) {
 
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
     public void deleteAll(ArrayList<Supplier> suppliersToRemove) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-            for(Supplier s : suppliers) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            for (Supplier s : suppliers) {
                 if (suppliers.containsAll(suppliersToRemove)) {
                     suppliers.removeAll(suppliersToRemove);
                 } else if (suppliers.contains(s)) {
                     suppliers.remove(s);
                 }
             }
-            for(Supplier s : suppliers) {
+            for (Supplier s : suppliers) {
                 outputStream.writeObject(s);
             }
-        } catch(IOException ex) {
-            ex.getMessage();
+        } catch (IOException exception) {
+            exception.getMessage();
         }
     }
 
@@ -71,9 +72,8 @@ public class SuppliersFileHandler implements ISuppliersFileHandler  {
         boolean updated = false;
         ObservableList<Supplier> currentSuppliers = getSuppliers();
 
-        // Update the specific sector
-        for(Supplier s : currentSuppliers) {
-            if(s.getSupplierID().equals(supplierID)) {
+        for (Supplier s : currentSuppliers) {
+            if (s.getSupplierID().equals(supplierID)) {
                 currentSuppliers.remove(s);
                 s.setName(supplierName);
                 currentSuppliers.add(s);
@@ -84,54 +84,64 @@ public class SuppliersFileHandler implements ISuppliersFileHandler  {
         suppliers.clear();
         suppliers.setAll(currentSuppliers);
 
-        // Write the updated list back to the file
         boolean saved = false;
-        if(updated) {
+        if (updated) {
             saved = updateAll();
         }
-        return(updated && saved);
+        return (updated && saved);
     }
 
     public boolean updateAll() {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(Supplier s : suppliers) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            for (Supplier s : suppliers) {
                 outputStream.writeObject(s);
             }
             return true;
-        } catch (IOException ex) {
-            ex.getMessage();
+        } catch (IOException exception) {
+            exception.getMessage();
             return false;
         }
     }
 
     public Supplier selectSupplier(String supplierName){
-        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            while(true) {
-                if(reader.readObject() instanceof Supplier) {
-                    if(((Supplier) reader.readObject()).getName().equals(supplierName)) {
-                        return (Supplier) reader.readObject();
+        if (!dataFile.exists()) {
+            return null;
+        }
+
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
+            while (true) {
+                Object obj = reader.readObject();
+                if (obj instanceof Supplier supplier) {
+                    if (supplier.getName().equals(supplierName)) {
+                        return supplier;
                     }
                 }
             }
         }
         catch (EOFException ignored) {
         }
-        catch (IOException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+        catch (IOException | ClassNotFoundException exception) {
+            System.out.println(exception.getMessage());
         }
         return null;
     }
 
     public ObservableList<Supplier> getSuppliers() {
-        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            while(true) {
+        suppliers.clear();
+
+        if (!dataFile.exists()) {
+            return suppliers;
+        }
+
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
+            while (true) {
                 Supplier supplier = (Supplier) reader.readObject();
                 suppliers.add(supplier);
             }
-        }catch(EOFException ignored) {
+        } catch (EOFException ignored) {
 
-        }catch (IOException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException | ClassNotFoundException exception) {
+            System.out.println(exception.getMessage());
         }
         return suppliers;
     }

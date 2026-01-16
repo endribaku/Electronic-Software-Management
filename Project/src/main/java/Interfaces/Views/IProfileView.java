@@ -1,5 +1,6 @@
 package Interfaces.Views;
 
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -45,5 +46,11 @@ public interface IProfileView {
     // ==== Messages ====
     void showInfo(String title, String message);
     void showError(String title, String message);
+
+    ButtonBase getCancelButton();
+
+    ButtonBase getEditButton();
+
+    ButtonBase getUpdateProfileButton();
 }
 

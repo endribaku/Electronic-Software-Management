@@ -2,6 +2,8 @@ package Controllers;
 
 import DAO.UserFileHandler;
 import Exceptions.InvalidCredentialsException;
+import Interfaces.DAO.IUserFileHandler;
+import Interfaces.Views.IProfileView;
 import Models.User;
 import Views.ProfileView;
 import javafx.scene.control.Alert;
@@ -10,15 +12,25 @@ import java.time.LocalDate;
 
 public class ProfileController {
 
-    private ProfileView view = new ProfileView();
-    private UserFileHandler handler = new UserFileHandler();
+    private IProfileView view;
+    private IUserFileHandler handler;
     private User currentUser;
 
     // Controller setting the currentUser as the one who controls
     public ProfileController(User user) {
         this.currentUser = user;
+        this.view = new ProfileView();
+        this.handler = new UserFileHandler();
         onInitialize();
     }
+
+    public ProfileController(IProfileView view, IUserFileHandler handler, User user) {
+        this.view = view;
+        this.handler = handler;
+        this.currentUser = user;
+    }
+
+
 
     private void onInitialize() {
 
@@ -103,11 +115,11 @@ public class ProfileController {
         this.view.getDateOfBirthTextField().setText(currentUser.getDateOfBirth().toString());
     }
 
-    public ProfileView getView() {
+    public IProfileView getView() {
         return view;
     }
 
-    public UserFileHandler getHandler() {
+    public IUserFileHandler getHandler() {
         return handler;
     }
 }

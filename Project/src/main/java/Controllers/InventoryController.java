@@ -4,6 +4,8 @@ import DAO.InventoryFileHandler;
 import Exceptions.CategoryCreationException;
 import Exceptions.ItemCreationException;
 import Exceptions.SectorCreationException;
+import Interfaces.DAO.IInventoryFileHandler;
+import Interfaces.Views.IInventoryView;
 import Misc.StockUpdateResult;
 import Models.*;
 import Views.InventoryView;
@@ -13,8 +15,8 @@ import java.time.LocalDate;
 
 public class InventoryController {
 
-    private final InventoryView inventoryListView = new InventoryView();
-    private final InventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
+    private final IInventoryView inventoryListView = new InventoryView();
+    private final IInventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
     private User currentUser;
     private Item editingItem;
 
@@ -152,11 +154,11 @@ public class InventoryController {
         sendAlertforLowStock();
     }
 
-    public InventoryView getView() {
+    public IInventoryView getView() {
         return inventoryListView;
     }
 
-    public InventoryFileHandler getInventoryDAO() {
+    public IInventoryFileHandler getInventoryDAO() {
         return inventoryFileHandler;
     }
 

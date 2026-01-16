@@ -2,7 +2,6 @@ package DAO;
 
 import Interfaces.DAO.IUserFileHandler;
 import Models.Access;
-import Models.Permission;
 import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,14 +9,13 @@ import javafx.collections.ObservableList;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 public class UserFileHandler implements IUserFileHandler {
 
     public static final String FILE_PATH = "Project/Data/employees.dat";
-    private static final File DATA_FILE = new File(FILE_PATH);
 
+    private final File dataFile;
 
     public ObservableList<User> getUsers() {
         return users;
@@ -26,12 +24,17 @@ public class UserFileHandler implements IUserFileHandler {
     private final ObservableList<User> users = FXCollections.observableArrayList();
 
     public UserFileHandler() {
+        this(new File(FILE_PATH));
+    }
+
+    public UserFileHandler(File dataFile) {
+        this.dataFile = dataFile;
         selectAllUser();
     }
 
     @Override
     public ObservableList<User> getAllUsers() {
-        if(users.isEmpty()) {
+        if (users.isEmpty()) {
             selectAllUser();
         }
         return users;
@@ -39,44 +42,44 @@ public class UserFileHandler implements IUserFileHandler {
 
     @Override
     public void insertUser(User user) {
-        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
+        try (FileOutputStream outputStream = new FileOutputStream(dataFile, true)) {
             ObjectOutputStream writer;
-            if (DATA_FILE.length() > 0)
+            if (dataFile.length() > 0)
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(user);
             users.add(user);
-        } catch(IOException ioe) {
-            ioe.getMessage();
+        } catch (IOException exception) {
+            exception.getMessage();
         }
     }
 
     @Override
     public boolean deleteUser(User user) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(User u : users) {
-                if(!u.equals(user))
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            for (User u : users) {
+                if (!u.equals(user))
                     outputStream.writeObject(u);
             }
             users.remove(user);
             return true;
-        } catch (IOException ex) {
-            ex.getMessage();
+        } catch (IOException exception) {
+            exception.getMessage();
             return false;
         }
     }
 
     public void deleteAll(ArrayList<User> usersToRemove) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))){
-            for(User u : users) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            for (User u : users) {
                 if (!usersToRemove.contains(u)) {
                     outputStream.writeObject(u);
                 }
             }
             users.removeAll(usersToRemove);
-        } catch(IOException ex) {
-            ex.getMessage();
+        } catch (IOException exception) {
+            exception.getMessage();
         }
     }
 
@@ -108,7 +111,7 @@ public class UserFileHandler implements IUserFileHandler {
                 salary,
                 accessLevel,
                 permissions,
-                (ObservableList<String>) sector
+                FXCollections.observableArrayList(sector)
         );
 
         users.set(users.indexOf(existingUser), updatedUser);
@@ -116,12 +119,18 @@ public class UserFileHandler implements IUserFileHandler {
         return updateAll(users);
     }
 
-    public boolean updateProfile(String username, String fullName, String email, String password, String phoneNumber, LocalDate dateOfBirth) {
+    public boolean updateProfile(
+            String username,
+            String fullName,
+            String email,
+            String password,
+            String phoneNumber,
+            LocalDate dateOfBirth) {
+
         boolean updated = false;
 
-        // Update the specific sector
-        for(User u : users) {
-            if(u.getUsername().equals(username)) {
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
                 users.remove(u);
                 u.setPassword(password);
                 u.setFullName(fullName);
@@ -136,19 +145,18 @@ public class UserFileHandler implements IUserFileHandler {
             }
         }
 
-        // Write the updated list back to the file
         boolean saved = false;
-        if(updated) {
+        if (updated) {
             saved = updateAll(users);
             System.out.println("Users saved in file");
         }
-        return(updated && saved);
+        return (updated && saved);
     }
 
     @Override
     public boolean updateAll(ObservableList<User> users) {
-        try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
-            for(User u : users) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
+            for (User u : users) {
                 outputStream.writeObject(u);
             }
             System.out.println("Users successfully updated in file.");
@@ -163,56 +171,55 @@ public class UserFileHandler implements IUserFileHandler {
     }
 
     public User selectUser(String username) {
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
-            while (true){
-                if(inputStream.readObject() instanceof User)
-                    if(((User) inputStream.readObject()).getUsername().equals(username)){
-                        return (User)inputStream.readObject();
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataFile))) {
+            while (true) {
+                Object obj = inputStream.readObject();
+                if (obj instanceof User user) {
+                    if (user.getUsername().equals(username)) {
+                        return user;
                     }
+                }
             }
-        }catch (EOFException e){
-
-        }catch(IOException | ClassNotFoundException ex) {
-            ex.getMessage();
+        } catch (EOFException e) {
+            // End of file reached
+        } catch (IOException | ClassNotFoundException exception) {
+            exception.getMessage();
         }
         return null;
     }
 
     public User selectUserFromId(String userID) {
-        try(ObjectInputStream inputStream =
-                    new ObjectInputStream(new FileInputStream(DATA_FILE));){
-            while (true){
-                if(inputStream.readObject() instanceof User)
-                    if(((User) inputStream.readObject()).getUserID().equals(userID)){
-                        return (User)inputStream.readObject();
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataFile))) {
+            while (true) {
+                Object obj = inputStream.readObject();
+                if (obj instanceof User user) {
+                    if (user.getUserID().equals(userID)) {
+                        return user;
                     }
+                }
             }
-        }catch (EOFException e){
-
-        }catch(IOException | ClassNotFoundException ex) {
-            ex.getMessage();
+        } catch (EOFException e) {
+            // End of file reached
+        } catch (IOException | ClassNotFoundException exception) {
+            exception.getMessage();
         }
         return null;
     }
 
     public void selectAllUser() {
-        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
-            while(true) {
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
+            while (true) {
                 User user = (User) reader.readObject();
                 users.add(user);
             }
-        }
-        catch (EOFException ignored) {
-        }
-        catch (IOException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+        } catch (EOFException ignored) {
+        } catch (IOException | ClassNotFoundException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
     public User authenticateUser(String username, String password) {
-        try (ObjectInputStream inputStream =
-                     new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataFile))) {
 
             while (true) {
                 Object obj = inputStream.readObject();
@@ -245,10 +252,4 @@ public class UserFileHandler implements IUserFileHandler {
         }
         return null;
     }
-
-
-
-
-
-
 }

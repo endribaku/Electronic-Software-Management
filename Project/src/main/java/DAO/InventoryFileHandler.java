@@ -12,8 +12,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class InventoryFileHandler implements IInventoryFileHandler {
+
     public static final String FILE_PATH = "Project/Data/inventory.dat";
-    private static final File DATA_FILE = new File(FILE_PATH);
+
+    private final File dataFile;
 
     private static ObjectProperty<Inventory> inventory;
     private static ObservableList<Sector> sectorsList = FXCollections.observableArrayList();
@@ -23,12 +25,17 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     private static ObservableList<Item> itemsSuppliedList = FXCollections.observableArrayList();
 
     public InventoryFileHandler() {
+        this(new File(FILE_PATH));
+    }
+
+    public InventoryFileHandler(File dataFile) {
+        this.dataFile = dataFile;
         inventory = getInventory();
     }
 
     public ObjectProperty<Inventory> getInventory() {
         ObjectProperty<Inventory> inventoryProperty = new SimpleObjectProperty<>();
-        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
             Inventory inventory = (Inventory) reader.readObject();
             inventoryProperty.set(inventory);
         } catch (FileNotFoundException e) {
@@ -42,7 +49,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public void setInventory(Inventory inventory) {
-        try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully saved to file.");
         } catch (FileNotFoundException e) {
@@ -65,7 +72,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public boolean updateInventory(Inventory inventory) {
-        try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             writer.writeObject(inventory);
             System.out.println("Inventory successfully updated in file.");
             return true;
@@ -79,7 +86,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public void deleteInventory() {
-        try (FileWriter writer = new FileWriter(DATA_FILE, false)) {
+        try (FileWriter writer = new FileWriter(dataFile, false)) {
             writer.write(""); // Empty the file
             System.out.println("Inventory file cleared successfully.");
         } catch (IOException e) {
@@ -369,7 +376,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public void deleteCategory(Category category) {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             categoriesList.remove(category);
             for (Category c : categoriesList) {
                 outputStream.writeObject(c);
@@ -382,7 +389,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public void deleteSector(Sector sector) {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             sectorsList.remove(sector);
             for (Sector s : sectorsList) {
                 outputStream.writeObject(s);
@@ -395,7 +402,7 @@ public class InventoryFileHandler implements IInventoryFileHandler {
     }
 
     public void deleteSupplier(Supplier supplier) {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             suppliersList.remove(supplier);
             for (Supplier s : suppliersList) {
                 outputStream.writeObject(s);
@@ -534,7 +541,6 @@ public class InventoryFileHandler implements IInventoryFileHandler {
         return suppliersList;
     }
 
-    // (left mostly as-is; minimal correction so it actually fills list)
     public ObservableList<Item> getSuppliedItems() {
         ObservableList<Supplier> supplierList = getSuppliersList();
         itemsSuppliedList.clear();

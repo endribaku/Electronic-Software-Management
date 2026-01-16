@@ -11,9 +11,18 @@ import java.util.List;
 public class ItemFileHandler implements IItemFileHandler {
 
     public static final String FILE_PATH = "Project/Data/items.dat";
-    private static final File DATA_FILE = new File(FILE_PATH);
+
+    private final File dataFile;
 
     private final ObservableList<Item> items = FXCollections.observableArrayList();
+
+    public ItemFileHandler() {
+        this(new File(FILE_PATH));
+    }
+
+    public ItemFileHandler(File dataFile) {
+        this.dataFile = dataFile;
+    }
 
     public ObservableList<Item> getAllItems() {
         if (items.isEmpty()) {
@@ -39,13 +48,13 @@ public class ItemFileHandler implements IItemFileHandler {
 
     public boolean updateAll() {
         try (ObjectOutputStream outputStream =
-                     new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+                     new ObjectOutputStream(new FileOutputStream(dataFile))) {
             for (Item i : items) {
                 outputStream.writeObject(i);
             }
             return true;
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException exception) {
+            System.out.println(exception.getMessage());
             return false;
         }
     }
@@ -60,10 +69,10 @@ public class ItemFileHandler implements IItemFileHandler {
 
     public void selectAllItems() {
         items.clear();
-        if (!DATA_FILE.exists()) {
+        if (!dataFile.exists()) {
             return;
         }
-        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
 
             boolean endOfFile = false;
 
@@ -75,8 +84,8 @@ public class ItemFileHandler implements IItemFileHandler {
                 }
             }
 
-        } catch (IOException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+        } catch (IOException | ClassNotFoundException exception) {
+            System.out.println(exception.getMessage());
         }
     }
 }

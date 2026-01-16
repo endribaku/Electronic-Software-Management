@@ -3,36 +3,49 @@ package DAO;
 import Interfaces.DAO.IBillFileHandler;
 import Models.Bill;
 import Models.Bill_Item;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.*;
 import java.time.format.DateTimeFormatter;
 
-
 public class BillFileHandler implements IBillFileHandler {
-    private static final String BILLS_DIRECTORY = "Project/Data/BillsRepository";
-    private static final String FILE_PATH = "Project/Data/bills.dat";
-    private static final File DATA_FILE = new File(FILE_PATH);
-    private static final ObservableList<Bill> bills = FXCollections.observableArrayList();
+
+    private final File billsDirectory;
+    private final File dataFile;
+
+    private final ObservableList<Bill> bills = FXCollections.observableArrayList();
+
     public static final String SEPARATOR =
             "-----------------------------------------\n";
 
+    public BillFileHandler() {
+        this(new File("Project/Data/bills.dat"), new File("Project/Data/BillsRepository"));
+    }
+
+    public BillFileHandler(File dataFile, File billsDirectory) {
+        this.dataFile = dataFile;
+        this.billsDirectory = billsDirectory;
+
+        if (!this.billsDirectory.exists()) {
+            this.billsDirectory.mkdirs();
+        }
+    }
+
     @Override
     public ObservableList<Bill> getBills() {
-        try(ObjectInputStream reader = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+        try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(dataFile))) {
             bills.clear();
-            while(true) {
+            while (true) {
                 Object obj = reader.readObject();
                 if (obj instanceof Bill) {
                     Bill bill = (Bill) obj;
                     bills.add(bill);
                 }
             }
-        }catch(EOFException eof) {
+        } catch (EOFException eof) {
 
-        }catch (IOException | ClassNotFoundException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
         return bills;
@@ -40,15 +53,15 @@ public class BillFileHandler implements IBillFileHandler {
 
     @Override
     public void insertBill(Bill bill) {
-        try(FileOutputStream outputStream = new FileOutputStream(DATA_FILE, true)) {
+        try (FileOutputStream outputStream = new FileOutputStream(dataFile, true)) {
             ObjectOutputStream writer;
-            if (DATA_FILE.length() > 0)
+            if (dataFile.length() > 0)
                 writer = new HeaderlessObjectOutputStream(outputStream);
             else
                 writer = new ObjectOutputStream(outputStream);
             writer.writeObject(bill);
             bills.add(bill);
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             ioe.getMessage();
         }
     }
@@ -57,9 +70,8 @@ public class BillFileHandler implements IBillFileHandler {
         String billText = generateBillText(bill);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDate = bill.getDateOfSale().format(formatter);
-        String filename = "Bill" + bill.getBillNumber() + formattedDate +  ".txt";
-        try(PrintWriter fileWriter = new PrintWriter(BILLS_DIRECTORY + "/" + filename))
-        {
+        String filename = "Bill" + bill.getBillNumber() + formattedDate + ".txt";
+        try (PrintWriter fileWriter = new PrintWriter(new File(billsDirectory, filename))) {
             fileWriter.write(billText);
             return true;
         } catch (IOException e) {
@@ -67,8 +79,6 @@ public class BillFileHandler implements IBillFileHandler {
             return false;
         }
     }
-
-
 
     public String generateBillText(Bill bill) {
         StringBuilder billText = new StringBuilder();
@@ -103,14 +113,4 @@ public class BillFileHandler implements IBillFileHandler {
         // Print the bill
         return billText.toString();
     }
-
-
-
-
-
-
-
-
-
-
 }

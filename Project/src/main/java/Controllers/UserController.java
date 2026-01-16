@@ -2,6 +2,8 @@ package Controllers;
 
 import DAO.BillFileHandler;
 import DAO.UserFileHandler;
+import Interfaces.DAO.IBillFileHandler;
+import Interfaces.DAO.IUserFileHandler;
 import Interfaces.Views.IUserView;
 import Models.*;
 import Views.UserView;
@@ -15,18 +17,18 @@ import java.util.Map;
 public class UserController {
 
     private IUserView view;               // ✅ interface type, same field name
-    private UserFileHandler handler;      // keep as-is
+    private IUserFileHandler handler;      // keep as-is
     private User currentUser;
 
     // Optional but recommended: avoid static calls for testability
-    private BillFileHandler billFileHandler = new BillFileHandler();
+    private IBillFileHandler billFileHandler = new BillFileHandler();
 
     public UserController(User user) {
         this(user, new UserView(), new UserFileHandler());
     }
 
     // ✅ constructor for integration testing (inject mock view)
-    public UserController(User user, IUserView view, UserFileHandler handler) {
+    public UserController(User user, IUserView view, IUserFileHandler handler) {
         this.view = view;
         this.handler = handler;
         this.currentUser = user;
@@ -37,7 +39,7 @@ public class UserController {
         return view;
     }
 
-    public UserFileHandler getHandler() {
+    public IUserFileHandler getHandler() {
         return handler;
     }
 
