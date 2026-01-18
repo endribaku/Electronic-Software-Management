@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 public class EmployeePerformanceController {
 
     // ✅ keep field NAMES unchanged (only types switched to interfaces)
-    private IEmployeePerformanceView view = new EmployeePerformanceView();
-    private IUserFileHandler userFileHandler = new UserFileHandler();
-    private IItemFileHandler itemFileHandler = new ItemFileHandler();
-    private IBillFileHandler billFileHandler = new BillFileHandler();
+    private IEmployeePerformanceView view;
+    private IUserFileHandler userFileHandler;
+    private IItemFileHandler itemFileHandler;
+    private IBillFileHandler billFileHandler;
 
     private User currentUser;
 
@@ -43,7 +43,8 @@ public class EmployeePerformanceController {
                 new EmployeePerformanceView(),
                 new UserFileHandler(),
                 new ItemFileHandler(),
-                new BillFileHandler()
+                new BillFileHandler(),
+                true   // charts ON in real app
         );
     }
 
@@ -53,7 +54,8 @@ public class EmployeePerformanceController {
             IEmployeePerformanceView view,
             IUserFileHandler userFileHandler,
             IItemFileHandler itemFileHandler,
-            IBillFileHandler billFileHandler
+            IBillFileHandler billFileHandler,
+            boolean initCharts   // 👈 NEW
     ) {
         this.currentUser = user;
         this.view = view;
@@ -61,21 +63,18 @@ public class EmployeePerformanceController {
         this.itemFileHandler = itemFileHandler;
         this.billFileHandler = billFileHandler;
 
-        // bills load (no static call)
+        // bills load
         this.view.getBills().clear();
         this.view.getBills().addAll(billFileHandler.getBills());
 
-        // charts init
-        initCharts();
-
-        // filter for which charts to show
-        this.view.getEmployeePerformanceFilter().setOnAction(event -> updateChartsLayout());
-
-        setupBillDateFilter();
-        setupSearchBar();
-
-        // initial layout based on default combobox value
-        updateChartsLayout();
+        if (initCharts) {
+            initCharts();
+            this.view.getEmployeePerformanceFilter()
+                    .setOnAction(event -> updateChartsLayout());
+            setupBillDateFilter();
+            setupSearchBar();
+            updateChartsLayout();
+        }
     }
 
     public IEmployeePerformanceView getView() {

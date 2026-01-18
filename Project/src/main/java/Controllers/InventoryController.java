@@ -15,8 +15,8 @@ import java.time.LocalDate;
 
 public class InventoryController {
 
-    private final IInventoryView inventoryListView = new InventoryView();
-    private final IInventoryFileHandler inventoryFileHandler = new InventoryFileHandler();
+    private IInventoryView inventoryListView;
+    private IInventoryFileHandler inventoryFileHandler;
     private User currentUser;
     private Item editingItem;
 
@@ -29,12 +29,31 @@ public class InventoryController {
     private static final String ERROR = "Error";
     private static final String DELETE_ITEM = "Delete Item";
 
-
-
-    // Controller setting the currentUser as the one who controls
     public InventoryController(User user) {
-        this.currentUser = user;
+        this(
+                user,
+                new InventoryView(),
+                new InventoryFileHandler(),
+                true
+        );
+    }
 
+    public InventoryController(
+            User user,
+            IInventoryView view,
+            IInventoryFileHandler fileHandler,
+            boolean wireView
+    ) {
+        this.currentUser = user;
+        this.inventoryListView = view;
+        this.inventoryFileHandler = fileHandler;
+
+        if (wireView) {
+            wireActions();
+        }
+    }
+
+    private void wireActions() {
         this.inventoryListView.getAddItemButton().setOnAction(e -> {
 
             String itemName =
@@ -153,6 +172,8 @@ public class InventoryController {
         setEditRows();
         sendAlertforLowStock();
     }
+
+
 
     public IInventoryView getView() {
         return inventoryListView;

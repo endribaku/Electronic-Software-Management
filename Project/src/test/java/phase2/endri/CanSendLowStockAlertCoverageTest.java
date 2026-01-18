@@ -4,8 +4,10 @@ import Controllers.InventoryController;
 import Models.Access;
 import Models.Item;
 import Models.User;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +19,15 @@ class CanSendLowStockAlertCoverageTest {
     private User testUser;
     private ObservableList<Item> lowStockItems;
 
+
+    @BeforeAll
+    static void initJavaFx() {
+        try {
+            Platform.startup(() -> {});
+        } catch (IllegalStateException ignored) {
+            // JavaFX already initialized
+        }
+    }
     @BeforeEach
     void setUp() {
         // Default user with NO access
