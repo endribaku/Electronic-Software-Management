@@ -52,4 +52,10 @@ public interface IInventoryFileHandler {
 
     // Low stock
     ObservableList<Item> checkForLowStock(ObservableList<Item> items);
+
+    ObservableList<Item> getItems();
+
+    void insertItem(Item item);
+
+    void deleteItem(String itemID);
 }

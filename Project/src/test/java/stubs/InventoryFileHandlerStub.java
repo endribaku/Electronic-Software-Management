@@ -135,4 +135,19 @@ public class InventoryFileHandlerStub implements IInventoryFileHandler {
     public ObservableList<Item> checkForLowStock(ObservableList<Item> items) {
         return FXCollections.observableArrayList();
     }
+
+    @Override
+    public ObservableList<Item> getItems() {
+        return null;
+    }
+
+    @Override
+    public void insertItem(Item item) {
+
+    }
+
+    @Override
+    public void deleteItem(String itemID) {
+
+    }
 }

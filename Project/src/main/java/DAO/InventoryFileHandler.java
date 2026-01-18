@@ -71,6 +71,21 @@ public class InventoryFileHandler implements IInventoryFileHandler {
         return lowStockItems;
     }
 
+    @Override
+    public ObservableList<Item> getItems() {
+        return null;
+    }
+
+    @Override
+    public void insertItem(Item item) {
+
+    }
+
+    @Override
+    public void deleteItem(String itemID) {
+
+    }
+
     public boolean updateInventory(Inventory inventory) {
         try (ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(dataFile))) {
             writer.writeObject(inventory);
