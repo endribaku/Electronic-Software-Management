@@ -240,10 +240,16 @@ public class EmployeePerformanceController {
             if (!billDate.isBefore(startOfWeek) && billDate.isBefore(startOfWeek.plusDays(7))) {
                 double amount = bill.getTotalAmount();
 
+                int contribution;
+
                 try {
-                    classifyBillAmount(amount);
+                    contribution = classifyBillAmount(amount);
                 } catch (IllegalArgumentException validationError) {
-                    continue;
+                    continue; // invalid bill
+                }
+
+                if (contribution == 0) {
+                    continue; // valid but non-impact bill
                 }
 
                 dailyEarnings.put(billDate, dailyEarnings.getOrDefault(billDate, 0.0) + amount);
@@ -277,10 +283,16 @@ public class EmployeePerformanceController {
                 int day = bill.getDateOfSale().getDayOfMonth();
                 double amount = bill.getTotalAmount();
 
+                int contribution;
+
                 try {
-                    classifyBillAmount(amount);
+                    contribution = classifyBillAmount(amount);
                 } catch (IllegalArgumentException validationError) {
-                    continue;
+                    continue; // invalid bill
+                }
+
+                if (contribution == 0) {
+                    continue; // valid but non-impact bill
                 }
 
                 dailyEarnings.put(day, dailyEarnings.getOrDefault(day, 0.0) + amount);
@@ -306,10 +318,16 @@ public class EmployeePerformanceController {
                 Month month = bill.getDateOfSale().getMonth();
                 double amount = bill.getTotalAmount();
 
+                int contribution;
+
                 try {
-                    classifyBillAmount(amount);
+                    contribution = classifyBillAmount(amount);
                 } catch (IllegalArgumentException validationError) {
-                    continue;
+                    continue; // invalid bill
+                }
+
+                if (contribution == 0) {
+                    continue; // valid but non-impact bill
                 }
 
                 monthlyEarnings.put(month, monthlyEarnings.getOrDefault(month, 0.0) + amount);
@@ -335,10 +353,16 @@ public class EmployeePerformanceController {
             int year = bill.getDateOfSale().getYear();
             double amount = bill.getTotalAmount();
 
+            int contribution;
+
             try {
-                classifyBillAmount(amount);
+                contribution = classifyBillAmount(amount);
             } catch (IllegalArgumentException validationError) {
-                continue;
+                continue; // invalid bill
+            }
+
+            if (contribution == 0) {
+                continue; // valid but non-impact bill
             }
 
             yearlyEarnings.put(year, yearlyEarnings.getOrDefault(year, 0.0) + amount);
@@ -369,10 +393,16 @@ public class EmployeePerformanceController {
                 String cashierName = bill.getUsername();
                 double amount = bill.getTotalAmount();
 
+                int contribution;
+
                 try {
-                    classifyBillAmount(amount);
+                    contribution = classifyBillAmount(amount);
                 } catch (IllegalArgumentException validationError) {
-                    continue;
+                    continue; // invalid bill
+                }
+
+                if (contribution == 0) {
+                    continue; // valid but non-impact bill
                 }
 
                 cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
@@ -399,10 +429,16 @@ public class EmployeePerformanceController {
                 String cashierName = bill.getUsername();
                 double amount = bill.getTotalAmount();
 
+                int contribution;
+
                 try {
-                    classifyBillAmount(amount);
+                    contribution = classifyBillAmount(amount);
                 } catch (IllegalArgumentException validationError) {
-                    continue;
+                    continue; // invalid bill
+                }
+
+                if (contribution == 0) {
+                    continue; // valid but non-impact bill
                 }
 
                 cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
@@ -448,12 +484,17 @@ public class EmployeePerformanceController {
             String cashierName = bill.getUsername();
             double amount = bill.getTotalAmount();
 
+            int contribution;
+
             try {
-                classifyBillAmount(amount);
+                contribution = classifyBillAmount(amount);
             } catch (IllegalArgumentException validationError) {
-                continue;
+                continue; // invalid bill
             }
 
+            if (contribution == 0) {
+                continue; // valid but non-impact bill
+            }
             cashierEarnings.put(cashierName, cashierEarnings.getOrDefault(cashierName, 0.0) + amount);
         }
 
