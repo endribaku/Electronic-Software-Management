@@ -28,11 +28,8 @@ public class SuppliersController {
     private ISupplierManagementView view = new SupplierManagementView();
     private ISuppliersFileHandler handler = new SuppliersFileHandler();
     private IInventoryFileHandler inventoryHandler = new InventoryFileHandler();
-    private User currentUser;
-
     // Constructor (default)
     public SuppliersController(User user) {
-        this.currentUser = user;
         onInitialize();
     }
 
@@ -43,7 +40,6 @@ public class SuppliersController {
             ISuppliersFileHandler handler,
             IInventoryFileHandler inventoryHandler
     ) {
-        this.currentUser = user;
         this.view = view;
         this.handler = handler;
         this.inventoryHandler = inventoryHandler;
@@ -66,9 +62,7 @@ public class SuppliersController {
         view.onAddSupplier(this::onSupplierAdd);
         view.onDeleteSupplier(this::onSupplierDelete);
         view.onEditSupplier(this::onSupplierEdit);
-        view.onCancelUpdate(() -> {
-            view.showAddSupplierBox();
-        });
+        view.onCancelUpdate(() -> view.showAddSupplierBox());
 
         view.onUpdateTable(() -> {
             boolean success = handler.updateAll();

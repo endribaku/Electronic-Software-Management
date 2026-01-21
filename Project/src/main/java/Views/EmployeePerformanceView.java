@@ -18,6 +18,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class EmployeePerformanceView implements IEmployeePerformanceView {
+    private static final String TOTAL_SALES_LABEL = "Total Sales";
+    private static final String TOTAL_AMOUNT_EARNED_LABEL = "Total Amount Earned";
+
     private HBox employeePerformancePage = new HBox();
     private VBox billListBox = new VBox();
     private VBox chartsBox = new VBox();
@@ -91,7 +94,7 @@ public class EmployeePerformanceView implements IEmployeePerformanceView {
             return bill.getUsername().toLowerCase().contains(newValue.toLowerCase()); // Filter items
         }));
 
-        billTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        billTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         billTableView.setEditable(false);
         billNumberColumn.setCellValueFactory(new PropertyValueFactory<>("billNumber"));
         billNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -117,35 +120,35 @@ public class EmployeePerformanceView implements IEmployeePerformanceView {
         //Weekly
         employeePerformanceFilter.setValue("This Week's Performance");
         xAxisWeekly.setLabel("Days of the Week");
-        yAxisWeekly.setLabel("Total Amount Earned");
+        yAxisWeekly.setLabel(TOTAL_AMOUNT_EARNED_LABEL);
         lineChartWeekly.setTitle("Weekly Sales Statistics");
         pieChartWeekly.setTitle("Weekly Employee Performance");
-        seriesWeekly.setName("Total Sales");
+        seriesWeekly.setName(TOTAL_SALES_LABEL);
 
         weeklyCharts.getChildren().addAll(lineChartWeekly, pieChartWeekly);
 
         //Monthly
         xAxisMonthly.setLabel("Days of the Month");
-        yAxisMonthly.setLabel("Total Amount Earned");
+        yAxisMonthly.setLabel(TOTAL_AMOUNT_EARNED_LABEL);
         lineChartMonthly.setTitle("Monthly Sales Statistics");
         pieChartMonthly.setTitle("Monthly Employee Performance");
-        seriesMonthly.setName("Total Sales");
+        seriesMonthly.setName(TOTAL_SALES_LABEL);
         monthlyCharts.getChildren().addAll(lineChartMonthly, pieChartMonthly);
 
         //Yearly
         xAxisYearly.setLabel("Months of the Year");
-        yAxisYearly.setLabel("Total Amount Earned");
+        yAxisYearly.setLabel(TOTAL_AMOUNT_EARNED_LABEL);
         lineChartYearly.setTitle("Yearly Sales Statistics");
         pieChartYearly.setTitle("Yearly Employee Performance");
-        seriesYearly.setName("Total Sales");
+        seriesYearly.setName(TOTAL_SALES_LABEL);
         yearlyCharts.getChildren().addAll(lineChartYearly, pieChartYearly);
 
         //Total
         xAxisTotal.setLabel("Days");
-        yAxisTotal.setLabel("Total Amount Earned");
+        yAxisTotal.setLabel(TOTAL_AMOUNT_EARNED_LABEL);
         lineChartTotal.setTitle("Sales Statistics");
         pieChartTotal.setTitle("Employee Performance");
-        seriesTotal.setName("Total Sales");
+        seriesTotal.setName(TOTAL_SALES_LABEL);
         totalCharts.getChildren().addAll(lineChartTotal, pieChartTotal);
 
         chartsBox.getChildren().addAll(headerCharts, weeklyCharts);
@@ -165,7 +168,7 @@ public class EmployeePerformanceView implements IEmployeePerformanceView {
     }
 
     public ObservableList<Bill> getBills() {
-        return bills;
+        return bills == null ? FXCollections.observableArrayList() : bills;
     }
 
     public TextField getSearchBar() {
